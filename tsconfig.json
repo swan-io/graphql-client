@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "./example/schema.graphql",
+        "tadaOutputLocation": "./example/graphql-env.d.ts"
+      }
+    ],
+    "lib": ["ES2022", "DOM"],
+    "module": "ES2022",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "target": "es2016",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true
+  }
+}

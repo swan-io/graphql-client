@@ -1,0 +1,5 @@
+.DS_Store
+.DS_Store?
+node_modules/
+example/graphql-env.d.ts
+.env

@@ -1,0 +1,30 @@
+{
+  "name": "@swan-io/gql-client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@0no-co/graphqlsp": "^1.6.0",
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.67",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "gql.tada": "^1.3.6",
+    "jsdom": "^24.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.2",
+    "vite": "^5.2.2",
+    "vitest": "^1.4.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "dependencies": {
+    "@0no-co/graphql.web": "^1.0.4",
+    "@swan-io/boxed": "^2.1.1",
+    "@swan-io/request": "^1.0.2",
+    "ts-pattern": "^5.0.8"
+  }
+}
