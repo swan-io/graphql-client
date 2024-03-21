@@ -47,13 +47,13 @@ const mergeConnection = <A, T extends Connection<A>>(
       .with("before", () => ({
         hasPreviousPage: next.pageInfo.hasPreviousPage,
         startCursor: next.pageInfo.startCursor,
-        hasNextPage: previous.pageInfo.hasPreviousPage,
+        hasNextPage: previous.pageInfo.hasNextPage,
         endCursor: previous.pageInfo.endCursor,
       }))
       .with("after", () => ({
         hasPreviousPage: previous.pageInfo.hasPreviousPage,
         startCursor: previous.pageInfo.startCursor,
-        hasNextPage: next.pageInfo.hasPreviousPage,
+        hasNextPage: next.pageInfo.hasNextPage,
         endCursor: next.pageInfo.endCursor,
       }))
       .exhaustive(),
@@ -79,22 +79,27 @@ const createPaginationHook = (direction: mode) => {
         const connectionResult = connection.get();
         const aggregateResult = aggregate.get();
         if (connectionResult.isOk() && aggregateResult.isOk()) {
+          const connectionValue = connectionResult.get();
+          if (connectionValue != undefined) {
+            setAggregate(
+              mergeConnection(
+                aggregateResult.get(),
+                connectionValue,
+                direction
+              ) as T
+            );
+          }
+        }
+      } else {
+        if (connection != undefined) {
           setAggregate(
             mergeConnection(
-              aggregateResult.get(),
-              connectionResult.get(),
+              aggregate as Connection<A>,
+              connection as Connection<A>,
               direction
             ) as T
           );
         }
-      } else {
-        setAggregate(
-          mergeConnection(
-            aggregate as Connection<A>,
-            connection as Connection<A>,
-            direction
-          ) as T
-        );
       }
     }, [connection]);
 

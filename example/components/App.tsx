@@ -2,7 +2,10 @@ import { graphql } from "../graphql";
 import { useQuery } from "../../src";
 import { P, match } from "ts-pattern";
 import { AsyncData, Result } from "@swan-io/boxed";
-import { TransactionList, transactionListFragment } from "./TransactionList";
+import {
+  AccountMembershipList,
+  accountMembershipListFragment,
+} from "./AccountMembershipList";
 import { useState } from "react";
 
 const transactionListQuery = graphql(
@@ -10,19 +13,19 @@ const transactionListQuery = graphql(
     query App($accountMembershipId: ID!, $after: String) {
       accountMembership(id: $accountMembershipId) {
         account {
-          transactions(first: 20, after: $after) {
-            ...TransactionList
+          memberships(first: 3, after: $after) {
+            ...AccountMembershipList
           }
         }
       }
     }
   `,
-  [transactionListFragment]
+  [accountMembershipListFragment]
 );
 
 export const App = () => {
   const [after, setAfter] = useState<string | null>(null);
-  const [data] = useQuery(transactionListQuery, {
+  const [data, { nextData }] = useQuery(transactionListQuery, {
     accountMembershipId: "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
     after,
   });
@@ -43,13 +46,11 @@ export const App = () => {
               return <div>No membership</div>;
             }
 
-            if (accountMembership.account.transactions == null) {
-              return <div>No transactions</div>;
-            }
             return (
-              <TransactionList
-                data={accountMembership.account.transactions}
+              <AccountMembershipList
+                data={accountMembership.account.memberships}
                 onPressNextPage={setAfter}
+                isLoading={nextData.isLoading()}
               />
             );
           }

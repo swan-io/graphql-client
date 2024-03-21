@@ -139,8 +139,11 @@ export const readOperationFromCache = (
       // If the last value deeply equals the previous one, return the previous one
       const serializedVariables = JSON.stringify(variables);
       const previous = Option.fromNullable(STABILITY_CACHE.get(document))
-        .map((byVariable) => byVariable.get(serializedVariables))
+        .flatMap((byVariable) =>
+          Option.fromNullable(byVariable.get(serializedVariables))
+        )
         .flatMap((value) => value as Option<unknown>);
+
       if (previous.isSome() && deepEqual(value, previous.get())) {
         return previous;
       } else {

@@ -1,15 +1,18 @@
 import { FragmentOf, readFragment } from "gql.tada";
 import { graphql } from "../graphql";
-import { Transaction, transactionFragment } from "./Transaction";
+import {
+  AccountMembership,
+  accountMembershipFragment,
+} from "./AccountMembership";
 import { useAfterPagination } from "../../src/react/usePagination";
 
-export const transactionListFragment = graphql(
+export const accountMembershipListFragment = graphql(
   `
-    fragment TransactionList on TransactionConnection {
+    fragment AccountMembershipList on AccountMembershipConnection {
       edges {
         node {
           id
-          ...Transaction
+          ...AccountMembership
         }
       }
       pageInfo {
@@ -19,30 +22,37 @@ export const transactionListFragment = graphql(
       totalCount
     }
   `,
-  [transactionFragment]
+  [accountMembershipFragment]
 );
 
 type Props = {
-  data: FragmentOf<typeof transactionListFragment>;
+  data: FragmentOf<typeof accountMembershipListFragment>;
   onPressNextPage: (cursor: string | null) => void;
+  isLoading: boolean;
 };
 
-export const TransactionList = ({ data, onPressNextPage }: Props) => {
+export const AccountMembershipList = ({
+  data,
+  onPressNextPage,
+  isLoading,
+}: Props) => {
   const transactions = useAfterPagination(
-    readFragment(transactionListFragment, data)
+    readFragment(accountMembershipListFragment, data)
   );
 
   return (
     <div>
-      <h1>Transactions</h1>
+      <h1>Memberships</h1>
       <div>
         <div>Total: {transactions.totalCount}</div>
 
         <div>
           {transactions.edges.map((data) => {
-            return <Transaction key={data.node.id} data={data.node} />;
+            return <AccountMembership key={data.node.id} data={data.node} />;
           })}
         </div>
+
+        {isLoading ? <div>Loading next results …</div> : null}
 
         <button
           disabled={!transactions.pageInfo.hasNextPage}
