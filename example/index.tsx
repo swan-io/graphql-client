@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { Client, ClientContext } from "../src";
 import { App } from "./components/App";
+import { Suspense } from "react";
 
 const yourAuthBearer = "your-auth-bearer";
 
@@ -15,7 +16,9 @@ const client = new Client({
 const Root = () => {
   return (
     <ClientContext.Provider value={client}>
-      <App />
+      <Suspense fallback={<h1>Suspense loading</h1>}>
+        <App />
+      </Suspense>
     </ClientContext.Provider>
   );
 };

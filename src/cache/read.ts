@@ -6,17 +6,18 @@ import {
   getSelectedKeys,
 } from "../graphql/ast";
 import { match } from "ts-pattern";
-import { Array, Option } from "@swan-io/boxed";
-import { deepEqual, isRecord } from "../utils";
+import { Array, Option, Result } from "@swan-io/boxed";
+import { deepEqual, isRecord, serializeVariables } from "../utils";
 
 const getFromCacheOrReturnValue = (
   cache: ClientCache,
   valueOrKey: unknown,
-  selectedKeys: Set<string>
-): Option<unknown> =>
-  typeof valueOrKey === "symbol"
+  selectedKeys: Set<symbol>
+): Option<unknown> => {
+  return typeof valueOrKey === "symbol"
     ? cache.getFromCache(valueOrKey, selectedKeys).flatMap(Option.fromNullable)
     : Option.Some(valueOrKey);
+};
 
 const STABILITY_CACHE = new WeakMap<DocumentNode, Map<string, unknown>>();
 
@@ -41,6 +42,11 @@ export const readOperationFromCache = (
             if (data == undefined) {
               return Option.None();
             }
+            const cacheHasKey = data.hasOwnProperty(fieldNameWithArguments);
+            if (!cacheHasKey) {
+              return Option.None();
+            }
+
             const valueOrKeyFromCache = data[fieldNameWithArguments];
 
             if (valueOrKeyFromCache == undefined) {
@@ -51,7 +57,7 @@ export const readOperationFromCache = (
             }
 
             if (Array.isArray(valueOrKeyFromCache)) {
-              const selectedKeys = getSelectedKeys(fieldNode);
+              const selectedKeys = getSelectedKeys(fieldNode, variables);
               return Option.all(
                 valueOrKeyFromCache.map((valueOrKey) => {
                   const value = getFromCacheOrReturnValue(
@@ -76,7 +82,7 @@ export const readOperationFromCache = (
                 [originalFieldName]: result,
               }));
             } else {
-              const selectedKeys = getSelectedKeys(fieldNode);
+              const selectedKeys = getSelectedKeys(fieldNode, variables);
 
               const value = getFromCacheOrReturnValue(
                 cache,
@@ -123,7 +129,7 @@ export const readOperationFromCache = (
     )
     .flatMap(({ operation, cacheKey }) => {
       return cache
-        .getFromCache(cacheKey, getSelectedKeys(operation))
+        .getFromCache(cacheKey, getSelectedKeys(operation, variables))
         .map((cache) => ({ cache, operation }));
     })
     .flatMap(({ operation, cache }) => {
@@ -137,17 +143,22 @@ export const readOperationFromCache = (
       // We use a trick to return stable values, the document holds a WeakMap
       // that for each key (serialized variables), stores the last returned result.
       // If the last value deeply equals the previous one, return the previous one
-      const serializedVariables = JSON.stringify(variables);
+      const serializedVariables = serializeVariables(variables);
       const previous = Option.fromNullable(STABILITY_CACHE.get(document))
         .flatMap((byVariable) =>
           Option.fromNullable(byVariable.get(serializedVariables))
         )
-        .flatMap((value) => value as Option<unknown>);
+        .flatMap((value) => value as Option<Result<unknown, unknown>>);
 
-      if (previous.isSome() && deepEqual(value, previous.get())) {
+      if (
+        previous
+          .flatMap((previous) => previous.toOption())
+          .map((previous) => deepEqual(value, previous))
+          .getWithDefault(false)
+      ) {
         return previous;
       } else {
-        const valueToCache = Option.Some(value);
+        const valueToCache = Option.Some(Result.Ok(value));
         const documentCache = STABILITY_CACHE.get(document) ?? new Map();
         documentCache.set(serializedVariables, valueToCache);
         STABILITY_CACHE.set(document, documentCache);

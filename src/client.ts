@@ -10,7 +10,11 @@ import {
 import { ClientCache } from "./cache/cache";
 import { TypedDocumentNode } from "./types";
 import { DocumentNode, GraphQLError, print } from "@0no-co/graphql.web";
-import { getExecutableOperationName } from "./graphql/ast";
+import {
+  addTypenames,
+  getExecutableOperationName,
+  inlineFragments,
+} from "./graphql/ast";
 import { Future, Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
 import { InvalidGraphQLResponseError, parseGraphQLError } from "./errors";
@@ -33,14 +37,6 @@ export type MakeRequest = (
     NetworkError | TimeoutError | BadStatusError | EmptyResponseError
   >
 >;
-
-export type ClientError =
-  | NetworkError
-  | TimeoutError
-  | BadStatusError
-  | EmptyResponseError
-  | InvalidGraphQLResponseError
-  | GraphQLError[];
 
 export type ClientConfig = {
   url: string;
@@ -77,12 +73,25 @@ export class Client {
   makeRequest: MakeRequest;
   subscribers: Set<() => void>;
 
+  transformedDocuments: Map<DocumentNode, DocumentNode>;
+
   constructor(config: ClientConfig) {
     this.url = config.url;
     this.headers = config.headers ?? { "Content-Type": "application/json" };
     this.cache = new ClientCache();
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
     this.subscribers = new Set();
+    this.transformedDocuments = new Map();
+  }
+
+  getTransformedDocument(document: DocumentNode) {
+    if (this.transformedDocuments.has(document)) {
+      return this.transformedDocuments.get(document) as DocumentNode;
+    } else {
+      const transformedDocument = inlineFragments(addTypenames(document));
+      this.transformedDocuments.set(document, transformedDocument);
+      return transformedDocument;
+    }
   }
 
   subscribe(func: () => void) {
@@ -94,16 +103,20 @@ export class Client {
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables
   ) {
-    const operationName =
-      getExecutableOperationName(document).getWithDefault("Untitled");
+    const transformedDocument = this.getTransformedDocument(document);
 
-    const variablesAsRecord = (variables ?? {}) as Record<string, any>;
+    const operationName =
+      getExecutableOperationName(transformedDocument).getWithDefault(
+        "Untitled"
+      );
+
+    const variablesAsRecord = variables as Record<string, any>;
 
     return this.makeRequest({
       url: this.url,
       headers: this.headers,
       operationName,
-      document,
+      document: transformedDocument,
       variables: variablesAsRecord,
     })
       .mapOkToResult((payload) =>
@@ -122,7 +135,19 @@ export class Client {
           )
       )
       .tapOk((data) => {
-        writeOperationToCache(this.cache, document, data, variablesAsRecord);
+        writeOperationToCache(
+          this.cache,
+          transformedDocument,
+          data,
+          variablesAsRecord
+        );
+      })
+      .tap((result) => {
+        this.cache.setOperationInCache(
+          transformedDocument,
+          variablesAsRecord,
+          result
+        );
         this.subscribers.forEach((func) => {
           func();
         });
@@ -133,13 +158,20 @@ export class Client {
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables
   ) {
-    const variablesAsRecord = (variables ?? {}) as Record<string, any>;
+    const variablesAsRecord = variables as Record<string, any>;
+    const transformedDocument = this.getTransformedDocument(document);
 
-    return readOperationFromCache(
-      this.cache,
-      document,
-      variablesAsRecord
-    ) as Option<Data>;
+    return match(
+      this.cache.getOperationFromCache(transformedDocument, variablesAsRecord)
+    )
+      .with(Option.P.Some(Result.P.Error(P._)), (value) => value)
+      .otherwise(() =>
+        readOperationFromCache(
+          this.cache,
+          transformedDocument,
+          variablesAsRecord
+        )
+      );
   }
 
   query<Data, Variables>(

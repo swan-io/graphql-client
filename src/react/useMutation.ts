@@ -1,6 +1,6 @@
 import { AsyncData, Future, Result } from "@swan-io/boxed";
 import { TypedDocumentNode } from "../types";
-import { ClientError } from "../client";
+import { ClientError } from "../errors";
 import { useCallback, useContext, useState } from "react";
 import { ClientContext } from "./ClientContext";
 import { addTypenames, inlineFragments } from "../graphql/ast";
@@ -13,10 +13,10 @@ export type Mutation<Data, Variables> = readonly [
 export const useMutation = <Data, Variables>(
   mutation: TypedDocumentNode<Data, Variables>
 ): Mutation<Data, Variables> => {
-  const [adaptedMutation] = useState<TypedDocumentNode<Data, Variables>>(() =>
-    inlineFragments(addTypenames(mutation))
-  );
   const client = useContext(ClientContext);
+
+  const [stableMutation] =
+    useState<TypedDocumentNode<Data, Variables>>(mutation);
 
   const [data, setData] = useState<AsyncData<Result<Data, ClientError>>>(
     AsyncData.NotAsked()
@@ -26,10 +26,10 @@ export const useMutation = <Data, Variables>(
     (variables: Variables) => {
       setData(AsyncData.Loading());
       return client
-        .commitMutation(adaptedMutation, variables)
+        .commitMutation(stableMutation, variables)
         .tap((result) => setData(AsyncData.Done(result)));
     },
-    [adaptedMutation]
+    [stableMutation]
   );
 
   return [commitMutation, data];

@@ -1,13 +1,19 @@
-import { Option } from "@swan-io/boxed";
+import { Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
-import { DEEP_MERGE_DELETE, containsAll, deepMerge } from "../utils";
 import {
+  DEEP_MERGE_DELETE,
+  containsAll,
+  deepMerge,
+  serializeVariables,
+} from "../utils";
+import {
+  DocumentNode,
   OperationDefinitionNode,
   OperationTypeNode,
 } from "@0no-co/graphql.web";
 
 type CacheEntry = {
-  requestedKeys: Set<string>;
+  requestedKeys: Set<symbol>;
   value: unknown;
 };
 
@@ -47,12 +53,39 @@ const mergeCacheEntries = (a: CacheEntry, b: CacheEntry): CacheEntry => {
 
 export class ClientCache {
   cache = new Map<symbol, CacheEntry>();
+  operationCache = new Map<
+    DocumentNode,
+    Map<string, Option<Result<unknown, unknown>>>
+  >();
 
   dump() {
     return this.cache;
   }
 
-  getFromCache(cacheKey: symbol, requestedKeys: Set<string>) {
+  getOperationFromCache(
+    documentNode: DocumentNode,
+    variables: Record<string, any>
+  ) {
+    const serializedVariables = serializeVariables(variables);
+    return Option.fromNullable(this.operationCache.get(documentNode))
+      .flatMap((cache) => Option.fromNullable(cache.get(serializedVariables)))
+      .flatMap((value) => value);
+  }
+
+  setOperationInCache(
+    documentNode: DocumentNode,
+    variables: Record<string, any>,
+    data: Result<unknown, unknown>
+  ) {
+    const serializedVariables = serializeVariables(variables);
+    const documentCache = Option.fromNullable(
+      this.operationCache.get(documentNode)
+    ).getWithDefault(new Map());
+    documentCache.set(serializedVariables, Option.Some(data));
+    this.operationCache.set(documentNode, documentCache);
+  }
+
+  getFromCache(cacheKey: symbol, requestedKeys: Set<symbol>) {
     return this.get(cacheKey).flatMap((entry) => {
       if (containsAll(entry.requestedKeys, requestedKeys)) {
         return Option.Some(entry.value);
@@ -87,7 +120,7 @@ export class ClientCache {
 
   cacheIfEligible<T extends unknown>(
     value: T,
-    requestedKeys: Set<string>
+    requestedKeys: Set<symbol>
   ): symbol | T {
     return match(getCacheKeyFromJson(value))
       .with(Option.P.Some(P.select()), (cacheKey) => {

@@ -86,3 +86,7 @@ export const deepEqual = (a: any, b: any): boolean => {
 
   return true;
 };
+
+export const serializeVariables = (variables: Record<string, any>) => {
+  return JSON.stringify(variables);
+};

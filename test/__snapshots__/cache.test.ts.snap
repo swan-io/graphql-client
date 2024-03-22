@@ -4,10 +4,10 @@ exports[`Write & read in cache 1`] = `
 Map {
   Symbol(Query) => {
     "requestedKeys": Set {
-      "__typename",
-      "accountMembership",
-      "accountMemberships",
-      "supportingDocumentCollection",
+      Symbol(__typename),
+      Symbol(accountMembership({"id":"1"})),
+      Symbol(accountMemberships({"first":"2"})),
+      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})),
     },
     "value": {
       Symbol(__typename): "Query",
@@ -30,10 +30,11 @@ Map {
   },
   Symbol(AccountMembership<account-membership-1>) => {
     "requestedKeys": Set {
-      "__typename",
-      "id",
-      "user",
-      "account",
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(user),
+      Symbol(account),
+      Symbol(membershipUser),
     },
     "value": {
       Symbol(__typename): "AccountMembership",
@@ -48,11 +49,11 @@ Map {
   },
   Symbol(User<user-1>) => {
     "requestedKeys": Set {
-      "__typename",
-      "id",
-      "firstName",
-      "lastName",
-      "identificationLevels",
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(firstName),
+      Symbol(lastName),
+      Symbol(identificationLevels),
     },
     "value": {
       Symbol(__typename): "User",
@@ -64,10 +65,10 @@ Map {
   },
   Symbol(AccountMembership<account-membership-2>) => {
     "requestedKeys": Set {
-      "__typename",
-      "id",
-      "account",
-      "user",
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(account),
+      Symbol(membershipUser),
     },
     "value": {
       Symbol(__typename): "AccountMembership",
@@ -81,9 +82,9 @@ Map {
   },
   Symbol(User<user-2>) => {
     "requestedKeys": Set {
-      "__typename",
-      "id",
-      "lastName",
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(lastName),
     },
     "value": {
       Symbol(__typename): "User",
@@ -93,9 +94,9 @@ Map {
   },
   Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
     "requestedKeys": Set {
-      "__typename",
-      "supportingDocuments",
-      "id",
+      Symbol(__typename),
+      Symbol(supportingDocuments),
+      Symbol(id),
     },
     "value": {
       Symbol(__typename): "SupportingDocumentCollection",
@@ -107,307 +108,14 @@ Map {
   },
   Symbol(SupportingDocument<supporting-document-1>) => {
     "requestedKeys": Set {
-      "__typename",
-      "id",
-      "createdAt",
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(createdAt),
     },
     "value": {
       Symbol(__typename): "SupportingDocument",
       Symbol(id): "supporting-document-1",
       Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
-  },
-}
-`;
-
-exports[`Write & read in cache 2`] = `
-Map {
-  Symbol(Query) => {
-    "requestedKeys": Set {
-      "__typename",
-      "accountMembership",
-      "accountMemberships",
-      "supportingDocumentCollection",
-    },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
-      Symbol(accountMemberships({"first":"2"})): {
-        Symbol(__typename): "AccountMembershipConnection",
-        Symbol(edges): [
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-1>),
-          },
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-2>),
-          },
-        ],
-      },
-      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
-    },
-  },
-  Symbol(AccountMembership<account-membership-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "user",
-      "account",
-    },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-1",
-      Symbol(user): Symbol(User<user-1>),
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "First",
-      },
-      Symbol(membershipUser): Symbol(User<user-1>),
-    },
-  },
-  Symbol(User<user-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "firstName",
-      "lastName",
-      "identificationLevels",
-    },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-1",
-      Symbol(firstName): "Matthias",
-      Symbol(lastName): "Le Brun",
-      Symbol(identificationLevels): null,
-    },
-  },
-  Symbol(AccountMembership<account-membership-2>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "account",
-      "user",
-    },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-2",
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "Second",
-      },
-      Symbol(membershipUser): Symbol(User<user-2>),
-      Symbol(user): Symbol(User<user-2>),
-    },
-  },
-  Symbol(User<user-2>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "lastName",
-      "firstName",
-      "identificationLevels",
-    },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-2",
-      Symbol(lastName): "Acthernoene",
-      Symbol(firstName): "Mathieu",
-      Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): false,
-      },
-    },
-  },
-  Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "supportingDocuments",
-      "id",
-    },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(supportingDocuments): [
-        Symbol(SupportingDocument<supporting-document-1>),
-      ],
-      Symbol(id): "supporting-document-collection-1",
-    },
-  },
-  Symbol(SupportingDocument<supporting-document-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "createdAt",
-    },
-    "value": {
-      Symbol(__typename): "SupportingDocument",
-      Symbol(id): "supporting-document-1",
-      Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
-  },
-  Symbol(Mutation) => {
-    "requestedKeys": Set {
-      "__typename",
-      "bindAccountMembership",
-    },
-    "value": {
-      Symbol(__typename): "Mutation",
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
-        Symbol(__typename): "BindAccountMembershipSuccessPayload",
-        Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
-        Symbol(message): undefined,
-      },
-    },
-  },
-}
-`;
-
-exports[`Write & read in cache 3`] = `
-Map {
-  Symbol(Query) => {
-    "requestedKeys": Set {
-      "__typename",
-      "accountMembership",
-      "accountMemberships",
-      "supportingDocumentCollection",
-    },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
-      Symbol(accountMemberships({"first":"2"})): {
-        Symbol(__typename): "AccountMembershipConnection",
-        Symbol(edges): [
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-1>),
-          },
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-2>),
-          },
-        ],
-      },
-      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
-    },
-  },
-  Symbol(AccountMembership<account-membership-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "user",
-      "account",
-    },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-1",
-      Symbol(user): Symbol(User<user-1>),
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "First",
-      },
-      Symbol(membershipUser): Symbol(User<user-1>),
-    },
-  },
-  Symbol(User<user-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "firstName",
-      "lastName",
-      "identificationLevels",
-    },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-1",
-      Symbol(firstName): "Matthias",
-      Symbol(lastName): "Le Brun",
-      Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): true,
-      },
-    },
-  },
-  Symbol(AccountMembership<account-membership-2>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "account",
-      "user",
-    },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-2",
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "Second",
-      },
-      Symbol(membershipUser): Symbol(User<user-2>),
-      Symbol(user): Symbol(User<user-2>),
-    },
-  },
-  Symbol(User<user-2>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "lastName",
-      "firstName",
-      "identificationLevels",
-    },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-2",
-      Symbol(lastName): "Acthernoene",
-      Symbol(firstName): "Mathieu",
-      Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): false,
-      },
-    },
-  },
-  Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "supportingDocuments",
-      "id",
-    },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(supportingDocuments): [
-        Symbol(SupportingDocument<supporting-document-1>),
-      ],
-      Symbol(id): "supporting-document-collection-1",
-    },
-  },
-  Symbol(SupportingDocument<supporting-document-1>) => {
-    "requestedKeys": Set {
-      "__typename",
-      "id",
-      "createdAt",
-    },
-    "value": {
-      Symbol(__typename): "SupportingDocument",
-      Symbol(id): "supporting-document-1",
-      Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
-  },
-  Symbol(Mutation) => {
-    "requestedKeys": Set {
-      "__typename",
-      "bindAccountMembership",
-    },
-    "value": {
-      Symbol(__typename): "Mutation",
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
-        Symbol(__typename): "BindAccountMembershipSuccessPayload",
-        Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
-        Symbol(message): undefined,
-      },
     },
   },
 }

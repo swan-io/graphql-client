@@ -1,5 +1,5 @@
 import { graphql } from "../graphql";
-import { useQuery } from "../../src";
+import { ClientError, useQuery } from "../../src";
 import { P, match } from "ts-pattern";
 import { AsyncData, Result } from "@swan-io/boxed";
 import {
@@ -25,10 +25,14 @@ const transactionListQuery = graphql(
 
 export const App = () => {
   const [after, setAfter] = useState<string | null>(null);
-  const [data, { nextData }] = useQuery(transactionListQuery, {
-    accountMembershipId: "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
-    after,
-  });
+  const [data, { isLoading }] = useQuery(
+    transactionListQuery,
+    {
+      accountMembershipId: "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
+      after,
+    }
+    // { suspense: true }
+  );
 
   return (
     <div>
@@ -36,7 +40,7 @@ export const App = () => {
         .with(AsyncData.P.NotAsked, () => "Nothing")
         .with(AsyncData.P.Loading, () => "Loading")
         .with(AsyncData.P.Done(Result.P.Error(P.select())), (error) => {
-          console.error(error);
+          ClientError.forEach(error, (error) => console.error(error));
           return "Error";
         })
         .with(
@@ -50,7 +54,7 @@ export const App = () => {
               <AccountMembershipList
                 data={accountMembership.account.memberships}
                 onPressNextPage={setAfter}
-                isLoading={nextData.isLoading()}
+                isLoading={isLoading}
               />
             );
           }

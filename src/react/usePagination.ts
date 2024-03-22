@@ -1,5 +1,5 @@
 import { AsyncData, Result } from "@swan-io/boxed";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { match } from "ts-pattern";
 
 type Edge<T> = {
@@ -61,49 +61,14 @@ const mergeConnection = <A, T extends Connection<A>>(
 };
 
 const createPaginationHook = (direction: mode) => {
-  return <
-    A,
-    T extends Connection<A> | AsyncData<Result<Connection<A>, unknown>>
-  >(
-    connection: T
-  ): T => {
-    const [aggregate, setAggregate] = useState(connection);
-
-    useEffect(() => {
-      if (
-        AsyncData.isAsyncData(connection) &&
-        AsyncData.isAsyncData(aggregate) &&
-        connection.isDone() &&
-        aggregate.isDone()
-      ) {
-        const connectionResult = connection.get();
-        const aggregateResult = aggregate.get();
-        if (connectionResult.isOk() && aggregateResult.isOk()) {
-          const connectionValue = connectionResult.get();
-          if (connectionValue != undefined) {
-            setAggregate(
-              mergeConnection(
-                aggregateResult.get(),
-                connectionValue,
-                direction
-              ) as T
-            );
-          }
-        }
-      } else {
-        if (connection != undefined) {
-          setAggregate(
-            mergeConnection(
-              aggregate as Connection<A>,
-              connection as Connection<A>,
-              direction
-            ) as T
-          );
-        }
-      }
-    }, [connection]);
-
-    return aggregate;
+  return <A, T extends Connection<A>>(connection: T): T => {
+    const connectionRef = useRef(connection);
+    connectionRef.current = mergeConnection(
+      connectionRef.current,
+      connection,
+      direction
+    );
+    return connectionRef.current;
   };
 };
 

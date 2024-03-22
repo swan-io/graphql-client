@@ -29,7 +29,7 @@ export const writeOperationToCache = (
           );
 
           const fieldValue = data.at(-1)[originalFieldName];
-          const selectedKeys = getSelectedKeys(fieldNode);
+          const selectedKeys = getSelectedKeys(fieldNode, variables);
 
           if (fieldValue != undefined) {
             if (Array.isArray(fieldValue)) {
@@ -96,7 +96,7 @@ export const writeOperationToCache = (
 
   document.definitions.forEach((definition) => {
     if (definition.kind === Kind.OPERATION_DEFINITION) {
-      cache.cacheIfEligible(response, getSelectedKeys(definition));
+      cache.cacheIfEligible(response, getSelectedKeys(definition, variables));
       traverse(definition.selectionSet, [response]);
     }
   });

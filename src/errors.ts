@@ -1,5 +1,19 @@
 import { GraphQLError, ASTNode } from "@0no-co/graphql.web";
+import {
+  BadStatusError,
+  EmptyResponseError,
+  NetworkError,
+  TimeoutError,
+} from "@swan-io/request";
 import { P, match } from "ts-pattern";
+
+export type ClientError =
+  | NetworkError
+  | TimeoutError
+  | BadStatusError
+  | EmptyResponseError
+  | InvalidGraphQLResponseError
+  | GraphQLError[];
 
 export class InvalidGraphQLResponseError extends Error {
   response: unknown;
@@ -42,4 +56,25 @@ export const parseGraphQLError = (error: unknown): GraphQLError => {
       }
     )
     .otherwise((error) => new GraphQLError(JSON.stringify(error)));
+};
+
+export const ClientError = {
+  toArray: (clientError: ClientError) => {
+    return Array.isArray(clientError) ? clientError : [clientError];
+  },
+  forEach: (
+    clientError: ClientError,
+    func: (
+      error:
+        | NetworkError
+        | TimeoutError
+        | BadStatusError
+        | EmptyResponseError
+        | InvalidGraphQLResponseError
+        | GraphQLError,
+      index?: number
+    ) => void
+  ) => {
+    ClientError.toArray(clientError).forEach(func);
+  },
 };

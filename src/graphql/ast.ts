@@ -23,17 +23,21 @@ import { P, match } from "ts-pattern";
  * @returns selectedKeys Set<string>
  */
 export const getSelectedKeys = (
-  fieldNode: FieldNode | OperationDefinitionNode
-): Set<string> => {
-  const selectedKeys = new Set<string>();
+  fieldNode: FieldNode | OperationDefinitionNode,
+  variables: Record<string, any>
+): Set<symbol> => {
+  const selectedKeys = new Set<symbol>();
 
   const traverse = (selections: SelectionSetNode) => {
     // We only need to care about FieldNode & InlineFragment node
     // as we inline all fragments in the query
     selections.selections.forEach((selection) => {
       if (selection.kind === Kind.FIELD) {
-        const fieldName = selection.name.value;
-        selectedKeys.add(fieldName);
+        const fieldNameWithArguments = getFieldNameWithArguments(
+          selection,
+          variables
+        );
+        selectedKeys.add(fieldNameWithArguments);
       } else if (selection.kind === Kind.INLINE_FRAGMENT) {
         traverse(selection.selectionSet);
       }
@@ -66,7 +70,7 @@ export const getSelectedKeys = (
 export const getFieldNameWithArguments = (
   fieldNode: FieldNode,
   variables: Record<string, any>
-): symbol | string => {
+): symbol => {
   const fieldName = getFieldName(fieldNode);
   const args = extractArguments(fieldNode, variables);
   if (Object.keys(args).length === 0) {
