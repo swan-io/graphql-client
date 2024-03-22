@@ -1,16 +1,16 @@
 # Website
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
 ### Installation
 
-```console
+```
 $ yarn
 ```
 
 ### Local Development
 
-```console
+```
 $ yarn start
 ```
 
@@ -18,7 +18,7 @@ This command starts a local development server and opens up a browser window. Mo
 
 ### Build
 
-```console
+```
 $ yarn build
 ```
 
