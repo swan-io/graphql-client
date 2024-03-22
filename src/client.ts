@@ -17,7 +17,11 @@ import {
 } from "./graphql/ast";
 import { Future, Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
-import { InvalidGraphQLResponseError, parseGraphQLError } from "./errors";
+import {
+  ClientError,
+  InvalidGraphQLResponseError,
+  parseGraphQLError,
+} from "./errors";
 import { writeOperationToCache } from "./cache/write";
 import { readOperationFromCache } from "./cache/read";
 
@@ -38,11 +42,25 @@ export type MakeRequest = (
   >
 >;
 
+export type ParseResponse = (payload: unknown) => Result<unknown, ClientError>;
+
 export type ClientConfig = {
   url: string;
   headers?: Record<string, string>;
   makeRequest?: MakeRequest;
+  parseResponse?: ParseResponse;
 };
+
+const defaultParseResponse = (payload: unknown) =>
+  match(payload)
+    .returnType<Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>>()
+    .with({ errors: P.select(P.array()) }, (errors) =>
+      Result.Error(errors.map(parseGraphQLError))
+    )
+    .with({ data: P.select(P.not(P.nullish)) }, (data) => Result.Ok(data))
+    .otherwise((response) =>
+      Result.Error(new InvalidGraphQLResponseError(response))
+    );
 
 const defaultMakeRequest: MakeRequest = ({
   url,
@@ -71,6 +89,8 @@ export class Client {
   headers: Record<string, string>;
   cache: ClientCache;
   makeRequest: MakeRequest;
+  parseResponse: ParseResponse;
+
   subscribers: Set<() => void>;
 
   transformedDocuments: Map<DocumentNode, DocumentNode>;
@@ -80,6 +100,7 @@ export class Client {
     this.headers = config.headers ?? { "Content-Type": "application/json" };
     this.cache = new ClientCache();
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
+    this.parseResponse = config.parseResponse ?? defaultParseResponse;
     this.subscribers = new Set();
     this.transformedDocuments = new Map();
   }
@@ -119,21 +140,8 @@ export class Client {
       document: transformedDocument,
       variables: variablesAsRecord,
     })
-      .mapOkToResult((payload) =>
-        match(payload)
-          .returnType<
-            Result<Data, GraphQLError[] | InvalidGraphQLResponseError>
-          >()
-          .with({ errors: P.select(P.array()) }, (errors) =>
-            Result.Error(errors.map(parseGraphQLError))
-          )
-          .with({ data: P.select(P.not(P.nullish)) }, (data) =>
-            Result.Ok(data as Data)
-          )
-          .otherwise((response) =>
-            Result.Error(new InvalidGraphQLResponseError(response))
-          )
-      )
+      .mapOkToResult(this.parseResponse)
+      .mapOk((data) => data as Data)
       .tapOk((data) => {
         writeOperationToCache(
           this.cache,
