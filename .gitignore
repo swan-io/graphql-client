@@ -1,8 +1,12 @@
+# dependencies
+/node_modules
+
+# production
+/dist
+
+# misc
 .DS_Store
-.DS_Store?
-node_modules/
-# example/graphql-env.d.ts
 .env
-docs/node_modules/
-.docusaurus
-dist/
+
+yarn-debug.log*
+yarn-error.log*
