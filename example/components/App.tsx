@@ -30,6 +30,7 @@ export const App = () => {
     "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
   );
   const [suspense, setSuspense] = useState(false);
+  const [optimize, setOptimize] = useState(false);
 
   const [data, { isLoading, reload, refresh }] = useQuery(
     transactionListQuery,
@@ -37,7 +38,7 @@ export const App = () => {
       accountMembershipId,
       after,
     },
-    { suspense },
+    { suspense, optimize },
   );
 
   const toggleAccountMembership = useCallback(() => {
@@ -64,6 +65,14 @@ export const App = () => {
             onChange={() => setSuspense((x) => !x)}
           />
           Suspense
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={optimize}
+            onChange={() => setOptimize((x) => !x)}
+          />
+          Optimize
         </label>
       </header>
 

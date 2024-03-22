@@ -347,13 +347,6 @@ export const optimizeQuery = (
         definitions: [
           {
             ...operation,
-            name:
-              operation.name != null
-                ? {
-                    ...operation.name,
-                    value: `${operation.name.value}__partial`,
-                  }
-                : operation.name,
             selectionSet,
           } as OperationDefinitionNode,
         ],
