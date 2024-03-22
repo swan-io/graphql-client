@@ -16,7 +16,9 @@
   "scripts": {
     "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
     "clean": "rm -rf dist",
-    "test": "vitest",
+    "format": "prettier '**/*' -u -w",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "example": "vite example --config vite.config.mjs"
   },
   "devDependencies": {
