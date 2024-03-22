@@ -18,8 +18,10 @@ export type ClientError =
 export class InvalidGraphQLResponseError extends Error {
   response: unknown;
   constructor(response: unknown) {
-    super(`Received an invalid GraphQL response`);
+    super("Received an invalid GraphQL response");
+    this.name = this.constructor.name;
     this.response = response;
+    Object.setPrototypeOf(this, InvalidGraphQLResponseError.prototype);
   }
 }
 
