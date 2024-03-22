@@ -4,8 +4,8 @@ export const deepMerge = (target: any, source: any): any => {
   const next: any = Array.isArray(target)
     ? Array(target.length)
     : Array.isArray(source)
-    ? Array(source.length)
-    : {};
+      ? Array(source.length)
+      : {};
 
   Object.getOwnPropertyNames(target).forEach((name) => {
     // instruction to remove existing field
@@ -52,7 +52,7 @@ export const containsAll = <T>(a: Set<T>, b: Set<T>): boolean => {
 };
 
 export const isRecord = (
-  value: unknown
+  value: unknown,
 ): value is Record<PropertyKey, unknown> => {
   return value != null && typeof value === "object";
 };

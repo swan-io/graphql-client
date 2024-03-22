@@ -1,4 +1,4 @@
-import { GraphQLError, ASTNode } from "@0no-co/graphql.web";
+import { ASTNode, GraphQLError } from "@0no-co/graphql.web";
 import {
   BadStatusError,
   EmptyResponseError,
@@ -51,9 +51,9 @@ export const parseGraphQLError = (error: unknown): GraphQLError => {
                 [extension: string]: unknown;
               }
             | null
-            | undefined
+            | undefined,
         );
-      }
+      },
     )
     .otherwise((error) => new GraphQLError(JSON.stringify(error)));
 };
@@ -72,8 +72,8 @@ export const ClientError = {
         | EmptyResponseError
         | InvalidGraphQLResponseError
         | GraphQLError,
-      index?: number
-    ) => void
+      index?: number,
+    ) => void,
   ) => {
     ClientError.toArray(clientError).forEach(func);
   },

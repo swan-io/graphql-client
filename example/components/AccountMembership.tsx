@@ -1,6 +1,6 @@
 import { FragmentOf, readFragment } from "gql.tada";
-import { graphql } from "../graphql";
 import { P, match } from "ts-pattern";
+import { graphql } from "../graphql";
 
 export const accountMembershipFragment = graphql(`
   fragment AccountMembership on AccountMembership {
@@ -42,7 +42,7 @@ export const AccountMembership = ({ data }: Props) => {
       {match(accountMembership)
         .with(
           { user: { firstName: P.string, lastName: P.string } },
-          ({ user: { firstName, lastName } }) => `${firstName} ${lastName}`
+          ({ user: { firstName, lastName } }) => `${firstName} ${lastName}`,
         )
         .with(
           {
@@ -54,7 +54,7 @@ export const AccountMembership = ({ data }: Props) => {
             statusInfo: {
               restrictedTo: { firstName, lastName },
             },
-          }) => `${firstName} ${lastName} (restricted to)`
+          }) => `${firstName} ${lastName} (restricted to)`,
         )
         .otherwise(() => "No user")}
     </div>

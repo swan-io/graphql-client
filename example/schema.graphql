@@ -1740,7 +1740,7 @@ input ActivatePhysicalCardInput {
 }
 
 union ActivatePhysicalCardPayload =
-    ActivatePhysicalCardSuccessPayload
+  | ActivatePhysicalCardSuccessPayload
   | BadAccountStatusRejection
   | PhysicalCardNotFoundRejection
   | PhysicalCardWrongStatusRejection
@@ -1833,7 +1833,7 @@ input AddAccountMembershipInput {
 }
 
 union AddAccountMembershipPayload =
-    AddAccountMembershipSuccessPayload
+  | AddAccountMembershipSuccessPayload
   | BadAccountStatusRejection
   | ForbiddenRejection
   | InvalidPhoneNumberRejection
@@ -1861,7 +1861,7 @@ input AddAccountMembershipsInput {
 }
 
 union AddAccountMembershipsPayload =
-    AddAccountMembershipsSuccessPayload
+  | AddAccountMembershipsSuccessPayload
   | BadAccountStatusRejection
   | ForbiddenRejection
   | InvalidPhoneNumberRejection
@@ -1938,7 +1938,7 @@ input AddCardInput {
 }
 
 union AddCardPayload =
-    AddCardSuccessPayload
+  | AddCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | BadAccountStatusRejection
   | CardProductDisabledRejection
@@ -1969,7 +1969,7 @@ input AddCardsInput {
 }
 
 union AddCardsPayload =
-    AddCardsSuccessPayload
+  | AddCardsSuccessPayload
   | AddingCardsToDifferentAccountsRejection
   | BadAccountStatusRejection
   | TooManyItemsRejection
@@ -2021,7 +2021,7 @@ input AddCardsWithGroupDeliveryInput {
 }
 
 union AddCardsWithGroupDeliveryPayload =
-    AddCardsWithGroupDeliverySuccessPayload
+  | AddCardsWithGroupDeliverySuccessPayload
   | AddingCardsToDifferentAccountsRejection
   | BadAccountStatusRejection
   | TooManyItemsRejection
@@ -2064,7 +2064,7 @@ input AddDigitalCardInput {
 Payload returned on mutation completion
 """
 union AddDigitalCardPayload =
-    AddDigitalCardSuccessPayload
+  | AddDigitalCardSuccessPayload
   | CardNotFoundRejection
   | CardCanNotBeDigitalizedRejection
   | ApplePayNotAllowedForProjectRejection
@@ -2121,7 +2121,7 @@ input AddDirectDebitFundingSourceInput {
 Add Direct Debit Funding Source Payload
 """
 union AddDirectDebitFundingSourcePayload =
-    AddDirectDebitFundingSourceSuccessPayload
+  | AddDirectDebitFundingSourceSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | AccountVerificationAlreadyRejectedRejection
@@ -2161,7 +2161,7 @@ input AddExternalAccountBalanceInput {
 }
 
 union AddExternalAccountBalancePayload =
-    AddExternalAccountBalanceSuccessPayload
+  | AddExternalAccountBalanceSuccessPayload
   | ValidationRejection
   | ExternalAccountBalanceAlreadyExistsRejection
   | ForbiddenRejection
@@ -2241,7 +2241,7 @@ input AddExternalAccountInput {
 }
 
 union AddExternalAccountPayload =
-    AddExternalAccountSuccessPayload
+  | AddExternalAccountSuccessPayload
   | ValidationRejection
   | IbanValidationRejection
   | ExternalAccountAlreadyExistsRejection
@@ -2278,7 +2278,7 @@ input AddFundingLimitSettingsChangeRequestInput {
 Payload returned on mutation completion
 """
 union AddFundingLimitSettingsChangeRequestPayload =
-    AddFundingLimitSettingsChangeRequestSuccessPayload
+  | AddFundingLimitSettingsChangeRequestSuccessPayload
   | FundingLimitSettingsChangeRequestBadAmountRejection
   | AccountHolderNotFoundRejection
   | ForbiddenRejection
@@ -2345,7 +2345,7 @@ input AddInternalDirectDebitPaymentMandateInput {
 Union type return by the addInternalDirectDebitPaymentMandate mutation
 """
 union AddInternalDirectDebitPaymentMandatePayload =
-    AddInternalDirectDebitPaymentMandateSuccessPayload
+  | AddInternalDirectDebitPaymentMandateSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | DebtorAccountNotAllowedRejection
@@ -2405,7 +2405,7 @@ input AddMerchantProfileInput {
 Add Merchant Profile Payload
 """
 union AddMerchantProfilePayload =
-    AddMerchantProfileSuccessPayload
+  | AddMerchantProfileSuccessPayload
   | ForbiddenRejection
   | AccountNotFoundRejection
   | InternalErrorRejection
@@ -2443,7 +2443,7 @@ input AddOrUpdateExternalAccountBalanceInput {
 }
 
 union AddOrUpdateExternalAccountBalancePayload =
-    AddOrUpdateExternalAccountBalanceSuccessPayload
+  | AddOrUpdateExternalAccountBalanceSuccessPayload
   | ValidationRejection
   | ForbiddenRejection
 
@@ -2478,7 +2478,7 @@ input AddReceivedInternalDirectDebitB2bMandateInput {
 Union type return by the addReceivedInternalDirectDebitB2bMandate mutation
 """
 union AddReceivedInternalDirectDebitB2bMandatePayload =
-    AddReceivedInternalDirectDebitB2bMandateSuccessPayload
+  | AddReceivedInternalDirectDebitB2bMandateSuccessPayload
   | ForbiddenRejection
   | PaymentMandateMandateNotFoundRejection
   | AccountHolderTypeIndividualRejection
@@ -2542,7 +2542,7 @@ input AddReceivedSepaDirectDebitB2bMandateInput {
 Union type return by the addReceivedSepaDirectDebitB2bMandate mutation
 """
 union AddReceivedSepaDirectDebitB2bMandatePayload =
-    AddReceivedSepaDirectDebitB2bMandateSuccessPayload
+  | AddReceivedSepaDirectDebitB2bMandateSuccessPayload
   | ForbiddenRejection
   | AccountNotFoundRejection
   | AccountHolderTypeIndividualRejection
@@ -2773,7 +2773,7 @@ input AddSepaDirectDebitPaymentMandateInput {
 Union type return by the addSepaDirectDebitPaymentMandate mutation
 """
 union AddSepaDirectDebitPaymentMandatePayload =
-    AddSepaDirectDebitPaymentMandateSuccessPayload
+  | AddSepaDirectDebitPaymentMandateSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | DebtorAccountNotAllowedRejection
@@ -2827,7 +2827,7 @@ input AddSingleUseVirtualCardInput {
 }
 
 union AddSingleUseVirtualCardPayload =
-    AddSingleUseVirtualCardSuccessForUserPayload
+  | AddSingleUseVirtualCardSuccessForUserPayload
   | AddSingleUseVirtualCardSuccessForProjectOwnerPayload
   | BadAccountStatusRejection
   | AccountMembershipNotAllowedRejection
@@ -2858,7 +2858,7 @@ input AddSingleUseVirtualCardsInput {
 }
 
 union AddSingleUseVirtualCardsPayload =
-    AddSingleUseVirtualCardsSuccessPayload
+  | AddSingleUseVirtualCardsSuccessPayload
   | AddingCardsToDifferentAccountsRejection
   | TooManyItemsRejection
   | BadAccountStatusRejection
@@ -2896,7 +2896,7 @@ type AddSingleUseVirtualCardSuccessForUserPayload {
 }
 
 union AddVirtualIbanEntryPayload =
-    AddVirtualIbanEntrySuccessPayload
+  | AddVirtualIbanEntrySuccessPayload
   | AccountNotFoundRejection
   | BadAccountStatusRejection
   | ForbiddenRejection
@@ -2932,7 +2932,7 @@ input AllowSddInput {
 }
 
 union AllowSddPayload =
-    AllowSddSuccessPayload
+  | AllowSddSuccessPayload
   | AccountNotFoundRejection
   | ValidationRejection
 
@@ -2945,7 +2945,7 @@ input AllowSddVirtualIbanEntryInput {
 }
 
 union AllowSddVirtualIbanEntryPayload =
-    AllowSddVirtualIbanEntrySuccessPayload
+  | AllowSddVirtualIbanEntrySuccessPayload
   | BadAccountStatusRejection
   | ValidationRejection
 
@@ -3281,7 +3281,7 @@ input BeneficiaryVerificationInput {
 BeneficiaryVerificationResult
 """
 union BeneficiaryVerificationResult =
-    BeneficiaryMatch
+  | BeneficiaryMatch
   | BeneficiaryTypo
   | BeneficiaryMismatch
   | InvalidBeneficiaryVerification
@@ -3302,7 +3302,7 @@ input BindAccountMembershipInput {
 }
 
 union BindAccountMembershipPayload =
-    BindAccountMembershipSuccessPayload
+  | BindAccountMembershipSuccessPayload
   | BadAccountStatusRejection
   | AccountMembershipNotFoundRejection
   | AccountMembershipNotReadyToBeBoundRejection
@@ -3369,7 +3369,7 @@ input CancelCardInput {
 }
 
 union CancelCardPayload =
-    CancelCardSuccessPayload
+  | CancelCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | CardNotFoundRejection
   | ForbiddenRejection
@@ -3393,7 +3393,7 @@ input CancelConsentInput {
 Payload of the `cancelConsent` mutation
 """
 union CancelConsentPayload =
-    CancelConsentSuccessPayload
+  | CancelConsentSuccessPayload
   | ConsentNotFoundRejection
   | NotReachableConsentStatusRejection
 
@@ -3415,7 +3415,7 @@ input CancelDigitalCardInput {
 }
 
 union CancelDigitalCardPayload =
-    CancelDigitalCardSuccessPayload
+  | CancelDigitalCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | CardNotFoundRejection
   | DigitalCardNotFoundRejection
@@ -3534,7 +3534,7 @@ input CancelFundingSourceInput {
 Cancel Funding Source Payload
 """
 union CancelFundingSourcePayload =
-    CancelFundingSourceSuccessPayload
+  | CancelFundingSourceSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
 
@@ -3564,7 +3564,7 @@ input CancelPhysicalCardInput {
 }
 
 union CancelPhysicalCardPayload =
-    CancelPhysicalCardSuccessPayload
+  | CancelPhysicalCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | CardNotFoundRejection
   | ForbiddenRejection
@@ -3613,7 +3613,7 @@ input CancelStandingOrderInput {
 }
 
 union CancelStandingOrderPayload =
-    CancelStandingOrderSuccessPayload
+  | CancelStandingOrderSuccessPayload
   | ForbiddenRejection
   | InternalErrorRejection
   | StandingOrderNotFoundRejection
@@ -3633,7 +3633,7 @@ input CancelTransactionInput {
 }
 
 union CancelTransactionPayload =
-    CancelTransactionSuccessPayload
+  | CancelTransactionSuccessPayload
   | ForbiddenRejection
 
 type CancelTransactionSuccessPayload {
@@ -3645,7 +3645,7 @@ input CancelVirtualIbanEntryInput {
 }
 
 union CancelVirtualIbanEntryPayload =
-    CancelVirtualIbanEntrySuccessPayload
+  | CancelVirtualIbanEntrySuccessPayload
   | AccountNotFoundRejection
   | BadAccountStatusRejection
   | InternalErrorRejection
@@ -4686,7 +4686,7 @@ type CardProduct {
 }
 
 union CardProductByIdResultPayload =
-    CardProduct
+  | CardProduct
   | CardProductNotFoundRejection
   | ForbiddenRejection
 
@@ -5500,7 +5500,7 @@ input CloseAccountInput {
 }
 
 union CloseAccountPayload =
-    CloseAccountSuccessPayload
+  | CloseAccountSuccessPayload
   | AccountNotFoundRejection
   | BadAccountStatusRejection
   | ForbiddenRejection
@@ -5804,7 +5804,7 @@ input ConfirmPhysicalCardRenewalInput {
 }
 
 union ConfirmPhysicalCardRenewalPayload =
-    ConfirmPhysicalCardRenewalSuccessPayload
+  | ConfirmPhysicalCardRenewalSuccessPayload
   | ForbiddenRejection
   | CardNotFoundRejection
   | ValidationRejection
@@ -6216,7 +6216,7 @@ input CreateCapitalDepositCaseInput {
 }
 
 union CreateCapitalDepositCasePayload =
-    CreateCapitalDepositCaseSuccessPayload
+  | CreateCapitalDepositCaseSuccessPayload
   | ForbiddenRejection
   | BadRequestRejection
   | ValidationRejection
@@ -6236,7 +6236,7 @@ input CreateCardProductInput {
 }
 
 union CreateCardProductPayload =
-    CreateCardProductSuccessPayload
+  | CreateCardProductSuccessPayload
   | ProjectNotFoundRejection
   | ForbiddenRejection
   | ValidationRejection
@@ -6340,7 +6340,7 @@ input CreateMerchantPaymentLinkInput {
 }
 
 union CreateMerchantPaymentLinkPayload =
-    CreateMerchantPaymentLinkSuccessPayload
+  | CreateMerchantPaymentLinkSuccessPayload
   | MerchantProfileWrongStatusRejection
   | MerchantPaymentMethodNotActiveRejection
   | PaymentMethodNotCompatibleRejection
@@ -6371,7 +6371,7 @@ input CreateMultiConsentInput {
 Payload of the `createMultiConsent` mutation
 """
 union CreateMultiConsentPayload =
-    CreateMultiConsentSuccessPayload
+  | CreateMultiConsentSuccessPayload
   | ConsentsNotAllInCreatedStatusRejection
   | ConsentsNotFoundRejection
   | TooManyChildConsentsRejection
@@ -6534,7 +6534,7 @@ input DeleteCardProductInput {
 }
 
 union DeleteCardProductPayload =
-    DeleteCardProductSuccessPayload
+  | DeleteCardProductSuccessPayload
   | CardProductNotFoundRejection
   | CardProductUsedRejection
   | ForbiddenRejection
@@ -6552,7 +6552,7 @@ input DeleteSupportingDocumentInput {
 }
 
 union DeleteSupportingDocumentPayload =
-    DeleteSupportingDocumentSuccessPayload
+  | DeleteSupportingDocumentSuccessPayload
   | ForbiddenRejection
   | InternalErrorRejection
   | SupportingDocumentCollectionNotFoundRejection
@@ -6570,7 +6570,7 @@ input DenySddInput {
 }
 
 union DenySddPayload =
-    DenySddSuccessPayload
+  | DenySddSuccessPayload
   | BadAccountStatusRejection
   | AccountNotFoundRejection
   | InvalidArgumentRejection
@@ -6585,7 +6585,7 @@ input DenySddVirtualIbanEntryInput {
 }
 
 union DenySddVirtualIbanEntryPayload =
-    DenySddVirtualIbanEntrySuccessPayload
+  | DenySddVirtualIbanEntrySuccessPayload
   | BadAccountStatusRejection
   | ValidationRejection
 
@@ -6967,7 +6967,7 @@ input DisableAccountMembershipInput {
 }
 
 union DisableAccountMembershipPayload =
-    DisableAccountMembershipSuccessPayload
+  | DisableAccountMembershipSuccessPayload
   | AccountMembershipCannotBeDisabledRejection
   | AccountMembershipNotFoundRejection
   | ForbiddenRejection
@@ -7216,7 +7216,7 @@ input EnableReceivedDirectDebitMandateInput {
 Union type return by the enableReceivedDirectDebitMandate mutation
 """
 union EnableReceivedDirectDebitMandatePayload =
-    EnableReceivedDirectDebitMandateSuccessPayload
+  | EnableReceivedDirectDebitMandateSuccessPayload
   | ReceivedDirectDebitMandateNotFoundRejection
   | ReceivedDirectDebitMandateCanceledRejection
   | ForbiddenRejection
@@ -7995,7 +7995,7 @@ input FinalizeOnboardingInput {
 }
 
 union FinalizeOnboardingPayload =
-    FinalizeOnboardingSuccessPayload
+  | FinalizeOnboardingSuccessPayload
   | InternalErrorRejection
   | ForbiddenRejection
   | OnboardingNotCompletedRejection
@@ -8452,7 +8452,7 @@ input GenerateCapitalDepositDocumentUploadUrlInput {
 }
 
 union GenerateCapitalDepositDocumentUploadUrlPayload =
-    GenerateCapitalDepositDocumentUploadUrlSuccessPayload
+  | GenerateCapitalDepositDocumentUploadUrlSuccessPayload
   | CapitalDepositDocumentCanNotBeUploaded
   | CapitalDepositDocumentCanNotBeUploadedRejection
   | ForbiddenRejection
@@ -8489,7 +8489,7 @@ input GenerateSupportingDocumentUploadUrlInput {
 }
 
 union GenerateSupportingDocumentUploadUrlPayload =
-    GenerateSupportingDocumentUploadUrlSuccessPayload
+  | GenerateSupportingDocumentUploadUrlSuccessPayload
   | SupportingDocumentCollectionNotFoundRejection
   | ForbiddenRejection
   | InternalErrorRejection
@@ -8541,7 +8541,7 @@ input GrantConsentWithServerSignatureInput {
 Payload of the `grantConsentWithServerSignature` mutation
 """
 union GrantConsentWithServerSignaturePayload =
-    GrantConsentWithServerSignatureSuccessPayload
+  | GrantConsentWithServerSignatureSuccessPayload
   | ConsentNotFoundRejection
   | NotReachableConsentStatusRejection
   | ForbiddenRejection
@@ -8752,7 +8752,7 @@ type IdentificationConnection {
 Union representing all the possible identification document types
 """
 union IdentificationDocument =
-    IdCardDocument
+  | IdCardDocument
   | PassportDocument
   | ResidencePermitDocument
   | DriversLicenseDocument
@@ -9013,7 +9013,7 @@ Union representing all the possible statuses: not supported, not started, pendin
 Each variant contains its relevant data, for example invalid contains a `reason` field, expired contains an `expiredAt` field, valid contains a `documents` field
 """
 union IdentificationLevelStatusInfo =
-    NotSupportedIdentificationLevelStatusInfo
+  | NotSupportedIdentificationLevelStatusInfo
   | NotStartedIdentificationLevelStatusInfo
   | StartedIdentificationLevelStatusInfo
   | PendingIdentificationLevelStatusInfo
@@ -9424,7 +9424,7 @@ input InitiateCheckMerchantPaymentInput {
 }
 
 union InitiateCheckMerchantPaymentPayload =
-    InitiateCheckMerchantPaymentSuccessPayload
+  | InitiateCheckMerchantPaymentSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | InternalErrorRejection
@@ -9466,7 +9466,7 @@ input InitiateCreditTransfersInput {
 }
 
 union InitiateCreditTransfersPayload =
-    InitiateCreditTransfersSuccessPayload
+  | InitiateCreditTransfersSuccessPayload
   | AccountNotFoundRejection
   | ForbiddenRejection
   | InternalErrorRejection
@@ -9524,7 +9524,7 @@ input InitiateFundingRequestInput {
 Initiate A Funding Request Payload
 """
 union InitiateFundingRequestPayload =
-    InitiateFundingRequestSuccessPayload
+  | InitiateFundingRequestSuccessPayload
   | ForbiddenRejection
   | ValidationRejection
   | FundingLimitExceededRejection
@@ -9598,7 +9598,7 @@ input InitiateInternationalCreditTransferInput {
 Initiate International Credit Transfer Response Payload
 """
 union InitiateInternationalCreditTransferResponsePayload =
-    InitiateInternationalCreditTransferResponseSuccessPayload
+  | InitiateInternationalCreditTransferResponseSuccessPayload
   | AccountNotFoundRejection
   | ForbiddenRejection
   | InternalErrorRejection
@@ -9653,7 +9653,7 @@ input InitiateMerchantPaymentCollectionInput {
 }
 
 union InitiateMerchantPaymentCollectionPayload =
-    InitiateMerchantPaymentCollectionSuccessPayload
+  | InitiateMerchantPaymentCollectionSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | InternalErrorRejection
@@ -10664,7 +10664,7 @@ input InternationalBeneficiaryInput {
 }
 
 union InternationalCreditTransferCreditor =
-    InternationalCreditTransferOutCreditor
+  | InternationalCreditTransferOutCreditor
   | InternationalCreditTransferInCreditor
 
 """
@@ -10693,7 +10693,7 @@ type InternationalCreditTransferCurrencyExchange {
 }
 
 union InternationalCreditTransferDebtor =
-    InternationalCreditTransferOutDebtor
+  | InternationalCreditTransferOutDebtor
   | InternationalCreditTransferInDebtor
 
 """
@@ -13492,7 +13492,7 @@ input OnboardCompanyAccountHolderInput {
 }
 
 union OnboardCompanyAccountHolderPayload =
-    OnboardCompanyAccountHolderSuccessPayload
+  | OnboardCompanyAccountHolderSuccessPayload
   | BadRequestRejection
   | ForbiddenRejection
   | ValidationRejection
@@ -13577,7 +13577,7 @@ input OnboardIndividualAccountHolderInput {
 }
 
 union OnboardIndividualAccountHolderPayload =
-    OnboardIndividualAccountHolderSuccessPayload
+  | OnboardIndividualAccountHolderSuccessPayload
   | ForbiddenRejection
   | ValidationRejection
 
@@ -15455,7 +15455,7 @@ input PrintPhysicalCardInput {
 }
 
 union PrintPhysicalCardPayload =
-    PrintPhysicalCardSuccessPayload
+  | PrintPhysicalCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | AlreadyValidPhysicalCardRejection
   | BadAccountStatusRejection
@@ -17142,7 +17142,7 @@ input RequestMerchantPaymentMethodsInput {
 }
 
 union RequestMerchantPaymentMethodsPayload =
-    RequestMerchantPaymentMethodsSuccessPayload
+  | RequestMerchantPaymentMethodsSuccessPayload
   | ForbiddenRejection
   | NotFoundRejection
   | InternalErrorRejection
@@ -17258,7 +17258,7 @@ input RequestMerchantProfileUpdateInput {
 Add Merchant Profile Payload
 """
 union RequestMerchantProfileUpdatePayload =
-    RequestMerchantProfileUpdateSuccessPayload
+  | RequestMerchantProfileUpdateSuccessPayload
   | ForbiddenRejection
   | AccountNotFoundRejection
   | InternalErrorRejection
@@ -17301,7 +17301,7 @@ input RequestSupportingDocumentCollectionReviewInput {
 }
 
 union RequestSupportingDocumentCollectionReviewPayload =
-    RequestSupportingDocumentCollectionReviewSuccessPayload
+  | RequestSupportingDocumentCollectionReviewSuccessPayload
   | ForbiddenRejection
   | SupportingDocumentCollectionNotFoundRejection
   | SupportingDocumentCollectionStatusNotAllowedRejection
@@ -17468,7 +17468,7 @@ input ResumeAccountMembershipInput {
 }
 
 union ResumeAccountMembershipPayload =
-    ResumeAccountMembershipSuccessPayload
+  | ResumeAccountMembershipSuccessPayload
   | ForbiddenRejection
   | UserNotAllowedToManageAccountMembershipRejection
   | ValidationRejection
@@ -17493,7 +17493,7 @@ input ResumePhysicalCardInput {
 }
 
 union ResumePhysicalCardPayload =
-    ResumePhysicalCardSuccessPayload
+  | ResumePhysicalCardSuccessPayload
   | ForbiddenRejection
   | CardNotFoundRejection
   | UserNotCardHolderRejection
@@ -17521,7 +17521,7 @@ input ReviewProjectCardSettingsInput {
 }
 
 union ReviewProjectCardSettingsPayload =
-    ReviewProjectCardSettingsSuccessPayload
+  | ReviewProjectCardSettingsSuccessPayload
   | ForbiddenRejection
   | ValidationRejection
 
@@ -17606,7 +17606,7 @@ input ScheduleStandingOrderInput {
 }
 
 union ScheduleStandingOrderPayload =
-    ScheduleStandingOrderSuccessPayload
+  | ScheduleStandingOrderSuccessPayload
   | ForbiddenRejection
   | InternalErrorRejection
   | InvalidArgumentRejection
@@ -20368,7 +20368,7 @@ input SuspendAccountMembershipInput {
 }
 
 union SuspendAccountMembershipPayload =
-    SuspendAccountMembershipSuccessPayload
+  | SuspendAccountMembershipSuccessPayload
   | InternalErrorRejection
   | LegalRepresentativeAccountMembershipCannotBeSuspendedRejection
   | UserNotAllowedToManageAccountMembershipRejection
@@ -20418,7 +20418,7 @@ input SuspendCardProductInput {
 }
 
 union SuspendCardProductPayload =
-    SuspendCardProductSuccessPayload
+  | SuspendCardProductSuccessPayload
   | CardProductNotFoundRejection
   | ForbiddenRejection
   | ValidationRejection
@@ -20481,7 +20481,7 @@ input SuspendPhysicalCardInput {
 }
 
 union SuspendPhysicalCardPayload =
-    SuspendPhysicalCardSuccessPayload
+  | SuspendPhysicalCardSuccessPayload
   | AccountMembershipNotAllowedRejection
   | CardNotFoundRejection
   | ForbiddenRejection
@@ -20524,7 +20524,7 @@ input SuspendReceivedDirectDebitMandateInput {
 Union type returned by the suspendReceivedDirectDebitMandate mutation
 """
 union SuspendReceivedDirectDebitMandatePayload =
-    SuspendReceivedDirectDebitMandateSuccessPayload
+  | SuspendReceivedDirectDebitMandateSuccessPayload
   | SuspendReceivedDirectDebitMandatedRejection
   | ReceivedDirectDebitMandateNotFoundRejection
   | ReceivedDirectDebitMandateCanceledRejection
@@ -21730,7 +21730,7 @@ input UpdateAccountHolderInput {
 }
 
 union UpdateAccountHolderPayload =
-    UpdateAccountHolderSuccessPayload
+  | UpdateAccountHolderSuccessPayload
   | AccountHolderNotFoundRejection
   | ValidationRejection
 
@@ -21824,7 +21824,7 @@ input UpdateAccountMembershipInput {
 }
 
 union UpdateAccountMembershipPayload =
-    UpdateAccountMembershipSuccessPayload
+  | UpdateAccountMembershipSuccessPayload
   | AccountMembershipCannotBeUpdatedRejection
   | AccountMembershipNotFoundRejection
   | ForbiddenRejection
@@ -21838,7 +21838,7 @@ type UpdateAccountMembershipSuccessPayload {
 }
 
 union UpdateAccountPayload =
-    UpdateAccountSuccessPayload
+  | UpdateAccountSuccessPayload
   | AccountNotFoundRejection
   | BadAccountStatusRejection
   | ForbiddenRejection
@@ -21900,7 +21900,7 @@ input UpdateCardInput {
 }
 
 union UpdateCardPayload =
-    UpdateCardSuccessPayload
+  | UpdateCardSuccessPayload
   | AccountNotFoundRejection
   | CardNotFoundRejection
   | AccountMembershipNotAllowedRejection
@@ -22010,7 +22010,7 @@ input UpdateCompanyOnboardingInput {
 Possible results for mutation `updateCompanyOnboarding`
 """
 union UpdateCompanyOnboardingPayload =
-    ForbiddenRejection
+  | ForbiddenRejection
   | InternalErrorRejection
   | UpdateCompanyOnboardingSuccessPayload
   | ValidationRejection
@@ -22098,7 +22098,7 @@ input UpdateIndividualOnboardingInput {
 Possible result types for `updateIndividualOnboarding`
 """
 union UpdateIndividualOnboardingPayload =
-    ForbiddenRejection
+  | ForbiddenRejection
   | InternalErrorRejection
   | UpdateIndividualOnboardingSuccessPayload
   | ValidationRejection
@@ -22119,7 +22119,7 @@ input UpdateProjectCardSettingsInput {
 }
 
 union UpdateProjectCardSettingsPayload =
-    UpdateProjectCardSettingsSuccessPayload
+  | UpdateProjectCardSettingsSuccessPayload
   | ForbiddenRejection
   | ValidationRejection
 
@@ -22172,7 +22172,7 @@ input UpdateReceivedSepaDirectDebitB2bMandateInput {
 Union type returned by the updateReceivedSepaDirectDebitB2bMandate mutation
 """
 union UpdateReceivedSepaDirectDebitB2bMandatePayload =
-    UpdateReceivedSepaDirectDebitB2bMandateSuccessPayload
+  | UpdateReceivedSepaDirectDebitB2bMandateSuccessPayload
   | ReceivedDirectDebitMandateNotFoundRejection
   | ForbiddenRejection
   | ReceivedDirectDebitMandateAlreadyExistRejection
@@ -22196,7 +22196,7 @@ input UpdateSupportingDocumentInput {
 }
 
 union UpdateSupportingDocumentPayload =
-    UpdateSupportingDocumentSuccessPayload
+  | UpdateSupportingDocumentSuccessPayload
   | ForbiddenRejection
   | InternalErrorRejection
   | SupportingDocumentCollectionNotFoundRejection
@@ -22222,7 +22222,7 @@ input UpdateUserConsentSettingsInput {
 }
 
 union UpdateUserConsentSettingsPayload =
-    UpdateUserConsentSettingsSuccessPayload
+  | UpdateUserConsentSettingsSuccessPayload
   | UpdateUserConsentSettingsTokenRejection
 
 type UpdateUserConsentSettingsSuccessPayload {
@@ -22636,7 +22636,7 @@ input ViewCardNumbersInput {
 }
 
 union ViewCardNumbersPayload =
-    ViewCardNumbersSuccessPayload
+  | ViewCardNumbersSuccessPayload
   | UserNotCardHolderRejection
   | CardNotFoundRejection
   | ValidationRejection
@@ -22661,7 +22661,7 @@ input ViewPhysicalCardNumbersInput {
 }
 
 union ViewPhysicalCardNumbersPayload =
-    ViewPhysicalCardNumbersSuccessPayload
+  | ViewPhysicalCardNumbersSuccessPayload
   | UserNotCardHolderRejection
   | CardNotFoundRejection
   | ValidationRejection
@@ -22686,7 +22686,7 @@ input ViewPhysicalCardPinInput {
 }
 
 union ViewPhysicalCardPinPayload =
-    ViewPhysicalCardPinSuccessPayload
+  | ViewPhysicalCardPinSuccessPayload
   | CardNotFoundRejection
   | PhysicalCardNotFoundRejection
   | PINNotReadyRejection

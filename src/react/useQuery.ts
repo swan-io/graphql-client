@@ -1,4 +1,4 @@
-import { AsyncData, Future, Option, Result } from "@swan-io/boxed";
+import { AsyncData, Future, Result } from "@swan-io/boxed";
 import {
   useCallback,
   useContext,
@@ -8,12 +8,10 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { ClientContext } from "./ClientContext";
+import { ClientError } from "../errors";
 import { TypedDocumentNode } from "../types";
 import { deepEqual } from "../utils";
-import { ClientError } from "../errors";
-import { addTypenames, inlineFragments } from "../graphql/ast";
-import { P, match } from "ts-pattern";
+import { ClientContext } from "./ClientContext";
 
 export type QueryConfig = {
   suspense?: boolean;
@@ -25,7 +23,7 @@ export type Query<Data, Variables> = readonly [
     isLoading: boolean;
     reload: () => Future<Result<Data, ClientError>>;
     refresh: () => Future<Result<Data, ClientError>>;
-  }
+  },
 ];
 
 const usePreviousValue = <T>(value: T): T => {
@@ -41,7 +39,7 @@ const usePreviousValue = <T>(value: T): T => {
 export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
-  { suspense = false }: QueryConfig = {}
+  { suspense = false }: QueryConfig = {},
 ): Query<Data, Variables> => {
   const client = useContext(ClientContext);
 
@@ -64,7 +62,7 @@ export const useQuery = <Data, Variables>(
 
   const data = useSyncExternalStore(
     (func) => client.subscribe(func),
-    getSnapshot
+    getSnapshot,
   );
 
   const asyncData = useMemo(() => {
@@ -106,8 +104,8 @@ export const useQuery = <Data, Variables>(
   const asyncDataToExpose = isReloading
     ? AsyncData.Loading()
     : isLoading
-    ? previousAsyncData
-    : asyncData;
+      ? previousAsyncData
+      : asyncData;
 
   if (suspense && asyncDataToExpose.isLoading()) {
     throw client.query(stableQuery, stableVariables).toPromise();

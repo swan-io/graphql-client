@@ -24,7 +24,7 @@ import { P, match } from "ts-pattern";
  */
 export const getSelectedKeys = (
   fieldNode: FieldNode | OperationDefinitionNode,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ): Set<symbol> => {
   const selectedKeys = new Set<symbol>();
 
@@ -35,7 +35,7 @@ export const getSelectedKeys = (
       if (selection.kind === Kind.FIELD) {
         const fieldNameWithArguments = getFieldNameWithArguments(
           selection,
-          variables
+          variables,
         );
         selectedKeys.add(fieldNameWithArguments);
       } else if (selection.kind === Kind.INLINE_FRAGMENT) {
@@ -69,7 +69,7 @@ export const getSelectedKeys = (
  */
 export const getFieldNameWithArguments = (
   fieldNode: FieldNode,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ): symbol => {
   const fieldName = getFieldName(fieldNode);
   const args = extractArguments(fieldNode, variables);
@@ -88,14 +88,14 @@ export const getFieldNameWithArguments = (
  */
 export const extractArguments = (
   fieldNode: FieldNode,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ): Record<string, any> => {
   const args = fieldNode.arguments ?? [];
   return Object.fromEntries(
     args.map(({ name: { value: name }, value }) => [
       name,
       extractValue(value, variables),
-    ])
+    ]),
   );
 };
 
@@ -108,7 +108,7 @@ export const extractArguments = (
  */
 const extractValue = (
   valueNode: ValueNode,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ): any => {
   return match(valueNode)
     .with({ kind: Kind.NULL }, () => null)
@@ -119,22 +119,22 @@ const extractValue = (
           Kind.FLOAT,
           Kind.STRING,
           Kind.BOOLEAN,
-          Kind.ENUM
+          Kind.ENUM,
         ),
       },
-      ({ value }) => value
+      ({ value }) => value,
     )
     .with({ kind: Kind.LIST }, ({ values }) =>
-      values.map((value) => extractValue(value, variables))
+      values.map((value) => extractValue(value, variables)),
     )
     .with({ kind: Kind.OBJECT }, ({ fields }) =>
       Object.fromEntries(
-        fields.map(({ name: { value: name }, value }) => [name, value])
-      )
+        fields.map(({ name: { value: name }, value }) => [name, value]),
+      ),
     )
     .with(
       { kind: Kind.VARIABLE },
-      ({ name: { value: name } }) => variables[name]
+      ({ name: { value: name } }) => variables[name],
     )
     .exhaustive();
 };
@@ -224,7 +224,7 @@ export const addTypenames = (documentNode: DocumentNode): DocumentNode => {
         selectionSet.selections.find(
           (selection) =>
             selection.kind === Kind.FIELD &&
-            selection.name.value === "__typename"
+            selection.name.value === "__typename",
         )
       ) {
         return selectionSet;

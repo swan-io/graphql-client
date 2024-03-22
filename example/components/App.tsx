@@ -1,12 +1,12 @@
-import { graphql } from "../graphql";
-import { ClientError, useQuery } from "../../src";
-import { P, match } from "ts-pattern";
 import { AsyncData, Result } from "@swan-io/boxed";
+import { useCallback, useState } from "react";
+import { P, match } from "ts-pattern";
+import { ClientError, useQuery } from "../../src";
+import { graphql } from "../graphql";
 import {
   AccountMembershipList,
   accountMembershipListFragment,
 } from "./AccountMembershipList";
-import { useCallback, useState } from "react";
 
 const transactionListQuery = graphql(
   `
@@ -21,13 +21,13 @@ const transactionListQuery = graphql(
       }
     }
   `,
-  [accountMembershipListFragment]
+  [accountMembershipListFragment],
 );
 
 export const App = () => {
   const [after, setAfter] = useState<string | null>(null);
   const [accountMembershipId, setAccountMembershipId] = useState(
-    "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
+    "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
   );
   const [suspense, setSuspense] = useState(false);
 
@@ -37,7 +37,7 @@ export const App = () => {
       accountMembershipId,
       after,
     },
-    { suspense }
+    { suspense },
   );
 
   const toggleAccountMembership = useCallback(() => {
@@ -45,7 +45,7 @@ export const App = () => {
     setAccountMembershipId((currentAccountMembership) =>
       currentAccountMembership === "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
         ? "3c6cd099-02b5-4d05-86ae-364b72391070"
-        : "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
+        : "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
     );
   }, []);
 
@@ -91,7 +91,7 @@ export const App = () => {
                 />
               </div>
             );
-          }
+          },
         )
         .exhaustive()}
     </div>
