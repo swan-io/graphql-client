@@ -1,3 +1,8 @@
+import {
+  DocumentNode,
+  OperationDefinitionNode,
+  OperationTypeNode,
+} from "@0no-co/graphql.web";
 import { Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
 import {
@@ -7,11 +12,6 @@ import {
   isRecord,
   serializeVariables,
 } from "../utils";
-import {
-  DocumentNode,
-  OperationDefinitionNode,
-  OperationTypeNode,
-} from "@0no-co/graphql.web";
 
 type CacheEntry = {
   requestedKeys: Set<symbol>;
@@ -22,22 +22,22 @@ export const getCacheKeyFromJson = (json: unknown): Option<symbol> => {
   return match(json)
     .with(
       { __typename: P.select(P.union("Query", "Mutation", "Subscription")) },
-      (name) => Option.Some(Symbol.for(name))
+      (name) => Option.Some(Symbol.for(name)),
     )
     .with(
       { __typename: P.select("name", P.string), id: P.select("id", P.string) },
-      ({ name, id }) => Option.Some(Symbol.for(`${name}<${id}>`))
+      ({ name, id }) => Option.Some(Symbol.for(`${name}<${id}>`)),
     )
     .otherwise(() => Option.None());
 };
 
 export const getCacheKeyFromOperationNode = (
-  operationNode: OperationDefinitionNode
+  operationNode: OperationDefinitionNode,
 ): Option<symbol> => {
   return match(operationNode.operation)
     .with(OperationTypeNode.QUERY, () => Option.Some(Symbol.for("Query")))
     .with(OperationTypeNode.SUBSCRIPTION, () =>
-      Option.Some(Symbol.for("Subscription"))
+      Option.Some(Symbol.for("Subscription")),
     )
     .otherwise(() => Option.None());
 };
@@ -65,7 +65,7 @@ export class ClientCache {
 
   getOperationFromCache(
     documentNode: DocumentNode,
-    variables: Record<string, any>
+    variables: Record<string, any>,
   ) {
     const serializedVariables = serializeVariables(variables);
     return Option.fromNullable(this.operationCache.get(documentNode))
@@ -76,11 +76,11 @@ export class ClientCache {
   setOperationInCache(
     documentNode: DocumentNode,
     variables: Record<string, any>,
-    data: Result<unknown, unknown>
+    data: Result<unknown, unknown>,
   ) {
     const serializedVariables = serializeVariables(variables);
     const documentCache = Option.fromNullable(
-      this.operationCache.get(documentNode)
+      this.operationCache.get(documentNode),
     ).getWithDefault(new Map());
     documentCache.set(serializedVariables, Option.Some(data));
     this.operationCache.set(documentNode, documentCache);
@@ -121,7 +121,7 @@ export class ClientCache {
 
   cacheIfEligible<T extends unknown>(
     value: T,
-    requestedKeys: Set<symbol>
+    requestedKeys: Set<symbol>,
   ): symbol | T {
     return match(getCacheKeyFromJson(value))
       .with(Option.P.Some(P.select()), (cacheKey) => {
@@ -131,7 +131,7 @@ export class ClientCache {
           mergeCacheEntries(existingEntry, {
             requestedKeys,
             value,
-          })
+          }),
         );
         return cacheKey;
       })
@@ -183,7 +183,7 @@ export class ClientCache {
           {
             [originalFieldName]: DEEP_MERGE_DELETE,
             [fieldNameWithArguments]: value,
-          }
+          },
         );
 
         this.set(
@@ -191,7 +191,7 @@ export class ClientCache {
           mergeCacheEntries(existingEntry, {
             requestedKeys: new Set(),
             value: deepUpdate,
-          })
+          }),
         );
 
         // When the cached ancestor is found, remove

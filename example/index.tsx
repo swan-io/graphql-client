@@ -1,7 +1,7 @@
+import { Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Client, ClientContext } from "../src";
 import { App } from "./components/App";
-import { Suspense } from "react";
 
 const yourAuthBearer = "your-auth-bearer";
 

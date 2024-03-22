@@ -1,3 +1,5 @@
+import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
+import { Future, Option, Result } from "@swan-io/boxed";
 import {
   BadStatusError,
   EmptyResponseError,
@@ -7,24 +9,22 @@ import {
   badStatusToError,
   emptyToError,
 } from "@swan-io/request";
-import { ClientCache } from "./cache/cache";
-import { TypedDocumentNode } from "./types";
-import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
-import {
-  addTypenames,
-  getExecutableOperationName,
-  inlineFragments,
-} from "./graphql/ast";
-import { Future, Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
+import { ClientCache } from "./cache/cache";
+import { readOperationFromCache } from "./cache/read";
+import { writeOperationToCache } from "./cache/write";
 import {
   ClientError,
   InvalidGraphQLResponseError,
   parseGraphQLError,
 } from "./errors";
-import { writeOperationToCache } from "./cache/write";
-import { readOperationFromCache } from "./cache/read";
+import {
+  addTypenames,
+  getExecutableOperationName,
+  inlineFragments,
+} from "./graphql/ast";
 import { print } from "./graphql/print";
+import { TypedDocumentNode } from "./types";
 
 type RequestConfig = {
   url: string;
@@ -35,7 +35,7 @@ type RequestConfig = {
 };
 
 export type MakeRequest = (
-  config: RequestConfig
+  config: RequestConfig,
 ) => Future<
   Result<
     unknown,
@@ -56,11 +56,11 @@ const defaultParseResponse = (payload: unknown) =>
   match(payload)
     .returnType<Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>>()
     .with({ errors: P.select(P.array()) }, (errors) =>
-      Result.Error(errors.map(parseGraphQLError))
+      Result.Error(errors.map(parseGraphQLError)),
     )
     .with({ data: P.select(P.not(P.nullish)) }, (data) => Result.Ok(data))
     .otherwise((response) =>
-      Result.Error(new InvalidGraphQLResponseError(response))
+      Result.Error(new InvalidGraphQLResponseError(response)),
     );
 
 const defaultMakeRequest: MakeRequest = ({
@@ -135,7 +135,7 @@ export class Client {
 
   request<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables
+    variables: Variables,
   ) {
     const transformedDocument = this.getTransformedDocument(document);
     const transformedDocumentsForRequest =
@@ -143,7 +143,7 @@ export class Client {
 
     const operationName =
       getExecutableOperationName(transformedDocument).getWithDefault(
-        "Untitled"
+        "Untitled",
       );
 
     const variablesAsRecord = variables as Record<string, any>;
@@ -162,14 +162,14 @@ export class Client {
           this.cache,
           transformedDocument,
           data,
-          variablesAsRecord
+          variablesAsRecord,
         );
       })
       .tap((result) => {
         this.cache.setOperationInCache(
           transformedDocument,
           variablesAsRecord,
-          result
+          result,
         );
         this.subscribers.forEach((func) => {
           func();
@@ -179,34 +179,34 @@ export class Client {
 
   readFromCache<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables
+    variables: Variables,
   ) {
     const variablesAsRecord = variables as Record<string, any>;
     const transformedDocument = this.getTransformedDocument(document);
 
     return match(
-      this.cache.getOperationFromCache(transformedDocument, variablesAsRecord)
+      this.cache.getOperationFromCache(transformedDocument, variablesAsRecord),
     )
       .with(Option.P.Some(Result.P.Error(P._)), (value) => value)
       .otherwise(() =>
         readOperationFromCache(
           this.cache,
           transformedDocument,
-          variablesAsRecord
-        )
+          variablesAsRecord,
+        ),
       );
   }
 
   query<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables
+    variables: Variables,
   ) {
     return this.request(document, variables);
   }
 
   commitMutation<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables
+    variables: Variables,
   ) {
     return this.request(document, variables);
   }

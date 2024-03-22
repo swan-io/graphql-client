@@ -19,7 +19,7 @@ const UserInfo = graphql(
       }
     }
   `,
-  [IdentificationLevels]
+  [IdentificationLevels],
 );
 
 export const appQuery = graphql(
@@ -57,7 +57,7 @@ export const appQuery = graphql(
       }
     }
   `,
-  [UserInfo]
+  [UserInfo],
 );
 
 export const getAppQueryResponse = ({
@@ -151,7 +151,7 @@ export const bindAccountMembershipMutation = graphql(
       }
     }
   `,
-  [UserInfo]
+  [UserInfo],
 );
 
 export const bindMembershipMutationRejectionResponse = {

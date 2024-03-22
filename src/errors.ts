@@ -1,4 +1,4 @@
-import { GraphQLError, ASTNode } from "@0no-co/graphql.web";
+import { ASTNode, GraphQLError } from "@0no-co/graphql.web";
 import {
   BadStatusError,
   EmptyResponseError,
@@ -18,8 +18,10 @@ export type ClientError =
 export class InvalidGraphQLResponseError extends Error {
   response: unknown;
   constructor(response: unknown) {
-    super(`Received an invalid GraphQL response`);
+    super("Received an invalid GraphQL response");
+    this.name = this.constructor.name;
     this.response = response;
+    Object.setPrototypeOf(this, InvalidGraphQLResponseError.prototype);
   }
 }
 
@@ -51,9 +53,9 @@ export const parseGraphQLError = (error: unknown): GraphQLError => {
                 [extension: string]: unknown;
               }
             | null
-            | undefined
+            | undefined,
         );
-      }
+      },
     )
     .otherwise((error) => new GraphQLError(JSON.stringify(error)));
 };
@@ -72,8 +74,8 @@ export const ClientError = {
         | EmptyResponseError
         | InvalidGraphQLResponseError
         | GraphQLError,
-      index?: number
-    ) => void
+      index?: number,
+    ) => void,
   ) => {
     ClientError.toArray(clientError).forEach(func);
   },

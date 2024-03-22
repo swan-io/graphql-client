@@ -15,6 +15,6 @@ export interface TypedDocumentNode<
   },
   TVariables = {
     [key: string]: any;
-  }
+  },
 > extends DocumentNode,
     DocumentTypeDecoration<TResult, TVariables> {}

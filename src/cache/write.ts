@@ -1,24 +1,24 @@
-import { DocumentNode, SelectionSetNode, Kind } from "@0no-co/graphql.web";
-import { ClientCache } from "./cache";
+import { DocumentNode, Kind, SelectionSetNode } from "@0no-co/graphql.web";
+import { match } from "ts-pattern";
 import {
   extractArguments,
   getFieldName,
   getFieldNameWithArguments,
   getSelectedKeys,
 } from "../graphql/ast";
-import { match } from "ts-pattern";
 import { isRecord } from "../utils";
+import { ClientCache } from "./cache";
 
 export const writeOperationToCache = (
   cache: ClientCache,
   document: DocumentNode,
   response: any,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ) => {
   const traverse = (
     selections: SelectionSetNode,
     data: any[],
-    path: PropertyKey[] = []
+    path: PropertyKey[] = [],
   ) => {
     selections.selections.forEach((selection) => {
       match(selection)
@@ -26,7 +26,7 @@ export const writeOperationToCache = (
           const originalFieldName = getFieldName(fieldNode);
           const fieldNameWithArguments = getFieldNameWithArguments(
             fieldNode,
-            variables
+            variables,
           );
           const fieldArguments = extractArguments(fieldNode, variables);
 
@@ -54,7 +54,7 @@ export const writeOperationToCache = (
                   traverse(
                     fieldNode.selectionSet!,
                     [...data, fieldValue, item],
-                    [...path, fieldNameWithArguments, index.toString()]
+                    [...path, fieldNameWithArguments, index.toString()],
                   );
                 }
               });
@@ -74,7 +74,7 @@ export const writeOperationToCache = (
                 traverse(
                   fieldNode.selectionSet,
                   [...data, fieldValue],
-                  [...path, fieldNameWithArguments]
+                  [...path, fieldNameWithArguments],
                 );
               }
             }

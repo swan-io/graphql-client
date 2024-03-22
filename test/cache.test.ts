@@ -1,16 +1,16 @@
+import { Option, Result } from "@swan-io/boxed";
+import { expect, test } from "vitest";
+import { ClientCache } from "../src/cache/cache";
+import { readOperationFromCache } from "../src/cache/read";
+import { writeOperationToCache } from "../src/cache/write";
+import { addTypenames, inlineFragments } from "../src/graphql/ast";
 import {
   appQuery,
-  getAppQueryResponse,
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
+  getAppQueryResponse,
 } from "./data";
-import { writeOperationToCache } from "../src/cache/write";
-import { ClientCache } from "../src/cache/cache";
-import { readOperationFromCache } from "../src/cache/read";
-import { Option, Result } from "@swan-io/boxed";
-import { test, expect } from "vitest";
-import { inlineFragments, addTypenames } from "../src/graphql/ast";
 
 test("Write & read in cache", () => {
   const cache = new ClientCache();
@@ -26,7 +26,7 @@ test("Write & read in cache", () => {
     }),
     {
       id: "1",
-    }
+    },
   );
 
   expect(cache.dump()).toMatchSnapshot();
@@ -34,20 +34,20 @@ test("Write & read in cache", () => {
   expect(
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
-    })
+    }),
   ).toMatchObject(
     Option.Some(
       Result.Ok(
         getAppQueryResponse({
           user2LastName: "Last",
           user1IdentificationLevels: null,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   const preparedBindAccountMembershipMutation = inlineFragments(
-    addTypenames(bindAccountMembershipMutation)
+    addTypenames(bindAccountMembershipMutation),
   );
 
   writeOperationToCache(
@@ -56,22 +56,22 @@ test("Write & read in cache", () => {
     bindMembershipMutationRejectionResponse,
     {
       id: "account-membership-2",
-    }
+    },
   );
 
   expect(
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
-    })
+    }),
   ).toMatchObject(
     Option.Some(
       Result.Ok(
         getAppQueryResponse({
           user2LastName: "Last",
           user1IdentificationLevels: null,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   writeOperationToCache(
@@ -80,7 +80,7 @@ test("Write & read in cache", () => {
     bindMembershipMutationSuccessResponse,
     {
       id: "account-membership-2",
-    }
+    },
   );
 
   expect(cache.dump()).toMatchSnapshot();
@@ -88,16 +88,16 @@ test("Write & read in cache", () => {
   expect(
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
-    })
+    }),
   ).toMatchObject(
     Option.Some(
       Result.Ok(
         getAppQueryResponse({
           user2LastName: "Acthernoene",
           user1IdentificationLevels: null,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   writeOperationToCache(
@@ -113,7 +113,7 @@ test("Write & read in cache", () => {
     }),
     {
       id: "1",
-    }
+    },
   );
 
   expect(cache.dump()).toMatchSnapshot();
@@ -121,7 +121,7 @@ test("Write & read in cache", () => {
   expect(
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
-    })
+    }),
   ).toMatchObject(
     Option.Some(
       Result.Ok(
@@ -132,9 +132,9 @@ test("Write & read in cache", () => {
             PVID: true,
             QES: true,
           },
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   const values = Option.all([

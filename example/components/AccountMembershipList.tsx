@@ -1,10 +1,10 @@
 import { FragmentOf, readFragment } from "gql.tada";
+import { useForwardPagination } from "../../src/react/usePagination";
 import { graphql } from "../graphql";
 import {
   AccountMembership,
   accountMembershipFragment,
 } from "./AccountMembership";
-import { useForwardPagination } from "../../src/react/usePagination";
 
 export const accountMembershipListFragment = graphql(
   `
@@ -22,7 +22,7 @@ export const accountMembershipListFragment = graphql(
       totalCount
     }
   `,
-  [accountMembershipFragment]
+  [accountMembershipFragment],
 );
 
 type Props = {
@@ -37,7 +37,7 @@ export const AccountMembershipList = ({
   isLoading,
 }: Props) => {
   const transactions = useForwardPagination(
-    readFragment(accountMembershipListFragment, data)
+    readFragment(accountMembershipListFragment, data),
   );
 
   return (

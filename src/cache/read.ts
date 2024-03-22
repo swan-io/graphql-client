@@ -1,18 +1,18 @@
-import { DocumentNode, SelectionSetNode, Kind } from "@0no-co/graphql.web";
-import { ClientCache, getCacheKeyFromOperationNode } from "./cache";
+import { DocumentNode, Kind, SelectionSetNode } from "@0no-co/graphql.web";
+import { Array, Option, Result } from "@swan-io/boxed";
+import { match } from "ts-pattern";
 import {
   getFieldName,
   getFieldNameWithArguments,
   getSelectedKeys,
 } from "../graphql/ast";
-import { match } from "ts-pattern";
-import { Array, Option, Result } from "@swan-io/boxed";
 import { deepEqual, isRecord, serializeVariables } from "../utils";
+import { ClientCache, getCacheKeyFromOperationNode } from "./cache";
 
 const getFromCacheOrReturnValue = (
   cache: ClientCache,
   valueOrKey: unknown,
-  selectedKeys: Set<symbol>
+  selectedKeys: Set<symbol>,
 ): Option<unknown> => {
   return typeof valueOrKey === "symbol"
     ? cache.getFromCache(valueOrKey, selectedKeys).flatMap(Option.fromNullable)
@@ -24,11 +24,11 @@ const STABILITY_CACHE = new WeakMap<DocumentNode, Map<string, unknown>>();
 export const readOperationFromCache = (
   cache: ClientCache,
   document: DocumentNode,
-  variables: Record<string, any>
+  variables: Record<string, any>,
 ) => {
   const traverse = (
     selections: SelectionSetNode,
-    data: Record<PropertyKey, unknown>
+    data: Record<PropertyKey, unknown>,
   ): Option<any> => {
     return selections.selections.reduce((data, selection) => {
       return data.flatMap((data) =>
@@ -37,7 +37,7 @@ export const readOperationFromCache = (
             const originalFieldName = getFieldName(fieldNode);
             const fieldNameWithArguments = getFieldNameWithArguments(
               fieldNode,
-              variables
+              variables,
             );
             if (data == undefined) {
               return Option.None();
@@ -63,7 +63,7 @@ export const readOperationFromCache = (
                   const value = getFromCacheOrReturnValue(
                     cache,
                     valueOrKey,
-                    selectedKeys
+                    selectedKeys,
                   );
 
                   return value.flatMap((value) => {
@@ -76,7 +76,7 @@ export const readOperationFromCache = (
                       return Option.Some(value);
                     }
                   });
-                })
+                }),
               ).map((result) => ({
                 ...data,
                 [originalFieldName]: result,
@@ -87,14 +87,14 @@ export const readOperationFromCache = (
               const value = getFromCacheOrReturnValue(
                 cache,
                 valueOrKeyFromCache,
-                selectedKeys
+                selectedKeys,
               );
 
               return value.flatMap((value) => {
                 if (isRecord(value) && fieldNode.selectionSet != undefined) {
                   return traverse(
                     fieldNode.selectionSet,
-                    value as Record<PropertyKey, unknown>
+                    value as Record<PropertyKey, unknown>,
                   ).map((result) => ({
                     ...data,
                     [originalFieldName]: result,
@@ -111,7 +111,7 @@ export const readOperationFromCache = (
           .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
             return Option.None();
           })
-          .exhaustive()
+          .exhaustive(),
       );
     }, Option.Some(data));
   };
@@ -119,13 +119,13 @@ export const readOperationFromCache = (
   return Array.findMap(document.definitions, (definition) =>
     definition.kind === Kind.OPERATION_DEFINITION
       ? Option.Some(definition)
-      : Option.None()
+      : Option.None(),
   )
     .flatMap((operation) =>
       getCacheKeyFromOperationNode(operation).map((cacheKey) => ({
         operation,
         cacheKey,
-      }))
+      })),
     )
     .flatMap(({ operation, cacheKey }) => {
       return cache
@@ -135,7 +135,7 @@ export const readOperationFromCache = (
     .flatMap(({ operation, cache }) => {
       return traverse(
         operation.selectionSet,
-        cache as Record<PropertyKey, unknown>
+        cache as Record<PropertyKey, unknown>,
       );
     })
     .map((data) => JSON.parse(JSON.stringify(data)))
@@ -146,7 +146,7 @@ export const readOperationFromCache = (
       const serializedVariables = serializeVariables(variables);
       const previous = Option.fromNullable(STABILITY_CACHE.get(document))
         .flatMap((byVariable) =>
-          Option.fromNullable(byVariable.get(serializedVariables))
+          Option.fromNullable(byVariable.get(serializedVariables)),
         )
         .flatMap((value) => value as Option<Result<unknown, unknown>>);
 

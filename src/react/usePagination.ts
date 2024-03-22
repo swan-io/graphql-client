@@ -1,5 +1,4 @@
-import { AsyncData, Result } from "@swan-io/boxed";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { match } from "ts-pattern";
 import { isRecord } from "../utils";
 
@@ -23,7 +22,7 @@ type mode = "before" | "after";
 const mergeConnection = <A, T extends Connection<A>>(
   previous: T,
   next: T,
-  mode: mode
+  mode: mode,
 ): T => {
   if ("__connectionArguments" in next && isRecord(next.__connectionArguments)) {
     if (next.__connectionArguments[mode] == null) {
@@ -72,7 +71,7 @@ const createPaginationHook = (direction: mode) => {
     connectionRef.current = mergeConnection(
       connectionRef.current,
       connection,
-      direction
+      direction,
     );
     return connectionRef.current;
   };
