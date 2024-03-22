@@ -74,7 +74,12 @@ export const useQuery = <Data, Variables>(
 
   const previousAsyncData = usePreviousValue(asyncData);
 
+  const isSuspenseFirstFetch = useRef(true);
   useEffect(() => {
+    if (suspense && isSuspenseFirstFetch.current) {
+      isSuspenseFirstFetch.current = false;
+      return;
+    }
     const request = client.query(stableQuery, stableVariables);
     return () => request.cancel();
   }, [stableQuery, stableVariables]);
@@ -90,9 +95,7 @@ export const useQuery = <Data, Variables>(
   const isLoading = asyncData.isLoading();
   const asyncDataToExpose = isLoading ? previousAsyncData : asyncData;
 
-  const hasSuspended = useRef(false);
-  if (suspense && hasSuspended.current) {
-    hasSuspended.current = true;
+  if (suspense && asyncDataToExpose.isLoading()) {
     throw client.query(stableQuery, stableVariables).toPromise();
   }
 

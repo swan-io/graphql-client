@@ -30,8 +30,8 @@ export const App = () => {
     {
       accountMembershipId: "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
       after,
-    }
-    // { suspense: true }
+    },
+    { suspense: true }
   );
 
   return (
