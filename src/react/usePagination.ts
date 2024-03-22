@@ -1,6 +1,7 @@
 import { AsyncData, Result } from "@swan-io/boxed";
 import { useEffect, useRef, useState } from "react";
 import { match } from "ts-pattern";
+import { isRecord } from "../utils";
 
 type Edge<T> = {
   cursor?: string | null;
@@ -24,6 +25,11 @@ const mergeConnection = <A, T extends Connection<A>>(
   next: T,
   mode: mode
 ): T => {
+  if ("__connectionArguments" in next && isRecord(next.__connectionArguments)) {
+    if (next.__connectionArguments[mode] == null) {
+      return next;
+    }
+  }
   if (
     mode === "after" &&
     next.pageInfo.endCursor === previous.pageInfo.endCursor
@@ -72,6 +78,6 @@ const createPaginationHook = (direction: mode) => {
   };
 };
 
-export const useAfterPagination = createPaginationHook("after");
+export const useForwardPagination = createPaginationHook("after");
 
-export const useBeforePagination = createPaginationHook("before");
+export const useBackwardPagination = createPaginationHook("before");

@@ -1,6 +1,7 @@
 import { DocumentNode, SelectionSetNode, Kind } from "@0no-co/graphql.web";
 import { ClientCache } from "./cache";
 import {
+  extractArguments,
   getFieldName,
   getFieldNameWithArguments,
   getSelectedKeys,
@@ -27,6 +28,7 @@ export const writeOperationToCache = (
             fieldNode,
             variables
           );
+          const fieldArguments = extractArguments(fieldNode, variables);
 
           const fieldValue = data.at(-1)[originalFieldName];
           const selectedKeys = getSelectedKeys(fieldNode, variables);
@@ -45,6 +47,7 @@ export const writeOperationToCache = (
                   value: nextValue,
                   path,
                   ancestors: data,
+                  variables: fieldArguments,
                 });
 
                 if (isRecord(item) && !Array.isArray(item)) {
@@ -64,6 +67,7 @@ export const writeOperationToCache = (
                 value,
                 path,
                 ancestors: data,
+                variables: fieldArguments,
               });
 
               if (isRecord(fieldValue) && fieldNode.selectionSet != undefined) {
@@ -81,6 +85,7 @@ export const writeOperationToCache = (
               value: fieldValue,
               path,
               ancestors: data,
+              variables: fieldArguments,
             });
           }
         })

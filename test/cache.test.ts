@@ -8,11 +8,9 @@ import {
 import { writeOperationToCache } from "../src/cache/write";
 import { ClientCache } from "../src/cache/cache";
 import { readOperationFromCache } from "../src/cache/read";
-import { Option } from "@swan-io/boxed";
+import { Option, Result } from "@swan-io/boxed";
 import { test, expect } from "vitest";
-import util from "node:util";
 import { inlineFragments, addTypenames } from "../src/graphql/ast";
-import exp from "node:constants";
 
 test("Write & read in cache", () => {
   const cache = new ClientCache();
@@ -37,12 +35,14 @@ test("Write & read in cache", () => {
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
     })
-  ).toEqual(
+  ).toMatchObject(
     Option.Some(
-      getAppQueryResponse({
-        user2LastName: "Last",
-        user1IdentificationLevels: null,
-      })
+      Result.Ok(
+        getAppQueryResponse({
+          user2LastName: "Last",
+          user1IdentificationLevels: null,
+        })
+      )
     )
   );
 
@@ -63,12 +63,14 @@ test("Write & read in cache", () => {
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
     })
-  ).toEqual(
+  ).toMatchObject(
     Option.Some(
-      getAppQueryResponse({
-        user2LastName: "Last",
-        user1IdentificationLevels: null,
-      })
+      Result.Ok(
+        getAppQueryResponse({
+          user2LastName: "Last",
+          user1IdentificationLevels: null,
+        })
+      )
     )
   );
 
@@ -87,12 +89,14 @@ test("Write & read in cache", () => {
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
     })
-  ).toEqual(
+  ).toMatchObject(
     Option.Some(
-      getAppQueryResponse({
-        user2LastName: "Acthernoene",
-        user1IdentificationLevels: null,
-      })
+      Result.Ok(
+        getAppQueryResponse({
+          user2LastName: "Acthernoene",
+          user1IdentificationLevels: null,
+        })
+      )
     )
   );
 
@@ -118,16 +122,18 @@ test("Write & read in cache", () => {
     readOperationFromCache(cache, preparedAppQuery, {
       id: "1",
     })
-  ).toEqual(
+  ).toMatchObject(
     Option.Some(
-      getAppQueryResponse({
-        user2LastName: "Acthernoene",
-        user1IdentificationLevels: {
-          expert: true,
-          PVID: true,
-          QES: true,
-        },
-      })
+      Result.Ok(
+        getAppQueryResponse({
+          user2LastName: "Acthernoene",
+          user1IdentificationLevels: {
+            expert: true,
+            PVID: true,
+            QES: true,
+          },
+        })
+      )
     )
   );
 

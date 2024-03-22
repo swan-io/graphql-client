@@ -9,6 +9,33 @@
   .AccountMembership {
     padding: 10px;
   }
+
+  button {
+    background: #66e197;
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 5px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  button:disabled,
+  button:disabled:hover,
+  button:disabled:active {
+    background: #ccc;
+    opacity: 0.9;
+  }
+
+  button:hover {
+    background: #45c177;
+  }
+
+  button:active {
+    opacity: 0.9;
+  }
 </style>
 <div id="app"></div>
 <script type="module" src="./index.tsx"></script>

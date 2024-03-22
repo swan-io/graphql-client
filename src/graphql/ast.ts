@@ -86,7 +86,7 @@ export const getFieldNameWithArguments = (
  * @param variables
  * @returns Record<string, any>
  */
-const extractArguments = (
+export const extractArguments = (
   fieldNode: FieldNode,
   variables: Record<string, any>
 ): Record<string, any> => {

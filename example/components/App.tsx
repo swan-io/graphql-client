@@ -6,12 +6,13 @@ import {
   AccountMembershipList,
   accountMembershipListFragment,
 } from "./AccountMembershipList";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const transactionListQuery = graphql(
   `
     query App($accountMembershipId: ID!, $after: String) {
       accountMembership(id: $accountMembershipId) {
+        id
         account {
           memberships(first: 3, after: $after) {
             ...AccountMembershipList
@@ -25,17 +26,47 @@ const transactionListQuery = graphql(
 
 export const App = () => {
   const [after, setAfter] = useState<string | null>(null);
-  const [data, { isLoading }] = useQuery(
+  const [accountMembershipId, setAccountMembershipId] = useState(
+    "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
+  );
+  const [suspense, setSuspense] = useState(false);
+
+  const [data, { isLoading, reload, refresh }] = useQuery(
     transactionListQuery,
     {
-      accountMembershipId: "fa3a2485-43bc-461e-b38c-5a9bc3750c7d",
+      accountMembershipId,
       after,
     },
-    { suspense: true }
+    { suspense }
   );
+
+  const toggleAccountMembership = useCallback(() => {
+    setAfter(null);
+    setAccountMembershipId((currentAccountMembership) =>
+      currentAccountMembership === "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
+        ? "3c6cd099-02b5-4d05-86ae-364b72391070"
+        : "fa3a2485-43bc-461e-b38c-5a9bc3750c7d"
+    );
+  }, []);
 
   return (
     <div>
+      <header>
+        <button onClick={toggleAccountMembership}>
+          Toggle account membership
+        </button>
+        <button onClick={refresh}>Refresh</button>
+        <button onClick={reload}>Reload</button>
+        <label>
+          <input
+            type="checkbox"
+            checked={suspense}
+            onChange={() => setSuspense((x) => !x)}
+          />
+          Suspense
+        </label>
+      </header>
+
       {match(data)
         .with(AsyncData.P.NotAsked, () => "Nothing")
         .with(AsyncData.P.Loading, () => "Loading")
@@ -51,11 +82,14 @@ export const App = () => {
             }
 
             return (
-              <AccountMembershipList
-                data={accountMembership.account.memberships}
-                onPressNextPage={setAfter}
-                isLoading={isLoading}
-              />
+              <div>
+                <div>Account membership id: {accountMembership.id}</div>
+                <AccountMembershipList
+                  data={accountMembership.account.memberships}
+                  onPressNextPage={setAfter}
+                  isLoading={isLoading}
+                />
+              </div>
             );
           }
         )

@@ -19,7 +19,7 @@ export type QueryConfig = {
   suspense?: boolean;
 };
 
-export type Query<Data> = readonly [
+export type Query<Data, Variables> = readonly [
   AsyncData<Result<Data, ClientError>>,
   {
     isLoading: boolean;
@@ -42,7 +42,7 @@ export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
   { suspense = false }: QueryConfig = {}
-): Query<Data> => {
+): Query<Data, Variables> => {
   const client = useContext(ClientContext);
 
   // Query should never change
@@ -50,6 +50,7 @@ export const useQuery = <Data, Variables>(
 
   // Only break variables reference equality if not deeply equal
   const [stableVariables, setStableVariables] = useState(variables);
+
   useEffect(() => {
     if (!deepEqual(stableVariables, variables)) {
       setStableVariables(variables);
@@ -75,6 +76,7 @@ export const useQuery = <Data, Variables>(
   const previousAsyncData = usePreviousValue(asyncData);
 
   const isSuspenseFirstFetch = useRef(true);
+
   useEffect(() => {
     if (suspense && isSuspenseFirstFetch.current) {
       isSuspenseFirstFetch.current = false;
@@ -84,16 +86,28 @@ export const useQuery = <Data, Variables>(
     return () => request.cancel();
   }, [stableQuery, stableVariables]);
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const refresh = useCallback(() => {
-    return client.request(stableQuery, stableVariables);
+    setIsRefreshing(true);
+    return client
+      .request(stableQuery, stableVariables)
+      .tap(() => setIsRefreshing(false));
   }, [stableQuery, stableVariables]);
 
+  const [isReloading, setIsReloading] = useState(false);
   const reload = useCallback(() => {
-    return client.request(stableQuery, stableVariables);
+    setIsReloading(true);
+    return client
+      .request(stableQuery, stableVariables)
+      .tap(() => setIsReloading(false));
   }, [stableQuery, stableVariables]);
 
-  const isLoading = asyncData.isLoading();
-  const asyncDataToExpose = isLoading ? previousAsyncData : asyncData;
+  const isLoading = isRefreshing || isReloading || asyncData.isLoading();
+  const asyncDataToExpose = isReloading
+    ? AsyncData.Loading()
+    : isLoading
+    ? previousAsyncData
+    : asyncData;
 
   if (suspense && asyncDataToExpose.isLoading()) {
     throw client.query(stableQuery, stableVariables).toPromise();

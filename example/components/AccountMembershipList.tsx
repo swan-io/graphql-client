@@ -4,7 +4,7 @@ import {
   AccountMembership,
   accountMembershipFragment,
 } from "./AccountMembership";
-import { useAfterPagination } from "../../src/react/usePagination";
+import { useForwardPagination } from "../../src/react/usePagination";
 
 export const accountMembershipListFragment = graphql(
   `
@@ -36,7 +36,7 @@ export const AccountMembershipList = ({
   onPressNextPage,
   isLoading,
 }: Props) => {
-  const transactions = useAfterPagination(
+  const transactions = useForwardPagination(
     readFragment(accountMembershipListFragment, data)
   );
 

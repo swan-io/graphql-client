@@ -4,6 +4,7 @@ import {
   DEEP_MERGE_DELETE,
   containsAll,
   deepMerge,
+  isRecord,
   serializeVariables,
 } from "../utils";
 import {
@@ -143,12 +144,14 @@ export class ClientCache {
     value,
     path,
     ancestors,
+    variables,
   }: {
     originalFieldName: string;
     fieldNameWithArguments: symbol | string;
     value: unknown;
     path: PropertyKey[];
     ancestors: any[];
+    variables: Record<string, any>;
   }) {
     const ancestorsCopy = ancestors.concat();
     const pathCopy = path.concat();
@@ -161,6 +164,14 @@ export class ClientCache {
       if (maybeCacheKey.isSome()) {
         const cacheKey = maybeCacheKey.get();
         const existingEntry = this.getOrDefault(cacheKey);
+
+        if (
+          isRecord(value) &&
+          typeof value.__typename === "string" &&
+          value.__typename.endsWith("Connection")
+        ) {
+          value.__connectionArguments = variables;
+        }
 
         const deepUpdate = writePath.reduce<unknown>(
           (acc, key) => {
