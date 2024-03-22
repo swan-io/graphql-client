@@ -9,7 +9,7 @@ import {
 } from "@swan-io/request";
 import { ClientCache } from "./cache/cache";
 import { TypedDocumentNode } from "./types";
-import { DocumentNode, GraphQLError, print } from "@0no-co/graphql.web";
+import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
 import {
   addTypenames,
   getExecutableOperationName,
@@ -24,6 +24,7 @@ import {
 } from "./errors";
 import { writeOperationToCache } from "./cache/write";
 import { readOperationFromCache } from "./cache/read";
+import { print } from "./graphql/print";
 
 type RequestConfig = {
   url: string;
@@ -94,6 +95,7 @@ export class Client {
   subscribers: Set<() => void>;
 
   transformedDocuments: Map<DocumentNode, DocumentNode>;
+  transformedDocumentsForRequest: Map<DocumentNode, DocumentNode>;
 
   constructor(config: ClientConfig) {
     this.url = config.url;
@@ -103,6 +105,7 @@ export class Client {
     this.parseResponse = config.parseResponse ?? defaultParseResponse;
     this.subscribers = new Set();
     this.transformedDocuments = new Map();
+    this.transformedDocumentsForRequest = new Map();
   }
 
   getTransformedDocument(document: DocumentNode) {
@@ -111,6 +114,16 @@ export class Client {
     } else {
       const transformedDocument = inlineFragments(addTypenames(document));
       this.transformedDocuments.set(document, transformedDocument);
+      return transformedDocument;
+    }
+  }
+
+  getTransformedDocumentsForRequest(document: DocumentNode) {
+    if (this.transformedDocumentsForRequest.has(document)) {
+      return this.transformedDocumentsForRequest.get(document) as DocumentNode;
+    } else {
+      const transformedDocument = addTypenames(document);
+      this.transformedDocumentsForRequest.set(document, transformedDocument);
       return transformedDocument;
     }
   }
@@ -125,6 +138,8 @@ export class Client {
     variables: Variables
   ) {
     const transformedDocument = this.getTransformedDocument(document);
+    const transformedDocumentsForRequest =
+      this.getTransformedDocumentsForRequest(document);
 
     const operationName =
       getExecutableOperationName(transformedDocument).getWithDefault(
@@ -137,7 +152,7 @@ export class Client {
       url: this.url,
       headers: this.headers,
       operationName,
-      document: transformedDocument,
+      document: transformedDocumentsForRequest,
       variables: variablesAsRecord,
     })
       .mapOkToResult(this.parseResponse)
