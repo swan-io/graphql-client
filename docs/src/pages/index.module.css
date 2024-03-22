@@ -1,0 +1,140 @@
+.heroBanner {
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  background: linear-gradient(
+    to bottom right,
+    #8266c4 0%,
+    rgba(217, 97, 81, 0.5) 70.75%
+  );
+}
+
+.heroLogo {
+  max-width: 150px;
+  height: auto;
+  align-self: center;
+  margin-bottom: 10px;
+}
+
+.heroLeft {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroTitle {
+  font-size: 50px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.heroSubtitle {
+  font-size: 20px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.heroButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.heroButton {
+  border: 1px solid white;
+  color: #fff;
+}
+
+.heroButton:hover {
+  color: #fff;
+}
+
+.heroButtonSeparator {
+  display: flex;
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+}
+
+.heroCode {
+  box-shadow: 0 20px 30px -10px #d96151;
+  text-align: left;
+}
+
+:global([data-theme="dark"]) .heroCode {
+  box-shadow: 0 20px 30px -10px #572720;
+}
+
+.heroCodeBlock {
+  margin-bottom: 0 !important;
+}
+
+.contentBlock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 2rem 0;
+  background-color: rgba(246, 248, 250, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.contentBlockReversed {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  margin: 2rem 0;
+  background-color: rgba(246, 248, 250, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.contentBlockSide {
+  flex-grow: 1;
+  padding: 2rem;
+  width: 50%;
+}
+
+@media (max-width: 1200px) {
+  .heroBanner {
+    padding: 2rem;
+    padding-top: 3rem;
+    flex-direction: column;
+    text-align: center;
+    align-items: stretch;
+  }
+
+  .heroLeft {
+    flex-direction: column;
+    margin-bottom: 3rem;
+  }
+
+  .heroLogo {
+    max-width: 100px;
+    margin-right: 0;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .heroButtons {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 920px) {
+  .contentBlock,
+  .contentBlockReversed {
+    flex-direction: column;
+  }
+
+  .contentBlockSide {
+    width: 100%;
+  }
+}
