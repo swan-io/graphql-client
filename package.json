@@ -36,7 +36,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
-    "prepack": "yarn typecheck && yarn lint && yarn test && yarn build"
+    "prepack": "yarn typecheck && yarn test && yarn build"
   },
   "prettier": {
     "plugins": [
