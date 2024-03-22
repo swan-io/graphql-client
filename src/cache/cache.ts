@@ -65,7 +65,7 @@ export class ClientCache {
 
   getOperationFromCache(
     documentNode: DocumentNode,
-    variables: Record<string, any>,
+    variables: Record<string, unknown>,
   ) {
     const serializedVariables = serializeVariables(variables);
     return Option.fromNullable(this.operationCache.get(documentNode))
@@ -75,7 +75,7 @@ export class ClientCache {
 
   setOperationInCache(
     documentNode: DocumentNode,
-    variables: Record<string, any>,
+    variables: Record<string, unknown>,
     data: Result<unknown, unknown>,
   ) {
     const serializedVariables = serializeVariables(variables);
@@ -119,10 +119,7 @@ export class ClientCache {
     this.cache.set(cacheKey, entry);
   }
 
-  cacheIfEligible<T extends unknown>(
-    value: T,
-    requestedKeys: Set<symbol>,
-  ): symbol | T {
+  cacheIfEligible<T>(value: T, requestedKeys: Set<symbol>): symbol | T {
     return match(getCacheKeyFromJson(value))
       .with(Option.P.Some(P.select()), (cacheKey) => {
         const existingEntry = this.getOrDefault(cacheKey);
@@ -150,8 +147,8 @@ export class ClientCache {
     fieldNameWithArguments: symbol | string;
     value: unknown;
     path: PropertyKey[];
-    ancestors: any[];
-    variables: Record<string, any>;
+    ancestors: unknown[];
+    variables: Record<string, unknown>;
   }) {
     const ancestorsCopy = ancestors.concat();
     const pathCopy = path.concat();

@@ -10,7 +10,7 @@ export const printBlockString = (string: string) => {
 
 const hasItems = <T>(
   array: ReadonlyArray<T> | undefined | null,
-): array is ReadonlyArray<T> => !!(array && array.length);
+): array is ReadonlyArray<T> => Boolean(array && array.length);
 
 const MAX_LINE_LENGTH = 80;
 
@@ -66,9 +66,9 @@ const nodes: {
     return node.block ? printBlockString(node.value) : printString(node.value);
   },
   BooleanValue(node) {
-    return "" + node.value;
+    return String(node.value);
   },
-  NullValue(_node) {
+  NullValue() {
     return "null";
   },
   IntValue(node) {
@@ -144,5 +144,6 @@ const nodes: {
 };
 
 export const print = (node: ASTNode): string => {
-  return nodes[node.kind] ? (nodes as any)[node.kind]!(node) : "";
+  // @ts-expect-error It's safe
+  return typeof nodes[node.kind] == "function" ? nodes[node.kind](node) : "";
 };

@@ -1,6 +1,8 @@
 export const DEEP_MERGE_DELETE = Symbol.for("DEEP_MERGE_DELETE");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const deepMerge = (target: any, source: any): any => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const next: any = Array.isArray(target)
     ? Array(target.length)
     : Array.isArray(source)
@@ -57,6 +59,9 @@ export const isRecord = (
   return value != null && typeof value === "object";
 };
 
+export const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const deepEqual = (a: any, b: any): boolean => {
   if (Object.is(a, b)) {
     return true;
@@ -79,7 +84,7 @@ export const deepEqual = (a: any, b: any): boolean => {
   }
 
   for (const key of aKeys) {
-    if (!b.hasOwnProperty(key) || !deepEqual(a[key], b[key])) {
+    if (!hasOwnProperty.call(b, key) || !deepEqual(a[key], b[key])) {
       return false;
     }
   }
@@ -87,6 +92,6 @@ export const deepEqual = (a: any, b: any): boolean => {
   return true;
 };
 
-export const serializeVariables = (variables: Record<string, any>) => {
+export const serializeVariables = (variables: Record<string, unknown>) => {
   return JSON.stringify(variables);
 };

@@ -12,12 +12,12 @@ import { ClientCache } from "./cache";
 export const writeOperationToCache = (
   cache: ClientCache,
   document: DocumentNode,
-  response: any,
-  variables: Record<string, any>,
+  response: unknown,
+  variables: Record<string, unknown>,
 ) => {
   const traverse = (
     selections: SelectionSetNode,
-    data: any[],
+    data: unknown[],
     path: PropertyKey[] = [],
   ) => {
     selections.selections.forEach((selection) => {
@@ -30,12 +30,13 @@ export const writeOperationToCache = (
           );
           const fieldArguments = extractArguments(fieldNode, variables);
 
-          const fieldValue = data.at(-1)[originalFieldName];
+          const parent = data.at(-1) as Record<PropertyKey, unknown>;
+          const fieldValue = parent[originalFieldName];
           const selectedKeys = getSelectedKeys(fieldNode, variables);
 
           if (fieldValue != undefined) {
             if (Array.isArray(fieldValue)) {
-              fieldValue.forEach((item: any, index: number) => {
+              fieldValue.forEach((item: unknown, index: number) => {
                 const value = cache.cacheIfEligible(item, selectedKeys);
 
                 const nextValue = Array(fieldValue.length);

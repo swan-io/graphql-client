@@ -53,12 +53,12 @@ export const useQuery = <Data, Variables>(
     if (!deepEqual(stableVariables, variables)) {
       setStableVariables(variables);
     }
-  }, [variables]);
+  }, [stableVariables, variables]);
 
   // Get data from cache
   const getSnapshot = useCallback(() => {
     return client.readFromCache(stableQuery, stableVariables);
-  }, [stableQuery, stableVariables]);
+  }, [client, stableQuery, stableVariables]);
 
   const data = useSyncExternalStore(
     (func) => client.subscribe(func),
@@ -82,7 +82,7 @@ export const useQuery = <Data, Variables>(
     }
     const request = client.query(stableQuery, stableVariables);
     return () => request.cancel();
-  }, [stableQuery, stableVariables]);
+  }, [client, suspense, stableQuery, stableVariables]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refresh = useCallback(() => {
@@ -90,7 +90,7 @@ export const useQuery = <Data, Variables>(
     return client
       .request(stableQuery, stableVariables)
       .tap(() => setIsRefreshing(false));
-  }, [stableQuery, stableVariables]);
+  }, [client, stableQuery, stableVariables]);
 
   const [isReloading, setIsReloading] = useState(false);
   const reload = useCallback(() => {
@@ -98,7 +98,7 @@ export const useQuery = <Data, Variables>(
     return client
       .request(stableQuery, stableVariables)
       .tap(() => setIsReloading(false));
-  }, [stableQuery, stableVariables]);
+  }, [client, stableQuery, stableVariables]);
 
   const isLoading = isRefreshing || isReloading || asyncData.isLoading();
   const asyncDataToExpose = isReloading

@@ -6,7 +6,12 @@ import {
   getFieldNameWithArguments,
   getSelectedKeys,
 } from "../graphql/ast";
-import { deepEqual, isRecord, serializeVariables } from "../utils";
+import {
+  deepEqual,
+  hasOwnProperty,
+  isRecord,
+  serializeVariables,
+} from "../utils";
 import { ClientCache, getCacheKeyFromOperationNode } from "./cache";
 
 const getFromCacheOrReturnValue = (
@@ -24,13 +29,13 @@ const STABILITY_CACHE = new WeakMap<DocumentNode, Map<string, unknown>>();
 export const readOperationFromCache = (
   cache: ClientCache,
   document: DocumentNode,
-  variables: Record<string, any>,
+  variables: Record<string, unknown>,
 ) => {
   const traverse = (
     selections: SelectionSetNode,
     data: Record<PropertyKey, unknown>,
-  ): Option<any> => {
-    return selections.selections.reduce((data, selection) => {
+  ): Option<unknown> => {
+    return selections.selections.reduce<Option<unknown>>((data, selection) => {
       return data.flatMap((data) =>
         match(selection)
           .with({ kind: Kind.FIELD }, (fieldNode) => {
@@ -42,11 +47,17 @@ export const readOperationFromCache = (
             if (data == undefined) {
               return Option.None();
             }
-            const cacheHasKey = data.hasOwnProperty(fieldNameWithArguments);
+
+            const cacheHasKey = hasOwnProperty.call(
+              data,
+              fieldNameWithArguments,
+            );
+
             if (!cacheHasKey) {
               return Option.None();
             }
 
+            // @ts-expect-error `data` is indexable at this point
             const valueOrKeyFromCache = data[fieldNameWithArguments];
 
             if (valueOrKeyFromCache == undefined) {
@@ -106,7 +117,10 @@ export const readOperationFromCache = (
             }
           })
           .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
-            return traverse(inlineFragmentNode.selectionSet, data);
+            return traverse(
+              inlineFragmentNode.selectionSet,
+              data as Record<PropertyKey, unknown>,
+            );
           })
           .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
             return Option.None();

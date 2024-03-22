@@ -28,7 +28,7 @@ export const useMutation = <Data, Variables>(
         .commitMutation(stableMutation, variables)
         .tap((result) => setData(AsyncData.Done(result)));
     },
-    [stableMutation],
+    [client, stableMutation],
   );
 
   return [commitMutation, data];

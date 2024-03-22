@@ -11,9 +11,11 @@ export interface DocumentTypeDecoration<TResult, TVariables> {
 
 export interface TypedDocumentNode<
   TResult = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   },
   TVariables = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   },
 > extends DocumentNode,

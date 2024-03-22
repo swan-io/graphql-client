@@ -31,7 +31,7 @@ type RequestConfig = {
   headers: Record<string, string>;
   operationName: string;
   document: DocumentNode;
-  variables: Record<string, any>;
+  variables: Record<string, unknown>;
 };
 
 export type MakeRequest = (
@@ -71,10 +71,10 @@ const defaultMakeRequest: MakeRequest = ({
   variables,
 }: RequestConfig) => {
   return Request.make({
-    url: url,
+    url,
     method: "POST",
     responseType: "json",
-    headers: headers,
+    headers,
     body: JSON.stringify({
       operationName,
       query: print(document),
@@ -146,7 +146,7 @@ export class Client {
         "Untitled",
       );
 
-    const variablesAsRecord = variables as Record<string, any>;
+    const variablesAsRecord = variables as Record<string, unknown>;
 
     return this.makeRequest({
       url: this.url,
@@ -181,7 +181,7 @@ export class Client {
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
   ) {
-    const variablesAsRecord = variables as Record<string, any>;
+    const variablesAsRecord = variables as Record<string, unknown>;
     const transformedDocument = this.getTransformedDocument(document);
 
     return match(

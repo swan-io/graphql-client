@@ -1,10 +1,12 @@
 import {
+  ASTNode,
   DocumentNode,
   FieldNode,
   FragmentDefinitionNode,
   InlineFragmentNode,
   Kind,
   OperationDefinitionNode,
+  SelectionNode,
   SelectionSetNode,
   ValueNode,
   visit,
@@ -24,7 +26,7 @@ import { P, match } from "ts-pattern";
  */
 export const getSelectedKeys = (
   fieldNode: FieldNode | OperationDefinitionNode,
-  variables: Record<string, any>,
+  variables: Record<string, unknown>,
 ): Set<symbol> => {
   const selectedKeys = new Set<symbol>();
 
@@ -69,7 +71,7 @@ export const getSelectedKeys = (
  */
 export const getFieldNameWithArguments = (
   fieldNode: FieldNode,
-  variables: Record<string, any>,
+  variables: Record<string, unknown>,
 ): symbol => {
   const fieldName = getFieldName(fieldNode);
   const args = extractArguments(fieldNode, variables);
@@ -88,8 +90,8 @@ export const getFieldNameWithArguments = (
  */
 export const extractArguments = (
   fieldNode: FieldNode,
-  variables: Record<string, any>,
-): Record<string, any> => {
+  variables: Record<string, unknown>,
+): Record<string, unknown> => {
   const args = fieldNode.arguments ?? [];
   return Object.fromEntries(
     args.map(({ name: { value: name }, value }) => [
@@ -108,8 +110,8 @@ export const extractArguments = (
  */
 const extractValue = (
   valueNode: ValueNode,
-  variables: Record<string, any>,
-): any => {
+  variables: Record<string, unknown>,
+): unknown => {
   return match(valueNode)
     .with({ kind: Kind.NULL }, () => null)
     .with(
@@ -165,7 +167,7 @@ export const inlineFragments = (documentNode: DocumentNode): DocumentNode => {
     },
   });
 
-  const inline = (node: any): any => {
+  const inline = (node: ASTNode): unknown => {
     if (node.kind === Kind.FRAGMENT_SPREAD) {
       const fragmentName = node.name.value;
       const fragmentNode = fragmentMap[fragmentName];
@@ -183,11 +185,13 @@ export const inlineFragments = (documentNode: DocumentNode): DocumentNode => {
     if (node.kind === Kind.SELECTION_SET) {
       return {
         ...node,
-        selections: node.selections.map((selection: any) => inline(selection)),
+        selections: node.selections.map((selection: SelectionNode) =>
+          inline(selection),
+        ),
       };
     }
 
-    if (node.selectionSet) {
+    if ("selectionSet" in node && node.selectionSet != null) {
       return {
         ...node,
         selectionSet: inline(node.selectionSet),
