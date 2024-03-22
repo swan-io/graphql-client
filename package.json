@@ -1,5 +1,6 @@
 {
   "name": "@swan-io/gql-client",
+  "description": "A simple, typesafe GraphQL client for React",
   "version": "0.1.0",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
