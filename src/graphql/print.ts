@@ -9,7 +9,7 @@ export const printBlockString = (string: string) => {
 };
 
 const hasItems = <T>(
-  array: ReadonlyArray<T> | undefined | null
+  array: ReadonlyArray<T> | undefined | null,
 ): array is ReadonlyArray<T> => !!(array && array.length);
 
 const MAX_LINE_LENGTH = 80;
