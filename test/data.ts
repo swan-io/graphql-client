@@ -22,6 +22,19 @@ const UserInfo = graphql(
   [IdentificationLevels],
 );
 
+const CompleteUserInfo = graphql(
+  `
+    fragment CompleteUserInfo on User {
+      id
+      firstName
+      lastName
+      birthDate
+      mobilePhoneNumber
+    }
+  `,
+  [IdentificationLevels],
+);
+
 export const appQuery = graphql(
   `
     query App($id: ID!) {
@@ -58,6 +71,44 @@ export const appQuery = graphql(
     }
   `,
   [UserInfo],
+);
+
+export const otherAppQuery = graphql(
+  `
+    query App($id: ID!) {
+      accountMembership(id: $id) {
+        id
+        user {
+          id
+          ...CompleteUserInfo
+        }
+      }
+      accountMemberships(first: 2) {
+        edges {
+          node {
+            id
+            account {
+              name
+            }
+            membershipUser: user {
+              id
+              lastName
+            }
+          }
+        }
+      }
+      supportingDocumentCollection(id: "e8d38e87-9862-47ef-b749-212ed566b955") {
+        __typename
+        supportingDocuments {
+          __typename
+          id
+          createdAt
+        }
+        id
+      }
+    }
+  `,
+  [CompleteUserInfo],
 );
 
 export const getAppQueryResponse = ({

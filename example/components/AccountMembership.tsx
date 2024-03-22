@@ -12,7 +12,6 @@ export const accountMembershipFragment = graphql(`
     }
     statusInfo {
       __typename
-      status
       ... on AccountMembershipBindingUserErrorStatusInfo {
         restrictedTo {
           firstName

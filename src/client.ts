@@ -148,6 +148,13 @@ export class Client {
 
     const variablesAsRecord = variables as Record<string, unknown>;
 
+    // TODO:
+    // optimizeQuery(
+    //   this.cache,
+    //   transformedDocument,
+    //   variablesAsRecord,
+    // )
+
     return this.makeRequest({
       url: this.url,
       headers: this.headers,

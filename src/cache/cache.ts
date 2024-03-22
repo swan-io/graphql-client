@@ -96,6 +96,12 @@ export class ClientCache {
     });
   }
 
+  getFromCacheWithoutKey(cacheKey: symbol) {
+    return this.get(cacheKey).flatMap((entry) => {
+      return Option.Some(entry.value);
+    });
+  }
+
   get(cacheKey: symbol): Option<CacheEntry> {
     if (this.cache.has(cacheKey)) {
       return Option.Some(this.cache.get(cacheKey) as CacheEntry);

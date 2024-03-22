@@ -1,15 +1,17 @@
 import { Option, Result } from "@swan-io/boxed";
 import { expect, test } from "vitest";
 import { ClientCache } from "../src/cache/cache";
-import { readOperationFromCache } from "../src/cache/read";
+import { optimizeQuery, readOperationFromCache } from "../src/cache/read";
 import { writeOperationToCache } from "../src/cache/write";
 import { addTypenames, inlineFragments } from "../src/graphql/ast";
+import { print } from "../src/graphql/print";
 import {
   appQuery,
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
   getAppQueryResponse,
+  otherAppQuery,
 } from "./data";
 
 test("Write & read in cache", () => {
@@ -49,6 +51,8 @@ test("Write & read in cache", () => {
   const preparedBindAccountMembershipMutation = inlineFragments(
     addTypenames(bindAccountMembershipMutation),
   );
+
+  const preparedOtherAppQuery = inlineFragments(addTypenames(otherAppQuery));
 
   writeOperationToCache(
     cache,
@@ -152,4 +156,10 @@ test("Write & read in cache", () => {
   } else {
     expect(true).toBe(false);
   }
+
+  console.log(
+    optimizeQuery(cache, preparedOtherAppQuery, { id: "1" })
+      .map(print)
+      .getWithDefault("no delta"),
+  );
 });
