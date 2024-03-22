@@ -17,7 +17,7 @@ export type QueryConfig = {
   suspense?: boolean;
 };
 
-export type Query<Data, Variables> = readonly [
+export type Query<Data> = readonly [
   AsyncData<Result<Data, ClientError>>,
   {
     isLoading: boolean;
@@ -40,7 +40,7 @@ export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
   { suspense = false }: QueryConfig = {},
-): Query<Data, Variables> => {
+): Query<Data> => {
   const client = useContext(ClientContext);
 
   // Query should never change
