@@ -164,7 +164,7 @@ export class Client {
         variablesAsRecord,
       );
       if (operationResult.isSome()) {
-        return Future.value(operationResult.get());
+        return Future.value(operationResult.get() as Result<Data, ClientError>);
       }
     }
 

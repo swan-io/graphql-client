@@ -83,7 +83,7 @@ export const useQuery = <Data, Variables>(
     }
     const request = client.query(stableQuery, stableVariables, { optimize });
     return () => request.cancel();
-  }, [client, suspense, stableQuery, stableVariables]);
+  }, [client, suspense, optimize, stableQuery, stableVariables]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refresh = useCallback(() => {
