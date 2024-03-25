@@ -7,6 +7,7 @@ import { addTypenames, inlineFragments } from "../src/graphql/ast";
 import { print } from "../src/graphql/print";
 import {
   appQuery,
+  appQueryWithExtraArrayInfo,
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
@@ -53,6 +54,9 @@ test("Write & read in cache", () => {
   );
 
   const preparedOtherAppQuery = inlineFragments(addTypenames(otherAppQuery));
+  const preparedAppQueryWithExtraArrayInfo = inlineFragments(
+    addTypenames(appQueryWithExtraArrayInfo),
+  );
 
   writeOperationToCache(
     cache,
@@ -157,9 +161,15 @@ test("Write & read in cache", () => {
     expect(true).toBe(false);
   }
 
-  console.log(
+  expect(
     optimizeQuery(cache, preparedOtherAppQuery, { id: "1" })
       .map(print)
       .getWithDefault("no delta"),
-  );
+  ).toMatchSnapshot();
+
+  expect(
+    optimizeQuery(cache, preparedAppQueryWithExtraArrayInfo, { id: "1" })
+      .map(print)
+      .getWithDefault("no delta"),
+  ).toMatchSnapshot();
 });

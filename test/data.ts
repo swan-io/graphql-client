@@ -111,6 +111,47 @@ export const otherAppQuery = graphql(
   [CompleteUserInfo],
 );
 
+export const appQueryWithExtraArrayInfo = graphql(
+  `
+    query App($id: ID!) {
+      accountMembership(id: $id) {
+        id
+        user {
+          id
+          ...CompleteUserInfo
+        }
+      }
+      accountMemberships(first: 2) {
+        edges {
+          node {
+            id
+            createdAt
+            account {
+              name
+              bankDetails
+            }
+            membershipUser: user {
+              id
+              lastName
+              firstName
+            }
+          }
+        }
+      }
+      supportingDocumentCollection(id: "e8d38e87-9862-47ef-b749-212ed566b955") {
+        __typename
+        supportingDocuments {
+          __typename
+          id
+          createdAt
+        }
+        id
+      }
+    }
+  `,
+  [CompleteUserInfo],
+);
+
 export const getAppQueryResponse = ({
   user2LastName,
   user1IdentificationLevels,
