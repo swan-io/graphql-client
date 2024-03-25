@@ -11,6 +11,7 @@ sidebar_label: useQuery
 - `variables`: your query variables
 - `config` (optional)
   - `suspense`: use React Suspense (default: `false`)
+  - `optimize`: adapt query to only require data that's missing from the cache (default: `false`)
 
 ### Returns
 
