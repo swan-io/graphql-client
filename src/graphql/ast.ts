@@ -251,3 +251,42 @@ export const getExecutableOperationName = (document: DocumentNode) => {
     }
   });
 };
+
+const getIdFieldNode = (selection: SelectionNode): Option<SelectionNode> => {
+  return match(selection)
+    .with({ kind: Kind.FIELD }, (fieldNode) =>
+      fieldNode.name.value === "id" ? Option.Some(fieldNode) : Option.None(),
+    )
+    .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
+      return Array.findMap(
+        inlineFragmentNode.selectionSet.selections,
+        getIdFieldNode,
+      );
+    })
+    .otherwise(() => Option.None());
+};
+
+export const addIdIfPreviousSelected = (
+  oldSelectionSet: SelectionSetNode,
+  newSelectionSet: SelectionSetNode,
+): SelectionSetNode => {
+  const idSelection = Array.findMap(oldSelectionSet.selections, getIdFieldNode);
+  const idSelectionInNew = Array.findMap(
+    newSelectionSet.selections,
+    getIdFieldNode,
+  );
+
+  if (idSelectionInNew.isSome()) {
+    return newSelectionSet;
+  }
+
+  return idSelection
+    .map((selection) => ({
+      ...newSelectionSet,
+      selections: [
+        selection,
+        ...newSelectionSet.selections,
+      ] as readonly SelectionNode[],
+    }))
+    .getWithDefault(newSelectionSet);
+};

@@ -7,5 +7,7 @@ export const graphql = initGraphQLTada<{
     ID: string;
     Currency: string;
     AmountValue: string;
+    Date: string;
+    PhoneNumber: string;
   };
 }>();

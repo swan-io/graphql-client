@@ -15,6 +15,7 @@ import { ClientContext } from "./ClientContext";
 
 export type QueryConfig = {
   suspense?: boolean;
+  optimize?: boolean;
 };
 
 export type Query<Data> = readonly [
@@ -39,7 +40,7 @@ const usePreviousValue = <T>(value: T): T => {
 export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
-  { suspense = false }: QueryConfig = {},
+  { suspense = false, optimize = false }: QueryConfig = {},
 ): Query<Data> => {
   const client = useContext(ClientContext);
 
@@ -80,9 +81,9 @@ export const useQuery = <Data, Variables>(
       isSuspenseFirstFetch.current = false;
       return;
     }
-    const request = client.query(stableQuery, stableVariables);
+    const request = client.query(stableQuery, stableVariables, { optimize });
     return () => request.cancel();
-  }, [client, suspense, stableQuery, stableVariables]);
+  }, [client, suspense, optimize, stableQuery, stableVariables]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refresh = useCallback(() => {
@@ -108,7 +109,7 @@ export const useQuery = <Data, Variables>(
       : asyncData;
 
   if (suspense && asyncDataToExpose.isLoading()) {
-    throw client.query(stableQuery, stableVariables).toPromise();
+    throw client.query(stableQuery, stableVariables, { optimize }).toPromise();
   }
 
   return [asyncDataToExpose, { isLoading, refresh, reload }];

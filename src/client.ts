@@ -11,7 +11,7 @@ import {
 } from "@swan-io/request";
 import { P, match } from "ts-pattern";
 import { ClientCache } from "./cache/cache";
-import { readOperationFromCache } from "./cache/read";
+import { optimizeQuery, readOperationFromCache } from "./cache/read";
 import { writeOperationToCache } from "./cache/write";
 import {
   ClientError,
@@ -85,6 +85,8 @@ const defaultMakeRequest: MakeRequest = ({
     .mapOkToResult(emptyToError);
 };
 
+type RequestOptions = { optimize?: boolean };
+
 export class Client {
   url: string;
   headers: Record<string, string>;
@@ -136,7 +138,8 @@ export class Client {
   request<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
-  ) {
+    { optimize = false }: RequestOptions = {},
+  ): Future<Result<Data, ClientError>> {
     const transformedDocument = this.getTransformedDocument(document);
     const transformedDocumentsForRequest =
       this.getTransformedDocumentsForRequest(document);
@@ -148,11 +151,30 @@ export class Client {
 
     const variablesAsRecord = variables as Record<string, unknown>;
 
+    const possiblyOptimizedQuery = optimize
+      ? optimizeQuery(this.cache, transformedDocument, variablesAsRecord).map(
+          addTypenames,
+        )
+      : Option.Some(transformedDocumentsForRequest);
+
+    if (possiblyOptimizedQuery.isNone()) {
+      const operationResult = readOperationFromCache(
+        this.cache,
+        transformedDocument,
+        variablesAsRecord,
+      );
+      if (operationResult.isSome()) {
+        return Future.value(operationResult.get() as Result<Data, ClientError>);
+      }
+    }
+
     return this.makeRequest({
       url: this.url,
       headers: this.headers,
       operationName,
-      document: transformedDocumentsForRequest,
+      document: possiblyOptimizedQuery.getWithDefault(
+        transformedDocumentsForRequest,
+      ),
       variables: variablesAsRecord,
     })
       .mapOkToResult(this.parseResponse)
@@ -200,14 +222,16 @@ export class Client {
   query<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
+    requestOptions?: RequestOptions,
   ) {
-    return this.request(document, variables);
+    return this.request(document, variables, requestOptions);
   }
 
   commitMutation<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
+    requestOptions?: RequestOptions,
   ) {
-    return this.request(document, variables);
+    return this.request(document, variables, requestOptions);
   }
 }

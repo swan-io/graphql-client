@@ -426,3 +426,7 @@ Map {
   },
 }
 `;
+
+exports[`Write & read in cache 4`] = `"query App($id: ID!) {accountMembership(id: $id) {id user {id ... on User {birthDate mobilePhoneNumber}}}}"`;
+
+exports[`Write & read in cache 5`] = `"query App($id: ID!) {accountMembership(id: $id) {id user {id ... on User {birthDate mobilePhoneNumber}}} accountMemberships(first: 2) {edges {node {id createdAt account {bankDetails}}}}}"`;
