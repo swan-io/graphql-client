@@ -58,5 +58,5 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn",
   },
 
-  ignorePatterns: [".eslintrc.js"],
+  ignorePatterns: [".eslintrc.js", "codegen.ts"],
 };

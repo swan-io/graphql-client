@@ -1,4 +1,9 @@
-import { DocumentNode, Kind, SelectionSetNode } from "@0no-co/graphql.web";
+import {
+  DocumentNode,
+  Kind,
+  OperationTypeNode,
+  SelectionSetNode,
+} from "@0no-co/graphql.web";
 import { match } from "ts-pattern";
 import {
   extractArguments,
@@ -19,6 +24,7 @@ export const writeOperationToCache = (
     selections: SelectionSetNode,
     data: unknown[],
     path: PropertyKey[] = [],
+    rootTypename: string,
   ) => {
     selections.selections.forEach((selection) => {
       match(selection)
@@ -49,6 +55,7 @@ export const writeOperationToCache = (
                   path,
                   ancestors: data,
                   variables: fieldArguments,
+                  rootTypename,
                 });
 
                 if (isRecord(item) && !Array.isArray(item)) {
@@ -56,6 +63,7 @@ export const writeOperationToCache = (
                     fieldNode.selectionSet!,
                     [...data, fieldValue, item],
                     [...path, fieldNameWithArguments, index.toString()],
+                    rootTypename,
                   );
                 }
               });
@@ -69,6 +77,7 @@ export const writeOperationToCache = (
                 path,
                 ancestors: data,
                 variables: fieldArguments,
+                rootTypename,
               });
 
               if (isRecord(fieldValue) && fieldNode.selectionSet != undefined) {
@@ -76,6 +85,7 @@ export const writeOperationToCache = (
                   fieldNode.selectionSet,
                   [...data, fieldValue],
                   [...path, fieldNameWithArguments],
+                  rootTypename,
                 );
               }
             }
@@ -87,11 +97,12 @@ export const writeOperationToCache = (
               path,
               ancestors: data,
               variables: fieldArguments,
+              rootTypename,
             });
           }
         })
         .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
-          traverse(inlineFragmentNode.selectionSet, data, path);
+          traverse(inlineFragmentNode.selectionSet, data, path, rootTypename);
         })
         .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
           // ignore, those are stripped
@@ -102,8 +113,23 @@ export const writeOperationToCache = (
 
   document.definitions.forEach((definition) => {
     if (definition.kind === Kind.OPERATION_DEFINITION) {
-      cache.cacheIfEligible(response, getSelectedKeys(definition, variables));
-      traverse(definition.selectionSet, [response]);
+      // Root __typename can vary, but we can't guess it from the document alone
+      const rootTypename = match(definition.operation)
+        .with(OperationTypeNode.QUERY, () => "Query")
+        .with(OperationTypeNode.SUBSCRIPTION, () => "Subscription")
+        .with(OperationTypeNode.MUTATION, () => "Mutation")
+        .exhaustive();
+
+      cache.cacheIfEligible(
+        isRecord(response)
+          ? {
+              ...response,
+              __typename: rootTypename,
+            }
+          : response,
+        getSelectedKeys(definition, variables),
+      );
+      traverse(definition.selectionSet, [response], [], rootTypename);
     }
   });
 

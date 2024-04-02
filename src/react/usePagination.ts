@@ -4,18 +4,21 @@ import { isRecord } from "../utils";
 
 type Edge<T> = {
   cursor?: string | null;
-  node: T;
+  node?: T | null | undefined;
 };
 
-type Connection<T> = {
-  edges: Edge<T>[];
-  pageInfo: {
-    hasPreviousPage?: boolean | null;
-    hasNextPage?: boolean | null;
-    endCursor?: string | null;
-    startCursor?: string | null;
-  };
-};
+type Connection<T> =
+  | {
+      edges?: (Edge<T> | null | undefined)[] | null | undefined;
+      pageInfo: {
+        hasPreviousPage?: boolean | null | undefined;
+        hasNextPage?: boolean | null | undefined;
+        endCursor?: string | null | undefined;
+        startCursor?: string | null | undefined;
+      };
+    }
+  | null
+  | undefined;
 
 type mode = "before" | "after";
 
@@ -24,6 +27,12 @@ const mergeConnection = <A, T extends Connection<A>>(
   next: T,
   mode: mode,
 ): T => {
+  if (next == null) {
+    return next;
+  }
+  if (previous == null) {
+    return next;
+  }
   if ("__connectionArguments" in next && isRecord(next.__connectionArguments)) {
     if (next.__connectionArguments[mode] == null) {
       return next;
@@ -45,8 +54,8 @@ const mergeConnection = <A, T extends Connection<A>>(
   return {
     ...next,
     edges: match(mode)
-      .with("before", () => [...next.edges, ...previous.edges])
-      .with("after", () => [...previous.edges, ...next.edges])
+      .with("before", () => [...(next.edges ?? []), ...(previous.edges ?? [])])
+      .with("after", () => [...(previous.edges ?? []), ...(next.edges ?? [])])
       .exhaustive(),
     pageInfo: match(mode)
       .with("before", () => ({

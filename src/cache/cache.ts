@@ -148,6 +148,7 @@ export class ClientCache {
     path,
     ancestors,
     variables,
+    rootTypename,
   }: {
     originalFieldName: string;
     fieldNameWithArguments: symbol | string;
@@ -155,6 +156,7 @@ export class ClientCache {
     path: PropertyKey[];
     ancestors: unknown[];
     variables: Record<string, unknown>;
+    rootTypename: string;
   }) {
     const ancestorsCopy = ancestors.concat();
     const pathCopy = path.concat();
@@ -163,7 +165,11 @@ export class ClientCache {
     let ancestor;
 
     while ((ancestor = ancestorsCopy.pop())) {
-      const maybeCacheKey = getCacheKeyFromJson(ancestor);
+      const maybeCacheKey = getCacheKeyFromJson(
+        ancestorsCopy.length === 0
+          ? { ...ancestor, __typename: rootTypename }
+          : ancestor,
+      );
       if (maybeCacheKey.isSome()) {
         const cacheKey = maybeCacheKey.get();
         const existingEntry = this.getOrDefault(cacheKey);

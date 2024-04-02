@@ -24,14 +24,6 @@
     "noImplicitReturns": false,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "plugins": [
-      {
-        "name": "@0no-co/graphqlsp",
-        "schema": "./example/schema.graphql",
-        "tadaOutputLocation": "./example/graphql-env.d.ts"
-      }
-    ]
+    "noUnusedParameters": true
   }
 }

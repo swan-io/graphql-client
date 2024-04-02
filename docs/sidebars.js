@@ -24,6 +24,10 @@ const sidebars = {
     },
     {
       type: "doc",
+      id: "use-deferred-query",
+    },
+    {
+      type: "doc",
       id: "use-mutation",
     },
     {

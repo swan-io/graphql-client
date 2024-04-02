@@ -37,7 +37,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
-    "prepack": "yarn typecheck && yarn test && yarn build"
+    "prepack": "yarn typecheck && yarn test && yarn build",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "prettier": {
     "plugins": [
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.6.0",
+    "@graphql-codegen/cli": "^5.0.2",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",

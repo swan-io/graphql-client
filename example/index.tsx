@@ -3,13 +3,10 @@ import { createRoot } from "react-dom/client";
 import { Client, ClientContext } from "../src";
 import { App } from "./components/App";
 
-const yourAuthBearer = "your-auth-bearer";
-
 const client = new Client({
-  url: "/api",
+  url: "https://swapi-graphql.netlify.app/.netlify/functions/index",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${yourAuthBearer}`,
   },
 });
 
