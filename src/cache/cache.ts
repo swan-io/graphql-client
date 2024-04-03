@@ -129,7 +129,7 @@ export class ClientCache {
     return match(getCacheKeyFromJson(value))
       .with(Option.P.Some(P.select()), (cacheKey) => {
         const existingEntry = this.getOrDefault(cacheKey);
-        this.cache.set(
+        this.set(
           cacheKey,
           mergeCacheEntries(existingEntry, {
             requestedKeys,

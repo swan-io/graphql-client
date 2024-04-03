@@ -90,15 +90,17 @@ export const writeOperationToCache = (
               }
             }
           } else {
-            cache.updateFieldInClosestCachedAncestor({
-              originalFieldName,
-              fieldNameWithArguments,
-              value: fieldValue,
-              path,
-              ancestors: data,
-              variables: fieldArguments,
-              rootTypename,
-            });
+            if (originalFieldName in parent) {
+              cache.updateFieldInClosestCachedAncestor({
+                originalFieldName,
+                fieldNameWithArguments,
+                value: fieldValue,
+                path,
+                ancestors: data,
+                variables: fieldArguments,
+                rootTypename,
+              });
+            }
           }
         })
         .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
