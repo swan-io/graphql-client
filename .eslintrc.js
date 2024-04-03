@@ -58,5 +58,5 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn",
   },
 
-  ignorePatterns: [".eslintrc.js", "codegen.ts"],
+  ignorePatterns: [".eslintrc.js", "codegen.ts", "vite.config.mjs"],
 };
