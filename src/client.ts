@@ -60,7 +60,7 @@ const defaultParseResponse = (payload: Response<unknown>) =>
         .with({ errors: P.select(P.array()) }, (errors) =>
           Result.Error(errors.map(parseGraphQLError)),
         )
-        .with({ data: P.select(P.not(P.nullish)) }, (data) => Result.Ok(data))
+        .with({ data: P.select(P.nonNullable) }, (data) => Result.Ok(data))
         .otherwise((response) =>
           Result.Error(new InvalidGraphQLResponseError(response)),
         ),
