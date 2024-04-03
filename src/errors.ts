@@ -61,7 +61,16 @@ export const parseGraphQLError = (error: unknown): GraphQLError => {
 };
 
 export const ClientError = {
-  toArray: (clientError: ClientError) => {
+  toArray: (
+    clientError: ClientError,
+  ): (
+    | GraphQLError
+    | NetworkError
+    | TimeoutError
+    | BadStatusError
+    | EmptyResponseError
+    | InvalidGraphQLResponseError
+  )[] => {
     return Array.isArray(clientError) ? clientError : [clientError];
   },
   forEach: (
