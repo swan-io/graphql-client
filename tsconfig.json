@@ -2,7 +2,7 @@
   "include": ["example", "src", "test"],
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ES2018",
+    "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "jsx": "react-jsx",
     "moduleResolution": "Node",
