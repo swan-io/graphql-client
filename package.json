@@ -1,5 +1,5 @@
 {
-  "name": "@swan-io/gql-client",
+  "name": "@swan-io/graphql-client",
   "version": "0.1.0-alpha",
   "license": "MIT",
   "description": "A simple, typesafe GraphQL client for React",
