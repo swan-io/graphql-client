@@ -430,3 +430,163 @@ Map {
 exports[`Write & read in cache 4`] = `"query App($id: ID!) {accountMembership(id: $id) {id user {id ... on User {birthDate mobilePhoneNumber}}}}"`;
 
 exports[`Write & read in cache 5`] = `"query App($id: ID!) {accountMembership(id: $id) {id user {id ... on User {birthDate mobilePhoneNumber}}} accountMemberships(first: 2) {edges {node {id createdAt account {bankDetails}}}}}"`;
+
+exports[`Write & read in cache 6`] = `
+Map {
+  Symbol(Query) => {
+    "requestedKeys": Set {
+      Symbol(__typename),
+      Symbol(onboardingInfo({"id":"d26ed1ed-5f70-4096-9d8e-27ef258e26fa"})),
+    },
+    "value": {
+      Symbol(__typename): "Query",
+      Symbol(onboardingInfo({"id":"d26ed1ed-5f70-4096-9d8e-27ef258e26fa"})): Symbol(OnboardingInfo<d26ed1ed-5f70-4096-9d8e-27ef258e26fa>),
+    },
+  },
+  Symbol(OnboardingInfo<d26ed1ed-5f70-4096-9d8e-27ef258e26fa>) => {
+    "requestedKeys": Set {
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(accountCountry),
+      Symbol(email),
+      Symbol(language),
+      Symbol(redirectUrl),
+      Symbol(tcuUrl),
+      Symbol(legalRepresentativeRecommendedIdentificationLevel),
+      Symbol(oAuthRedirectParameters),
+      Symbol(onboardingState),
+      Symbol(projectInfo),
+      Symbol(supportingDocumentCollection),
+      Symbol(info),
+      Symbol(statusInfo),
+    },
+    "value": {
+      Symbol(__typename): "OnboardingInfo",
+      Symbol(id): "d26ed1ed-5f70-4096-9d8e-27ef258e26fa",
+      Symbol(accountCountry): "FRA",
+      Symbol(email): null,
+      Symbol(language): null,
+      Symbol(redirectUrl): "",
+      Symbol(tcuUrl): "https://document-factory.sandbox.master.oina.ws/swanTCU/7649fada-a1c8-4537-bd3c-d539664a841c.pdf?Expires=1712229767&Key-Pair-Id=KTRMJ5W6BT4MH&Signature=eRpFq3ChqRx7KUVM5bhzPoX7uIxaCyJycw~wTAPDKslc-oq4OwKCrB1mm8efx~wdwuauT0b80EoPidCsoMEdYKvT7LE-H12HKizLYaHXxVNevmWZMR2zqN1v9bi77oIhVEQZmV9uGCluDypvWQn9eu3ICOMJr8k0dn7f4K0jQyAMju1AqBg3~jeeAbOD1Y0hA0T2zeJ~OLDahJB54kFDt~UbdwEylgjh1V-tg5GvXs1w268aax98DpHrORttnaSTLvB7PlMIJJbgQIy712OO2~zg6dggMSlWHk0J3243xsd65eWhLPeLVt8jlnYBMvc0Iscd4k12iVWKWRozckglNQ__",
+      Symbol(legalRepresentativeRecommendedIdentificationLevel): "PVID",
+      Symbol(oAuthRedirectParameters): null,
+      Symbol(onboardingState): "Ongoing",
+      Symbol(projectInfo): Symbol(ProjectInfo<64060573-f0ec-4204-ad49-a3983497ada4>),
+      Symbol(supportingDocumentCollection): Symbol(SupportingDocumentCollection<55561d8f-6a90-41f2-be48-e14c82e3cc34>),
+      Symbol(info): {
+        Symbol(__typename): "OnboardingIndividualAccountHolderInfo",
+        Symbol(residencyAddress): {
+          Symbol(__typename): "AddressInfo",
+          Symbol(addressLine1): null,
+          Symbol(addressLine2): null,
+          Symbol(city): null,
+          Symbol(country): null,
+          Symbol(postalCode): null,
+          Symbol(state): null,
+        },
+        Symbol(taxIdentificationNumber): null,
+        Symbol(employmentStatus): null,
+        Symbol(monthlyIncome): null,
+      },
+      Symbol(statusInfo): {
+        Symbol(__typename): "OnboardingInvalidStatusInfo",
+        Symbol(errors): [
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "email",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "employmentStatus",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "monthlyIncome",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "language",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "residencyAddress.addressLine1",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "residencyAddress.city",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "residencyAddress.country",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+          {
+            Symbol(__typename): "ValidationError",
+            Symbol(field): "residencyAddress.postalCode",
+            Symbol(errors): [
+              "Missing",
+            ],
+          },
+        ],
+      },
+    },
+  },
+  Symbol(ProjectInfo<64060573-f0ec-4204-ad49-a3983497ada4>) => {
+    "requestedKeys": Set {
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(accentColor),
+      Symbol(name),
+      Symbol(logoUri),
+      Symbol(tcuDocumentUri({"language":"en"})),
+    },
+    "value": {
+      Symbol(__typename): "ProjectInfo",
+      Symbol(id): "64060573-f0ec-4204-ad49-a3983497ada4",
+      Symbol(accentColor): "#38945D",
+      Symbol(name): "bloodyowl",
+      Symbol(logoUri): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/logo-5733f69e-8223-4b7e-92c7-0fed9eaaca33.png",
+      Symbol(tcuDocumentUri({"language":"en"})): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/tcu/bb87c4f2-de5f-4df7-b617-91f2c0eb03f4/en.pdf",
+    },
+  },
+  Symbol(SupportingDocumentCollection<55561d8f-6a90-41f2-be48-e14c82e3cc34>) => {
+    "requestedKeys": Set {
+      Symbol(__typename),
+      Symbol(id),
+      Symbol(requiredSupportingDocumentPurposes),
+      Symbol(statusInfo),
+      Symbol(supportingDocuments),
+    },
+    "value": {
+      Symbol(__typename): "SupportingDocumentCollection",
+      Symbol(id): "55561d8f-6a90-41f2-be48-e14c82e3cc34",
+      Symbol(requiredSupportingDocumentPurposes): [],
+      Symbol(statusInfo): {
+        Symbol(__typename): "SupportingDocumentCollectionWaitingForDocumentStatusInfo",
+        Symbol(status): "WaitingForDocument",
+      },
+      Symbol(supportingDocuments): [],
+    },
+  },
+}
+`;

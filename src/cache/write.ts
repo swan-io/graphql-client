@@ -42,6 +42,16 @@ export const writeOperationToCache = (
 
           if (fieldValue != undefined) {
             if (Array.isArray(fieldValue)) {
+              cache.updateFieldInClosestCachedAncestor({
+                originalFieldName,
+                fieldNameWithArguments,
+                value: fieldValue,
+                path,
+                ancestors: data,
+                variables: fieldArguments,
+                rootTypename,
+              });
+
               fieldValue.forEach((item: unknown, index: number) => {
                 const value = cache.cacheIfEligible(item, selectedKeys);
 

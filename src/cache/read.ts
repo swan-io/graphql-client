@@ -7,7 +7,7 @@ import {
   SelectionSetNode,
 } from "@0no-co/graphql.web";
 import { Array, Option, Result } from "@swan-io/boxed";
-import { match } from "ts-pattern";
+import { P, match } from "ts-pattern";
 import {
   addIdIfPreviousSelected,
   getFieldName,
@@ -134,6 +134,49 @@ export const readOperationFromCache = (
             }
           })
           .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
+            const typeCondition = inlineFragmentNode.typeCondition?.name.value;
+            const dataTypename = match(data)
+              .with({ __typename: P.select(P.string) }, (name) => name)
+              .with(
+                { __typename: P.array({ __typename: P.select(P.string) }) },
+                (name) => name,
+              )
+              .otherwise(() => undefined);
+
+            if (typeCondition != null && dataTypename != null) {
+              if (dataTypename === typeCondition) {
+                return traverse(
+                  inlineFragmentNode.selectionSet,
+                  data as Record<PropertyKey, unknown>,
+                );
+              } else {
+                if (
+                  inlineFragmentNode.selectionSet.selections.some(
+                    (selection) => selection.kind === Kind.INLINE_FRAGMENT,
+                  )
+                ) {
+                  return traverse(
+                    {
+                      ...inlineFragmentNode.selectionSet,
+                      selections:
+                        inlineFragmentNode.selectionSet.selections.filter(
+                          (selection) => {
+                            if (selection.kind === Kind.INLINE_FRAGMENT) {
+                              const typeCondition =
+                                selection.typeCondition?.name.value;
+                              return typeCondition === dataTypename;
+                            }
+                            return true;
+                          },
+                        ),
+                    },
+                    data as Record<PropertyKey, unknown>,
+                  );
+                } else {
+                  return Option.Some(data);
+                }
+              }
+            }
             return traverse(
               inlineFragmentNode.selectionSet,
               data as Record<PropertyKey, unknown>,

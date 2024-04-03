@@ -6,12 +6,14 @@ import { writeOperationToCache } from "../src/cache/write";
 import { addTypenames, inlineFragments } from "../src/graphql/ast";
 import { print } from "../src/graphql/print";
 import {
+  OnboardingInfo,
   appQuery,
   appQueryWithExtraArrayInfo,
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
   getAppQueryResponse,
+  onboardingInfoResponse,
   otherAppQuery,
 } from "./data";
 
@@ -48,6 +50,8 @@ test("Write & read in cache", () => {
       ),
     ),
   );
+
+  const preparedOnboardingInfo = inlineFragments(addTypenames(OnboardingInfo));
 
   const preparedBindAccountMembershipMutation = inlineFragments(
     addTypenames(bindAccountMembershipMutation),
@@ -174,4 +178,25 @@ test("Write & read in cache", () => {
       .map(print)
       .getWithDefault("no delta"),
   ).toMatchSnapshot();
+
+  const cache2 = new ClientCache();
+
+  writeOperationToCache(
+    cache2,
+    preparedOnboardingInfo,
+    onboardingInfoResponse,
+    {
+      id: "d26ed1ed-5f70-4096-9d8e-27ef258e26fa",
+      language: "en",
+    },
+  );
+
+  expect(cache2.dump()).toMatchSnapshot();
+
+  expect(
+    readOperationFromCache(cache2, preparedOnboardingInfo, {
+      id: "d26ed1ed-5f70-4096-9d8e-27ef258e26fa",
+      language: "en",
+    }),
+  ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
 });
