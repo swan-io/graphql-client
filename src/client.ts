@@ -1,10 +1,9 @@
 import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
 import { Future, Option, Result } from "@swan-io/boxed";
 import {
-  BadStatusError,
-  EmptyResponseError,
   NetworkError,
   Request,
+  Response,
   TimeoutError,
   badStatusToError,
   emptyToError,
@@ -26,7 +25,7 @@ import {
 import { print } from "./graphql/print";
 import { TypedDocumentNode } from "./types";
 
-type RequestConfig = {
+export type RequestConfig = {
   url: string;
   headers: Record<string, string>;
   operationName: string;
@@ -36,14 +35,11 @@ type RequestConfig = {
 
 export type MakeRequest = (
   config: RequestConfig,
-) => Future<
-  Result<
-    unknown,
-    NetworkError | TimeoutError | BadStatusError | EmptyResponseError
-  >
->;
+) => Future<Result<Response<unknown>, NetworkError | TimeoutError>>;
 
-export type ParseResponse = (payload: unknown) => Result<unknown, ClientError>;
+export type ParseResponse = (
+  payload: Response<unknown>,
+) => Result<unknown, ClientError>;
 
 export type ClientConfig = {
   url: string;
@@ -52,15 +48,22 @@ export type ClientConfig = {
   parseResponse?: ParseResponse;
 };
 
-const defaultParseResponse = (payload: unknown) =>
-  match(payload)
-    .returnType<Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>>()
-    .with({ errors: P.select(P.array()) }, (errors) =>
-      Result.Error(errors.map(parseGraphQLError)),
-    )
-    .with({ data: P.select(P.not(P.nullish)) }, (data) => Result.Ok(data))
-    .otherwise((response) =>
-      Result.Error(new InvalidGraphQLResponseError(response)),
+const defaultParseResponse = (payload: Response<unknown>) =>
+  Result.Ok(payload)
+    .flatMap(badStatusToError)
+    .flatMap(emptyToError)
+    .flatMap((payload) =>
+      match(payload)
+        .returnType<
+          Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>
+        >()
+        .with({ errors: P.select(P.array()) }, (errors) =>
+          Result.Error(errors.map(parseGraphQLError)),
+        )
+        .with({ data: P.select(P.not(P.nullish)) }, (data) => Result.Ok(data))
+        .otherwise((response) =>
+          Result.Error(new InvalidGraphQLResponseError(response)),
+        ),
     );
 
 const defaultMakeRequest: MakeRequest = ({
@@ -80,9 +83,7 @@ const defaultMakeRequest: MakeRequest = ({
       query: print(document),
       variables,
     }),
-  })
-    .mapOkToResult(badStatusToError)
-    .mapOkToResult(emptyToError);
+  });
 };
 
 type RequestOptions = { optimize?: boolean };
