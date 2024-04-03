@@ -47,9 +47,9 @@ type Props = {
 const UserPage = ({ userId }: Props) => {
   const [user, queryUser] = useDeferredQuery(userPageQuery);
 
-	useEffect(() => {
-		queryUser({ userId })
-	}, [userId, queryUser])
+  useEffect(() => {
+    queryUser({ userId })
+  }, [userId, queryUser])
 
   return user.match({
     NotAsked: () => null,
