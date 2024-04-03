@@ -1,13 +1,6 @@
 import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
 import { Future, Option, Result } from "@swan-io/boxed";
-import {
-  NetworkError,
-  Request,
-  Response,
-  TimeoutError,
-  badStatusToError,
-  emptyToError,
-} from "@swan-io/request";
+import { Request, badStatusToError, emptyToError } from "@swan-io/request";
 import { P, match } from "ts-pattern";
 import { ClientCache } from "./cache/cache";
 import { optimizeQuery, readOperationFromCache } from "./cache/read";
@@ -35,36 +28,13 @@ export type RequestConfig = {
 
 export type MakeRequest = (
   config: RequestConfig,
-) => Future<Result<Response<unknown>, NetworkError | TimeoutError>>;
-
-export type ParseResponse = (
-  payload: Response<unknown>,
-) => Result<unknown, ClientError>;
+) => Future<Result<unknown, ClientError>>;
 
 export type ClientConfig = {
   url: string;
   headers?: Record<string, string>;
   makeRequest?: MakeRequest;
-  parseResponse?: ParseResponse;
 };
-
-const defaultParseResponse = (payload: Response<unknown>) =>
-  Result.Ok(payload)
-    .flatMap(badStatusToError)
-    .flatMap(emptyToError)
-    .flatMap((payload) =>
-      match(payload)
-        .returnType<
-          Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>
-        >()
-        .with({ errors: P.select(P.array()) }, (errors) =>
-          Result.Error(errors.map(parseGraphQLError)),
-        )
-        .with({ data: P.select(P.nonNullable) }, (data) => Result.Ok(data))
-        .otherwise((response) =>
-          Result.Error(new InvalidGraphQLResponseError(response)),
-        ),
-    );
 
 const defaultMakeRequest: MakeRequest = ({
   url,
@@ -83,7 +53,22 @@ const defaultMakeRequest: MakeRequest = ({
       query: print(document),
       variables,
     }),
-  });
+  })
+    .mapOkToResult(badStatusToError)
+    .mapOkToResult(emptyToError)
+    .mapOkToResult((payload) =>
+      match(payload as unknown)
+        .returnType<
+          Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>
+        >()
+        .with({ errors: P.select(P.array()) }, (errors) =>
+          Result.Error(errors.map(parseGraphQLError)),
+        )
+        .with({ data: P.select(P.nonNullable) }, (data) => Result.Ok(data))
+        .otherwise((response) =>
+          Result.Error(new InvalidGraphQLResponseError(response)),
+        ),
+    );
 };
 
 type RequestOptions = { optimize?: boolean };
@@ -93,7 +78,6 @@ export class Client {
   headers: Record<string, string>;
   cache: ClientCache;
   makeRequest: MakeRequest;
-  parseResponse: ParseResponse;
 
   subscribers: Set<() => void>;
 
@@ -105,7 +89,6 @@ export class Client {
     this.headers = config.headers ?? { "Content-Type": "application/json" };
     this.cache = new ClientCache();
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
-    this.parseResponse = config.parseResponse ?? defaultParseResponse;
     this.subscribers = new Set();
     this.transformedDocuments = new Map();
     this.transformedDocumentsForRequest = new Map();
@@ -178,7 +161,6 @@ export class Client {
       ),
       variables: variablesAsRecord,
     })
-      .mapOkToResult(this.parseResponse)
       .mapOk((data) => data as Data)
       .tapOk((data) => {
         writeOperationToCache(
