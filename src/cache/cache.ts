@@ -44,10 +44,7 @@ export const getCacheKeyFromOperationNode = (
 
 const mergeCacheEntries = (a: CacheEntry, b: CacheEntry): CacheEntry => {
   return {
-    requestedKeys: new Set([
-      ...a.requestedKeys.values(),
-      ...b.requestedKeys.values(),
-    ]),
+    requestedKeys: new Set([...a.requestedKeys, ...b.requestedKeys]),
     value: deepMerge(a.value, b.value),
   };
 };
