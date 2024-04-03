@@ -1,5 +1,5 @@
 export * from "./client";
-export { ClientError } from "./errors";
+export * from "./errors";
 export { print } from "./graphql/print";
 export * from "./react/ClientContext";
 export * from "./react/useDeferredQuery";
