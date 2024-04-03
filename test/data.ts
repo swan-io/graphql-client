@@ -158,6 +158,7 @@ export const getAppQueryResponse = ({
 }: {
   user2LastName: string;
   user1IdentificationLevels: {
+    __typename: "IdentificationLevels";
     expert: boolean;
     PVID: boolean;
     QES: boolean;
@@ -267,6 +268,7 @@ export const bindMembershipMutationSuccessResponse = {
         firstName: "Mathieu",
         lastName: "Acthernoene",
         identificationLevels: {
+          __typename: "IdentificationLevels",
           expert: true,
           PVID: true,
           QES: false,

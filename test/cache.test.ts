@@ -114,6 +114,7 @@ test("Write & read in cache", () => {
     getAppQueryResponse({
       user2LastName: "Acthernoene",
       user1IdentificationLevels: {
+        __typename: "IdentificationLevels",
         expert: true,
         PVID: true,
         QES: true,
@@ -136,6 +137,7 @@ test("Write & read in cache", () => {
         getAppQueryResponse({
           user2LastName: "Acthernoene",
           user1IdentificationLevels: {
+            __typename: "IdentificationLevels",
             expert: true,
             PVID: true,
             QES: true,

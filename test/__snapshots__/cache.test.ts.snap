@@ -223,7 +223,7 @@ Map {
       Symbol(lastName): "Acthernoene",
       Symbol(firstName): "Mathieu",
       Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
+        Symbol(__typename): "IdentificationLevels",
         Symbol(expert): true,
         Symbol(PVID): true,
         Symbol(QES): false,
@@ -265,8 +265,8 @@ Map {
       Symbol(__typename): "Mutation",
       Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
         Symbol(__typename): "BindAccountMembershipSuccessPayload",
+        Symbol(message): "Account is in invalid status",
         Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
-        Symbol(message): undefined,
       },
     },
   },
@@ -337,7 +337,7 @@ Map {
       Symbol(firstName): "Matthias",
       Symbol(lastName): "Le Brun",
       Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
+        Symbol(__typename): "IdentificationLevels",
         Symbol(expert): true,
         Symbol(PVID): true,
         Symbol(QES): true,
@@ -377,7 +377,7 @@ Map {
       Symbol(lastName): "Acthernoene",
       Symbol(firstName): "Mathieu",
       Symbol(identificationLevels): {
-        Symbol(__typename): undefined,
+        Symbol(__typename): "IdentificationLevels",
         Symbol(expert): true,
         Symbol(PVID): true,
         Symbol(QES): false,
@@ -419,8 +419,8 @@ Map {
       Symbol(__typename): "Mutation",
       Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
         Symbol(__typename): "BindAccountMembershipSuccessPayload",
+        Symbol(message): "Account is in invalid status",
         Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
-        Symbol(message): undefined,
       },
     },
   },
