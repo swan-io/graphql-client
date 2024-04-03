@@ -1,7 +1,7 @@
 import { useForwardPagination } from "../../src";
 import { FragmentType, graphql, useFragment } from "../gql";
 
-export const FilmCharactersConnectionFragment = graphql(`
+const FilmCharactersConnectionFragment = graphql(`
   fragment FilmCharactersConnection on FilmCharactersConnection {
     edges {
       node {

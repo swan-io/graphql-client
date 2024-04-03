@@ -1348,6 +1348,19 @@ export type FilmDetailsQuery = {
   } | null;
 };
 
+export type ProducersQueryVariables = Exact<{
+  filmId: Scalars["ID"]["input"];
+}>;
+
+export type ProducersQuery = {
+  __typename?: "Root";
+  film?: {
+    __typename?: "Film";
+    id: string;
+    producers?: Array<string | null> | null;
+  } | null;
+};
+
 export type FilmsConnectionFragment = {
   __typename?: "FilmsConnection";
   edges?: Array<{
@@ -1791,3 +1804,52 @@ export const FilmDetailsDocument = {
     },
   ],
 } as unknown as DocumentNode<FilmDetailsQuery, FilmDetailsQueryVariables>;
+export const ProducersDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "Producers" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "filmId" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "film" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "filmId" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "producers" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ProducersQuery, ProducersQueryVariables>;

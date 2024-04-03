@@ -1,6 +1,6 @@
 import { FragmentType, graphql, useFragment } from "../gql";
 
-export const FilmFragment = graphql(`
+const FilmFragment = graphql(`
   fragment FilmItem on Film {
     id
     title

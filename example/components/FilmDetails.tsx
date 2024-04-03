@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "../../src";
+import { useDeferredQuery, useQuery } from "../../src";
 import { graphql } from "../gql";
 import { FilmCharacterList } from "./FilmCharacterList";
 
-export const FilmDetailsQuery = graphql(`
+const FilmDetailsQuery = graphql(`
   query FilmDetails($filmId: ID!, $first: Int!, $after: String) {
     film(id: $filmId) {
       id
@@ -14,6 +14,15 @@ export const FilmDetailsQuery = graphql(`
         ...FilmCharactersConnection
       }
       releaseDate
+    }
+  }
+`);
+
+const ProducersQuery = graphql(`
+  query Producers($filmId: ID!) {
+    film(id: $filmId) {
+      id
+      producers
     }
   }
 `);
@@ -35,6 +44,8 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
     { optimize },
   );
 
+  const [producers, queryProducers] = useDeferredQuery(ProducersQuery);
+
   return (
     <div className="FilmDetails" style={{ opacity: isLoading ? 0.5 : 1 }}>
       {data.match({
@@ -52,6 +63,30 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
                   <h1>{film.title}</h1>
                   <div>Director: {film.director}</div>
                   <div>Release date: {film.releaseDate}</div>
+                  <div>
+                    Producers:{" "}
+                    {producers.match({
+                      NotAsked: () => (
+                        <span
+                          style={{
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => queryProducers({ filmId })}
+                        >
+                          Load
+                        </span>
+                      ),
+                      Loading: () => <span>Loading ...</span>,
+                      Done: (result) =>
+                        result.match({
+                          Error: () => <span>Error</span>,
+                          Ok: ({ film }) => (
+                            <span>{film?.producers?.join(", ")}</span>
+                          ),
+                        }),
+                    })}
+                  </div>
                   <div>
                     Opening crawl:
                     <pre>{film.openingCrawl}</pre>

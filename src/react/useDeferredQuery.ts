@@ -49,7 +49,7 @@ export const useDeferredQuery = <Data, Variables>(
   const asyncData = useMemo(() => {
     return data
       .map((value) => AsyncData.Done(value as Result<Data, ClientError>))
-      .getWithDefault(AsyncData.Loading());
+      .getWithDefault(AsyncData.NotAsked());
   }, [data]);
 
   const [isQuerying, setIsQuerying] = useState(false);
