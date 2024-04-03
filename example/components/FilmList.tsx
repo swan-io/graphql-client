@@ -1,3 +1,4 @@
+import { Option } from "@swan-io/boxed";
 import { useForwardPagination } from "../../src";
 import { FragmentType, graphql, useFragment } from "../gql";
 import { Film } from "./Film";
@@ -21,9 +22,17 @@ type Props = {
   films: FragmentType<typeof FilmsConnectionFragment>;
   onNextPage: (cursor: string | null) => void;
   isLoadingMore: boolean;
+  activeFilm: Option<string>;
+  onPressFilm: (filmId: string) => void;
 };
 
-export const FilmList = ({ films, onNextPage, isLoadingMore }: Props) => {
+export const FilmList = ({
+  films,
+  onNextPage,
+  activeFilm,
+  onPressFilm,
+  isLoadingMore,
+}: Props) => {
   const connection = useForwardPagination(
     useFragment(FilmsConnectionFragment, films),
   );
@@ -42,7 +51,16 @@ export const FilmList = ({ films, onNextPage, isLoadingMore }: Props) => {
         if (node == null) {
           return null;
         }
-        return <Film film={node} key={node.id} />;
+        return (
+          <Film
+            film={node}
+            key={node.id}
+            isActive={activeFilm
+              .map((id) => node.id === id)
+              .getWithDefault(false)}
+            onPress={onPressFilm}
+          />
+        );
       })}
 
       {isLoadingMore ? <div>Loading more</div> : null}

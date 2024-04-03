@@ -9,10 +9,20 @@ export const FilmFragment = graphql(`
   }
 `);
 
-export const Film = (props: { film: FragmentType<typeof FilmFragment> }) => {
-  const film = useFragment(FilmFragment, props.film);
+type Props = {
+  film: FragmentType<typeof FilmFragment>;
+  isActive: boolean;
+  onPress: (filmId: string) => void;
+};
+
+export const Film = ({ film: data, isActive, onPress }: Props) => {
+  const film = useFragment(FilmFragment, data);
   return (
-    <div>
+    <div
+      className="Film"
+      data-active={isActive}
+      onClick={() => onPress(film.id)}
+    >
       <h3>{film.title}</h3>
       <p>{film.releaseDate}</p>
     </div>
