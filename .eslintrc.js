@@ -4,6 +4,13 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["react", "react-hooks"],
 
+  ignorePatterns: [
+    ".eslintrc.js",
+    "codegen.ts",
+    "tsup.config.ts",
+    "vite.config.mjs",
+  ],
+
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -57,6 +64,4 @@ module.exports = {
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
   },
-
-  ignorePatterns: [".eslintrc.js", "codegen.ts", "vite.config.mjs"],
 };

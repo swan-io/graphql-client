@@ -20,10 +20,6 @@
     "graphql",
     "react"
   ],
-  "browserslist": [
-    "defaults and fully supports es6-module",
-    "maintained node versions"
-  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
@@ -34,13 +30,12 @@
     "README.md"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "example": "vite example --config vite.config.mjs",
     "format": "prettier '**/*' --ignore-unknown --write",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build": "yarn clean && microbundle -f cjs,es --tsconfig tsconfig.build.json",
+    "build": "tsup",
     "prepack": "yarn typecheck && yarn test && yarn build",
     "codegen": "graphql-codegen --config codegen.ts"
   },
@@ -73,11 +68,11 @@
     "gql.tada": "^1.4.1",
     "graphql": "^16.8.1",
     "jsdom": "^24.0.0",
-    "microbundle": "^0.15.1",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "tsup": "^8.0.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.3",
     "vite": "^5.2.7",
