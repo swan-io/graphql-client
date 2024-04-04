@@ -35,7 +35,7 @@
     "format": "prettier '**/*' --ignore-unknown --write",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build": "tsup",
+    "build": "tsup && tsc -p tsconfig.build.json --emitDeclarationOnly",
     "prepack": "yarn typecheck && yarn test && yarn build",
     "codegen": "graphql-codegen --config codegen.ts"
   },
