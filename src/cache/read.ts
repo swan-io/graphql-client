@@ -74,8 +74,15 @@ export const readOperationFromCache = (
               return Option.None();
             }
 
-            // @ts-expect-error `data` is indexable at this point
-            const valueOrKeyFromCache = data[fieldNameWithArguments];
+            // in case a the data is read across multiple selections, get the actual one if generated,
+            // otherwise, read from cache (e.g. fragments)
+            const valueOrKeyFromCache =
+              // @ts-expect-error `data` is indexable at this point
+              originalFieldName in data
+                ? // @ts-expect-error `data` is indexable at this point
+                  data[originalFieldName]
+                : // @ts-expect-error `data` is indexable at this point
+                  data[fieldNameWithArguments];
 
             if (valueOrKeyFromCache == undefined) {
               return Option.Some({
@@ -173,10 +180,7 @@ export const readOperationFromCache = (
                     data as Record<PropertyKey, unknown>,
                   );
                 } else {
-                  return traverse(
-                    inlineFragmentNode.selectionSet,
-                    data as Record<PropertyKey, unknown>,
-                  );
+                  return Option.Some(data);
                 }
               }
             }
