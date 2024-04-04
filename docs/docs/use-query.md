@@ -18,13 +18,14 @@ sidebar_label: useQuery
 This hook returns a tuple you can extract like a `useState`:
 
 ```ts
-const [data, {isLoading, refresh, reload}] = useQuery(...)
+const [data, {isLoading, refresh, reload, setVariables}] = useQuery(...)
 ```
 
 - `data` (`AsyncData<Result<Data, ClientError>>`): the GraphQL response
 - `isLoading` (`boolean`): if the query is fetching
 - `refresh()`: refresh the query in the background, keeping current data on screen
-- `reload()`: reload the query (full reload, showing a full loading state)
+- `reload()`: reload the query (full reload, showing a full loading state and resets local variables)
+- `setVariables(variables)`: overwrites the variables locally, useful for `before` & `after` pagination
 
 ## Example
 

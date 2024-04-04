@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDeferredQuery, useQuery } from "../../src";
 import { graphql } from "../gql";
 import { FilmCharacterList } from "./FilmCharacterList";
@@ -33,13 +32,11 @@ type Props = {
 };
 
 export const FilmDetails = ({ filmId, optimize }: Props) => {
-  const [after, setAfter] = useState<string | null>(null);
-  const [data, { isLoading }] = useQuery(
+  const [data, { isLoading, reload, setVariables }] = useQuery(
     FilmDetailsQuery,
     {
       filmId,
       first: 5,
-      after,
     },
     { optimize },
   );
@@ -60,6 +57,13 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
               }
               return (
                 <>
+                  <button
+                    onClick={() => {
+                      reload();
+                    }}
+                  >
+                    Reload
+                  </button>
                   <h1>{film.title}</h1>
                   <div>Director: {film.director}</div>
                   <div>Release date: {film.releaseDate}</div>
@@ -96,7 +100,7 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
                       <h2>Characters</h2>
                       <FilmCharacterList
                         characters={film.characterConnection}
-                        onNextPage={setAfter}
+                        onNextPage={(after) => setVariables({ after })}
                         isLoadingMore={isLoading}
                       />
                     </>

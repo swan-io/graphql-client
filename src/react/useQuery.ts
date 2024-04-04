@@ -18,12 +18,13 @@ export type QueryConfig = {
   optimize?: boolean;
 };
 
-export type Query<Data> = readonly [
+export type Query<Data, Variables> = readonly [
   AsyncData<Result<Data, ClientError>>,
   {
     isLoading: boolean;
     reload: () => Future<Result<Data, ClientError>>;
     refresh: () => Future<Result<Data, ClientError>>;
+    setVariables: (variables: Partial<Variables>) => void;
   },
 ];
 
@@ -41,24 +42,27 @@ export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
   { suspense = false, optimize = false }: QueryConfig = {},
-): Query<Data> => {
+): Query<Data, Variables> => {
   const client = useContext(ClientContext);
 
   // Query should never change
   const [stableQuery] = useState<TypedDocumentNode<Data, Variables>>(query);
 
   // Only break variables reference equality if not deeply equal
-  const [stableVariables, setStableVariables] = useState(variables);
+  const [stableVariables, setStableVariables] = useState<
+    [Variables, Variables]
+  >([variables, variables]);
 
   useEffect(() => {
-    if (!deepEqual(stableVariables, variables)) {
-      setStableVariables(variables);
+    const [providedVariables] = stableVariables;
+    if (!deepEqual(providedVariables, variables)) {
+      setStableVariables([variables, variables]);
     }
   }, [stableVariables, variables]);
 
   // Get data from cache
   const getSnapshot = useCallback(() => {
-    return client.readFromCache(stableQuery, stableVariables);
+    return client.readFromCache(stableQuery, stableVariables[1]);
   }, [client, stableQuery, stableVariables]);
 
   const data = useSyncExternalStore(
@@ -81,7 +85,7 @@ export const useQuery = <Data, Variables>(
       isSuspenseFirstFetch.current = false;
       return;
     }
-    const request = client.query(stableQuery, stableVariables, { optimize });
+    const request = client.query(stableQuery, stableVariables[1], { optimize });
     return () => request.cancel();
   }, [client, suspense, optimize, stableQuery, stableVariables]);
 
@@ -89,15 +93,16 @@ export const useQuery = <Data, Variables>(
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     return client
-      .request(stableQuery, stableVariables)
+      .request(stableQuery, stableVariables[1])
       .tap(() => setIsRefreshing(false));
   }, [client, stableQuery, stableVariables]);
 
   const [isReloading, setIsReloading] = useState(false);
   const reload = useCallback(() => {
     setIsReloading(true);
+    setStableVariables(([stable]) => [stable, stable]);
     return client
-      .request(stableQuery, stableVariables)
+      .request(stableQuery, stableVariables[0])
       .tap(() => setIsReloading(false));
   }, [client, stableQuery, stableVariables]);
 
@@ -109,8 +114,22 @@ export const useQuery = <Data, Variables>(
       : asyncData;
 
   if (suspense && asyncDataToExpose.isLoading()) {
-    throw client.query(stableQuery, stableVariables, { optimize }).toPromise();
+    throw client
+      .query(stableQuery, stableVariables[1], { optimize })
+      .toPromise();
   }
 
-  return [asyncDataToExpose, { isLoading, refresh, reload }];
+  const setVariables = useCallback((variables: Partial<Variables>) => {
+    setStableVariables((prev) => {
+      const [prevStable, prevFinal] = prev;
+      const nextFinal = { ...prevFinal, ...variables };
+      if (!deepEqual(prevFinal, nextFinal)) {
+        return [prevStable, nextFinal];
+      } else {
+        return prev;
+      }
+    });
+  }, []);
+
+  return [asyncDataToExpose, { isLoading, refresh, reload, setVariables }];
 };

@@ -15,12 +15,11 @@ const AllFilmsQuery = graphql(`
 
 export const App = () => {
   const [optimize, setOptimize] = useState(false);
-  const [after, setAfter] = useState<string | null>(null);
   const [activeFilm, setActiveFilm] = useState<Option<string>>(Option.None());
 
-  const [data, { isLoading }] = useQuery(
+  const [data, { isLoading, setVariables }] = useQuery(
     AllFilmsQuery,
-    { first: 3, after },
+    { first: 3 },
     { optimize },
   );
 
@@ -49,7 +48,7 @@ export const App = () => {
                     </label>
                     <FilmList
                       films={allFilms}
-                      onNextPage={setAfter}
+                      onNextPage={(after) => setVariables({ after })}
                       isLoadingMore={isLoading}
                       activeFilm={activeFilm}
                       onPressFilm={(filmId: string) =>
@@ -61,11 +60,7 @@ export const App = () => {
                     {activeFilm.match({
                       None: () => <div>No film selected</div>,
                       Some: (filmId) => (
-                        <FilmDetails
-                          filmId={filmId}
-                          key={filmId}
-                          optimize={optimize}
-                        />
+                        <FilmDetails filmId={filmId} optimize={optimize} />
                       ),
                     })}
                   </div>
