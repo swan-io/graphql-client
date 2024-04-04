@@ -173,7 +173,10 @@ export const readOperationFromCache = (
                     data as Record<PropertyKey, unknown>,
                   );
                 } else {
-                  return Option.Some(data);
+                  return traverse(
+                    inlineFragmentNode.selectionSet,
+                    data as Record<PropertyKey, unknown>,
+                  );
                 }
               }
             }
