@@ -2,12 +2,12 @@ import { useRef } from "react";
 import { match } from "ts-pattern";
 import { isRecord } from "../utils";
 
-type Edge<T> = {
+export type Edge<T> = {
   cursor?: string | null;
   node?: T | null | undefined;
 };
 
-type Connection<T> =
+export type Connection<T> =
   | {
       edges?: (Edge<T> | null | undefined)[] | null | undefined;
       pageInfo: {
