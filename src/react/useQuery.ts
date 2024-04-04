@@ -56,6 +56,7 @@ export const useQuery = <Data, Variables>(
   useEffect(() => {
     const [providedVariables] = stableVariables;
     if (!deepEqual(providedVariables, variables)) {
+      setIsReloading(true);
       setStableVariables([variables, variables]);
     }
   }, [stableVariables, variables]);
@@ -85,7 +86,9 @@ export const useQuery = <Data, Variables>(
       isSuspenseFirstFetch.current = false;
       return;
     }
-    const request = client.query(stableQuery, stableVariables[1], { optimize });
+    const request = client
+      .query(stableQuery, stableVariables[1], { optimize })
+      .tap(() => setIsReloading(false));
     return () => request.cancel();
   }, [client, suspense, optimize, stableQuery, stableVariables]);
 
