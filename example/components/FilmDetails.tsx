@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDeferredQuery, useQuery } from "../../src";
 import { graphql } from "../gql";
 import { FilmCharacterList } from "./FilmCharacterList";
@@ -41,7 +42,16 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
     { optimize },
   );
 
-  const [producers, queryProducers] = useDeferredQuery(ProducersQuery);
+  const [producers, queryProducers] = useDeferredQuery(ProducersQuery, {
+    debounce: 500,
+  });
+
+  useEffect(() => {
+    // try debounced
+    queryProducers({ filmId: "1" });
+    queryProducers({ filmId: "2" });
+    queryProducers({ filmId });
+  }, [filmId, queryProducers]);
 
   return (
     <div className="FilmDetails" style={{ opacity: isLoading ? 0.5 : 1 }}>
@@ -70,23 +80,18 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
                   <div>
                     Producers:{" "}
                     {producers.match({
-                      NotAsked: () => (
-                        <span
-                          style={{
-                            textDecoration: "underline",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => queryProducers({ filmId })}
-                        >
-                          Load
-                        </span>
-                      ),
+                      NotAsked: () => null,
                       Loading: () => <span>Loading ...</span>,
                       Done: (result) =>
                         result.match({
                           Error: () => <span>Error</span>,
                           Ok: ({ film }) => (
-                            <span>{film?.producers?.join(", ")}</span>
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={() => queryProducers({ filmId })}
+                            >
+                              {film?.producers?.join(", ")}
+                            </span>
                           ),
                         }),
                     })}
