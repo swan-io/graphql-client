@@ -116,7 +116,11 @@ export const useQuery = <Data, Variables>(
       ? previousAsyncData
       : asyncData;
 
-  if (suspense && asyncDataToExpose.isLoading()) {
+  if (
+    suspense &&
+    isSuspenseFirstFetch.current &&
+    asyncDataToExpose.isLoading()
+  ) {
     throw client
       .query(stableQuery, stableVariables[1], { optimize })
       .toPromise();
