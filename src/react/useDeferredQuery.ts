@@ -19,7 +19,10 @@ export type DeferredQueryConfig = {
 
 export type DeferredQuery<Data, Variables> = readonly [
   AsyncData<Result<Data, ClientError>>,
-  (variables: Variables) => Future<Result<Data, ClientError>>,
+  {
+    query: (variables: Variables) => Future<Result<Data, ClientError>>;
+    reset: () => void;
+  },
 ];
 
 export const useDeferredQuery = <Data, Variables>(
@@ -98,7 +101,12 @@ export const useDeferredQuery = <Data, Variables>(
     [runQuery, debounce],
   );
 
+  const reset = useCallback(() => {
+    setIsQuerying(false);
+    setStableVariables(Option.None());
+  }, []);
+
   const asyncDataToExpose = isQuerying ? AsyncData.Loading() : asyncData;
 
-  return [asyncDataToExpose, exposedRunQuery];
+  return [asyncDataToExpose, { query: exposedRunQuery, reset }];
 };
