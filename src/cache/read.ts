@@ -65,10 +65,9 @@ export const readOperationFromCache = (
               return Option.None();
             }
 
-            const cacheHasKey = hasOwnProperty.call(
-              data,
-              fieldNameWithArguments,
-            );
+            const cacheHasKey =
+              hasOwnProperty.call(data, originalFieldName) ||
+              hasOwnProperty.call(data, fieldNameWithArguments);
 
             if (!cacheHasKey) {
               return Option.None();
