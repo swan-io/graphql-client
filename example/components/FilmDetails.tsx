@@ -42,9 +42,12 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
     { optimize },
   );
 
-  const [producers, queryProducers] = useDeferredQuery(ProducersQuery, {
-    debounce: 500,
-  });
+  const [producers, { query: queryProducers }] = useDeferredQuery(
+    ProducersQuery,
+    {
+      debounce: 500,
+    },
+  );
 
   useEffect(() => {
     // try debounced
