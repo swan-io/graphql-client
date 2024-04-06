@@ -95,7 +95,7 @@ useMutation(BlockUser, {
 
 useMutation(Unfriend, {
   connectionUpdates: [
-    ({ variables, remove }) =>
+    ({ data, variables, remove }) =>
       Option.fromNullable(data.unfriend).map(() =>
         remove(friends, [variables.id]),
       ),
