@@ -215,7 +215,7 @@ export class ClientCache {
     }
   }
 
-  update<A>(
+  unsafe__update<A>(
     cacheKey: symbol,
     path: (symbol | string)[],
     updater: (value: A) => A,
@@ -279,7 +279,7 @@ export class ClientCache {
             .with({ prepend: P.select(P.nonNullable) }, (edges) => {
               const firstPath = cachePath[0];
               if (firstPath != null) {
-                this.update(cacheKey, firstPath, (value) => {
+                this.unsafe__update(cacheKey, firstPath, (value) => {
                   if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
                     return value;
                   }
@@ -304,7 +304,7 @@ export class ClientCache {
             .with({ append: P.select(P.nonNullable) }, (edges) => {
               const lastPath = cachePath[cachePath.length - 1];
               if (lastPath != null) {
-                this.update(cacheKey, lastPath, (value) => {
+                this.unsafe__update(cacheKey, lastPath, (value) => {
                   if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
                     return value;
                   }
@@ -328,7 +328,7 @@ export class ClientCache {
             })
             .with({ remove: P.select(P.array()) }, (nodeIds) => {
               cachePath.forEach((path) => {
-                this.update(cacheKey, path, (value) => {
+                this.unsafe__update(cacheKey, path, (value) => {
                   return isRecord(value) && Array.isArray(value[edgesSymbol])
                     ? {
                         ...value,
