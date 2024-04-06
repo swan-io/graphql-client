@@ -176,6 +176,12 @@ export class ClientCache {
           typeof value.__typename === "string" &&
           value.__typename.endsWith("Connection")
         ) {
+          value.__connectionCacheKey = cacheKey.description;
+          value.__connectionCachePath = [
+            [...writePath, fieldNameWithArguments].map((item) =>
+              typeof item === "symbol" ? { symbol: item.description } : item,
+            ),
+          ];
           value.__connectionArguments = variables;
         }
 
@@ -206,5 +212,38 @@ export class ClientCache {
 
       writePath.push(pathCopy.pop() as PropertyKey);
     }
+  }
+
+  update<A>(
+    cacheKey: symbol,
+    path: (symbol | string)[],
+    updater: (value: A) => Partial<A>,
+  ) {
+    this.get(cacheKey).map((cachedAncestor) => {
+      const value = path.reduce<Option<unknown>>(
+        // @ts-expect-error fromNullable makes it safe
+        (acc, key) => acc.flatMap((acc) => Option.fromNullable(acc[key])),
+        Option.fromNullable(cachedAncestor.value),
+      );
+
+      value.map((item) => {
+        const deepUpdate = path.reduce<unknown>(
+          (acc, key) => {
+            return {
+              [key]: acc,
+            };
+          },
+          updater(item as A),
+        );
+
+        this.set(
+          cacheKey,
+          mergeCacheEntries(cachedAncestor, {
+            requestedKeys: new Set(),
+            value: deepUpdate,
+          }),
+        );
+      });
+    });
   }
 }

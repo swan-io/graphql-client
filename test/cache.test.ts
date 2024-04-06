@@ -1,5 +1,6 @@
 import { Option, Result } from "@swan-io/boxed";
 import { expect, test } from "vitest";
+import { Client, Connection } from "../src";
 import { ClientCache } from "../src/cache/cache";
 import { optimizeQuery, readOperationFromCache } from "../src/cache/read";
 import { writeOperationToCache } from "../src/cache/write";
@@ -199,4 +200,74 @@ test("Write & read in cache", () => {
       language: "en",
     }),
   ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
+
+  const client = new Client({ url: "/" });
+
+  writeOperationToCache(
+    client.cache,
+    preparedAppQuery,
+    getAppQueryResponse({
+      user2LastName: "Last",
+      user1IdentificationLevels: null,
+    }),
+    {
+      id: "1",
+    },
+  );
+
+  const read = readOperationFromCache(cache, preparedAppQuery, {
+    id: "1",
+  });
+
+  if (read.isSome()) {
+    const cacheResult = read.get();
+    if (cacheResult.isOk()) {
+      const value = cacheResult.get() as ReturnType<typeof getAppQueryResponse>;
+      const accountMemberships =
+        value.accountMemberships as unknown as Connection<{
+          __typename: "AccountMembership";
+          id: string;
+          account: {
+            __typename: "Account";
+            name: string;
+          };
+          membershipUser: {
+            __typename: "User";
+            id: string;
+            lastName: string;
+          };
+        }>;
+      client.updateConnection(accountMemberships, {
+        remove: ["account-membership-1"],
+      });
+      client.updateConnection(accountMemberships, {
+        append: [
+          {
+            __typename: "AccountMembershipEdge",
+            node: {
+              __typename: "AccountMembership",
+              id: "account-membership-3",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-3",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    expect(
+      readOperationFromCache(client.cache, preparedAppQuery, {
+        id: "1",
+      }),
+    ).toMatchSnapshot();
+  } else {
+    expect(true).toBe(false);
+  }
 });

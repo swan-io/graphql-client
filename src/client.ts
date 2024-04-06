@@ -16,7 +16,7 @@ import {
   inlineFragments,
 } from "./graphql/ast";
 import { print } from "./graphql/print";
-import { TypedDocumentNode } from "./types";
+import { Connection, Edge, TypedDocumentNode } from "./types";
 
 export type RequestConfig = {
   url: string;
@@ -216,5 +216,92 @@ export class Client {
     requestOptions?: RequestOptions,
   ) {
     return this.request(document, variables, requestOptions);
+  }
+
+  updateConnection<A, T extends Connection<A>>(
+    connection: T,
+    config:
+      | { prepend: Edge<A>[] }
+      | { append: Edge<A>[] }
+      | { remove: string[] },
+  ) {
+    match(connection as unknown)
+      .with(
+        {
+          __connectionCacheKey: P.string,
+          __connectionCachePath: P.array(
+            P.array(P.union({ symbol: P.string }, P.string)),
+          ),
+        },
+        ({ __connectionCacheKey, __connectionCachePath }) => {
+          const cacheKey = Symbol.for(__connectionCacheKey);
+          const cachePath = __connectionCachePath.map((path) =>
+            path.map((item) =>
+              typeof item === "string" ? item : Symbol.for(item.symbol),
+            ),
+          );
+          const edgesSymbol = Symbol.for("edges");
+          const nodeSymbol = Symbol.for("node");
+          match(config)
+            .with({ prepend: P.select(P.array()) }, (edges) => {
+              const firstPath = cachePath[0];
+              if (firstPath != null) {
+                this.cache.update(cacheKey, firstPath, (value) =>
+                  // @ts-expect-error safe
+                  value[edgesSymbol] != null
+                    ? {
+                        // @ts-expect-error safe
+                        ...value,
+                        // @ts-expect-error safe
+                        [edgesSymbol]: [...edges, ...value[edgesSymbol]],
+                      }
+                    : value,
+                );
+              }
+            })
+            .with({ append: P.select(P.array()) }, (edges) => {
+              const lastPath = cachePath[cachePath.length - 1];
+              if (lastPath != null) {
+                this.cache.update(cacheKey, lastPath, (value) =>
+                  // @ts-expect-error safe
+                  value[edgesSymbol] != null
+                    ? {
+                        // @ts-expect-error safe
+                        ...value,
+                        // @ts-expect-error safe
+                        [edgesSymbol]: [...value[edgesSymbol], ...edges],
+                      }
+                    : value,
+                );
+              }
+            })
+            .with({ remove: P.select(P.array()) }, (nodeIds) => {
+              cachePath.forEach((path) => {
+                this.cache.update(cacheKey, path, (value) => {
+                  // @ts-expect-error safe
+                  return value[edgesSymbol] != null
+                    ? {
+                        // @ts-expect-error safe
+                        ...value,
+                        // @ts-expect-error safe
+                        [edgesSymbol]: value[edgesSymbol].filter((edge) => {
+                          const node = edge[nodeSymbol] as symbol;
+                          return !nodeIds.some((nodeId) => {
+                            return node.description?.includes(`<${nodeId}>`);
+                          });
+                        }),
+                      }
+                    : value;
+                });
+              });
+            })
+            .exhaustive();
+        },
+      )
+      .otherwise(() => {});
+
+    this.subscribers.forEach((func) => {
+      func();
+    });
   }
 }

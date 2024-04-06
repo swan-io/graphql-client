@@ -1,24 +1,7 @@
 import { useRef } from "react";
 import { match } from "ts-pattern";
+import { Connection } from "../types";
 import { isRecord } from "../utils";
-
-export type Edge<T> = {
-  cursor?: string | null;
-  node?: T | null | undefined;
-};
-
-export type Connection<T> =
-  | {
-      edges?: (Edge<T> | null | undefined)[] | null | undefined;
-      pageInfo: {
-        hasPreviousPage?: boolean | null | undefined;
-        hasNextPage?: boolean | null | undefined;
-        endCursor?: string | null | undefined;
-        startCursor?: string | null | undefined;
-      };
-    }
-  | null
-  | undefined;
 
 type mode = "before" | "after";
 
@@ -53,6 +36,28 @@ const mergeConnection = <A, T extends Connection<A>>(
 
   return {
     ...next,
+    __connectionCachePath: match(mode)
+      .with("before", () => [
+        ...("__connectionCachePath" in next &&
+        Array.isArray(next.__connectionCachePath)
+          ? next.__connectionCachePath
+          : []),
+        ...("__connectionCachePath" in previous &&
+        Array.isArray(previous.__connectionCachePath)
+          ? previous.__connectionCachePath
+          : []),
+      ])
+      .with("after", () => [
+        ...("__connectionCachePath" in previous &&
+        Array.isArray(previous.__connectionCachePath)
+          ? previous.__connectionCachePath
+          : []),
+        ...("__connectionCachePath" in next &&
+        Array.isArray(next.__connectionCachePath)
+          ? next.__connectionCachePath
+          : []),
+      ])
+      .exhaustive(),
     edges: match(mode)
       .with("before", () => [...(next.edges ?? []), ...(previous.edges ?? [])])
       .with("after", () => [...(previous.edges ?? []), ...(next.edges ?? [])])
