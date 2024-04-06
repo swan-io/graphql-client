@@ -1,6 +1,6 @@
 import { Option, Result } from "@swan-io/boxed";
 import { expect, test } from "vitest";
-import { Client, Connection } from "../src";
+import { Connection } from "../src";
 import { ClientCache } from "../src/cache/cache";
 import { optimizeQuery, readOperationFromCache } from "../src/cache/read";
 import { writeOperationToCache } from "../src/cache/write";
@@ -8,6 +8,7 @@ import { addTypenames, inlineFragments } from "../src/graphql/ast";
 import { print } from "../src/graphql/print";
 import {
   OnboardingInfo,
+  addMembership,
   appQuery,
   appQueryWithExtraArrayInfo,
   bindAccountMembershipMutation,
@@ -201,10 +202,10 @@ test("Write & read in cache", () => {
     }),
   ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
 
-  const client = new Client({ url: "/" });
+  const cache3 = new ClientCache();
 
   writeOperationToCache(
-    client.cache,
+    cache3,
     preparedAppQuery,
     getAppQueryResponse({
       user2LastName: "Last",
@@ -215,7 +216,7 @@ test("Write & read in cache", () => {
     },
   );
 
-  const read = readOperationFromCache(cache, preparedAppQuery, {
+  const read = readOperationFromCache(cache3, preparedAppQuery, {
     id: "1",
   });
 
@@ -237,10 +238,61 @@ test("Write & read in cache", () => {
             lastName: string;
           };
         }>;
-      client.updateConnection(accountMemberships, {
+      cache3.updateConnection(accountMemberships, {
         remove: ["account-membership-1"],
       });
-      client.updateConnection(accountMemberships, {
+
+      writeOperationToCache(
+        cache3,
+        inlineFragments(addTypenames(addMembership)),
+        {
+          __typename: "Mutation",
+          addMembership: {
+            __typename: "AddMembership",
+            membership: {
+              __typename: "AccountMembership",
+              id: "account-membership-3",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-3",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        },
+        {},
+      );
+
+      writeOperationToCache(
+        cache3,
+        inlineFragments(addTypenames(addMembership)),
+        {
+          __typename: "Mutation",
+          addMembership: {
+            __typename: "AddMembership",
+            membership: {
+              __typename: "AccountMembership",
+              id: "account-membership-0",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-0",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        },
+        {},
+      );
+
+      cache3.updateConnection(accountMemberships, {
         append: [
           {
             __typename: "AccountMembershipEdge",
@@ -260,10 +312,30 @@ test("Write & read in cache", () => {
           },
         ],
       });
+      cache3.updateConnection(accountMemberships, {
+        prepend: [
+          {
+            __typename: "AccountMembershipEdge",
+            node: {
+              __typename: "AccountMembership",
+              id: "account-membership-0",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-0",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        ],
+      });
     }
 
     expect(
-      readOperationFromCache(client.cache, preparedAppQuery, {
+      readOperationFromCache(cache3, preparedAppQuery, {
         id: "1",
       }),
     ).toMatchSnapshot();

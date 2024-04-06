@@ -247,6 +247,26 @@ export const bindAccountMembershipMutation = graphql(
   [UserInfo],
 );
 
+export const addMembership = graphql(`
+  mutation AddMembership {
+    addMembership {
+      membership {
+        id
+        createdAt
+        account {
+          name
+          bankDetails
+        }
+        membershipUser: user {
+          id
+          lastName
+          firstName
+        }
+      }
+    }
+  }
+`);
+
 export const OnboardingInfo = graphql(
   `
     query GetOnboarding($id: ID!, $language: String!) {

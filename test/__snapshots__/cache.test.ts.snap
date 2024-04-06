@@ -653,6 +653,22 @@ t {
               "__typename": "AccountMembership",
               "account": {
                 "__typename": "Account",
+                "name": "First",
+              },
+              "id": "account-membership-0",
+              "membershipUser": {
+                "__typename": "User",
+                "id": "user-0",
+                "lastName": "Le Brun",
+              },
+            },
+          },
+          {
+            "__typename": "AccountMembershipEdge",
+            "node": {
+              "__typename": "AccountMembership",
+              "account": {
+                "__typename": "Account",
                 "name": "Second",
               },
               "id": "account-membership-2",

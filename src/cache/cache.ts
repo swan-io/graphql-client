@@ -3,8 +3,9 @@ import {
   OperationDefinitionNode,
   OperationTypeNode,
 } from "@0no-co/graphql.web";
-import { Option, Result } from "@swan-io/boxed";
+import { Array, Option, Result } from "@swan-io/boxed";
 import { P, match } from "ts-pattern";
+import { Connection, Edge } from "../types";
 import {
   DEEP_MERGE_DELETE,
   containsAll,
@@ -217,12 +218,14 @@ export class ClientCache {
   update<A>(
     cacheKey: symbol,
     path: (symbol | string)[],
-    updater: (value: A) => Partial<A>,
+    updater: (value: A) => A,
   ) {
     this.get(cacheKey).map((cachedAncestor) => {
       const value = path.reduce<Option<unknown>>(
-        // @ts-expect-error fromNullable makes it safe
-        (acc, key) => acc.flatMap((acc) => Option.fromNullable(acc[key])),
+        (acc, key) =>
+          acc.flatMap((acc) =>
+            Option.fromNullable(isRecord(acc) ? acc[key] : null),
+          ),
         Option.fromNullable(cachedAncestor.value),
       );
 
@@ -245,5 +248,102 @@ export class ClientCache {
         );
       });
     });
+  }
+
+  updateConnection<A, T extends Connection<A>>(
+    connection: T,
+    config:
+      | { prepend: Edge<A>[] }
+      | { append: Edge<A>[] }
+      | { remove: string[] },
+  ) {
+    match(connection as unknown)
+      .with(
+        {
+          __connectionCacheKey: P.string,
+          __connectionCachePath: P.array(
+            P.array(P.union({ symbol: P.string }, P.string)),
+          ),
+        },
+        ({ __connectionCacheKey, __connectionCachePath }) => {
+          const cacheKey = Symbol.for(__connectionCacheKey);
+          const cachePath = __connectionCachePath.map((path) =>
+            path.map((item) =>
+              typeof item === "string" ? item : Symbol.for(item.symbol),
+            ),
+          );
+          const typenameSymbol = Symbol.for("__typename");
+          const edgesSymbol = Symbol.for("edges");
+          const nodeSymbol = Symbol.for("node");
+          match(config)
+            .with({ prepend: P.select(P.nonNullable) }, (edges) => {
+              const firstPath = cachePath[0];
+              if (firstPath != null) {
+                this.update(cacheKey, firstPath, (value) => {
+                  if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
+                    return value;
+                  }
+                  return {
+                    ...value,
+                    [edgesSymbol]: [
+                      ...Array.filterMap(edges, ({ node, __typename }) =>
+                        getCacheKeyFromJson(node).flatMap((key) =>
+                          this.getFromCacheWithoutKey(key).map(() => ({
+                            [typenameSymbol]: __typename,
+                            [nodeSymbol]: key,
+                          })),
+                        ),
+                      ),
+                      ...value[edgesSymbol],
+                    ],
+                  };
+                });
+              }
+            })
+            .with({ append: P.select(P.nonNullable) }, (edges) => {
+              const lastPath = cachePath[cachePath.length - 1];
+              if (lastPath != null) {
+                this.update(cacheKey, lastPath, (value) => {
+                  if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
+                    return value;
+                  }
+                  return {
+                    ...value,
+                    [edgesSymbol]: [
+                      ...value[edgesSymbol],
+                      ...Array.filterMap(edges, ({ node, __typename }) =>
+                        getCacheKeyFromJson(node).flatMap((key) =>
+                          this.getFromCacheWithoutKey(key).map(() => ({
+                            [typenameSymbol]: __typename,
+                            [nodeSymbol]: key,
+                          })),
+                        ),
+                      ),
+                    ],
+                  };
+                });
+              }
+            })
+            .with({ remove: P.select(P.array()) }, (nodeIds) => {
+              cachePath.forEach((path) => {
+                this.update(cacheKey, path, (value) => {
+                  return isRecord(value) && Array.isArray(value[edgesSymbol])
+                    ? {
+                        ...value,
+                        [edgesSymbol]: value[edgesSymbol].filter((edge) => {
+                          const node = edge[nodeSymbol] as symbol;
+                          return !nodeIds.some((nodeId) => {
+                            return node.description?.includes(`<${nodeId}>`);
+                          });
+                        }),
+                      }
+                    : value;
+                });
+              });
+            })
+            .exhaustive();
+        },
+      )
+      .otherwise(() => {});
   }
 }
