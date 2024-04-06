@@ -250,8 +250,8 @@ export class ClientCache {
     });
   }
 
-  updateConnection<A, T extends Connection<A>>(
-    connection: T,
+  updateConnection<A>(
+    connection: Connection<A>,
     config:
       | { prepend: Edge<A>[] }
       | { append: Edge<A>[] }

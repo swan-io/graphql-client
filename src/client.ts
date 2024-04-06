@@ -218,8 +218,8 @@ export class Client {
     return this.request(document, variables, requestOptions);
   }
 
-  updateConnection<A, T extends Connection<A>>(
-    connection: T,
+  updateConnection<A>(
+    connection: Connection<A>,
     config:
       | { prepend: Edge<A>[] }
       | { append: Edge<A>[] }
