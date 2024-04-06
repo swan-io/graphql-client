@@ -22,8 +22,8 @@ export interface TypedDocumentNode<
     DocumentTypeDecoration<TResult, TVariables> {}
 
 export type Edge<T> = {
-  __typename?: string;
-  cursor?: string | null;
+  __typename?: string | null | undefined;
+  cursor?: string | null | undefined;
   node?: T | null | undefined;
 };
 
