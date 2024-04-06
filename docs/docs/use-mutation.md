@@ -3,7 +3,7 @@ title: useMutation
 sidebar_label: useMutation
 ---
 
-## useMutation(mutation)
+## useMutation(mutation, config?)
 
 ### Params
 
