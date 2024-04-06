@@ -16,7 +16,7 @@ import {
   inlineFragments,
 } from "./graphql/ast";
 import { print } from "./graphql/print";
-import { TypedDocumentNode } from "./types";
+import { Connection, Edge, TypedDocumentNode } from "./types";
 
 export type RequestConfig = {
   url: string;
@@ -71,7 +71,50 @@ const defaultMakeRequest: MakeRequest = ({
     );
 };
 
-type RequestOptions = { optimize?: boolean };
+type ConnectionUpdate<Node> = [
+  Connection<Node>,
+  { prepend: Edge<Node>[] } | { append: Edge<Node>[] } | { remove: string[] },
+];
+
+const prepend = <A>(
+  connection: Connection<A>,
+  edges: Edge<A>[],
+): ConnectionUpdate<A> => {
+  return [connection, { prepend: edges }];
+};
+
+const append = <A>(
+  connection: Connection<A>,
+  edges: Edge<A>[],
+): ConnectionUpdate<A> => {
+  return [connection, { append: edges }];
+};
+
+const remove = <A>(
+  connection: Connection<A>,
+  ids: string[],
+): ConnectionUpdate<A> => {
+  return [connection, { remove: ids }];
+};
+
+export type GetConnectionUpdate<Data, Variables> = (config: {
+  data: Data;
+  variables: Variables;
+  prepend: <A>(
+    connection: Connection<A>,
+    edges: Edge<A>[],
+  ) => ConnectionUpdate<A>;
+  append: <A>(
+    connection: Connection<A>,
+    edges: Edge<A>[],
+  ) => ConnectionUpdate<A>;
+  remove: <A>(connection: Connection<A>, ids: string[]) => ConnectionUpdate<A>;
+}) => Option<ConnectionUpdate<unknown>>;
+
+type RequestOptions<Data, Variables> = {
+  optimize?: boolean;
+  connectionUpdates?: GetConnectionUpdate<Data, Variables>[] | undefined;
+};
 
 export class Client {
   url: string;
@@ -122,7 +165,10 @@ export class Client {
   request<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
-    { optimize = false }: RequestOptions = {},
+    {
+      optimize = false,
+      connectionUpdates,
+    }: RequestOptions<Data, Variables> = {},
   ): Future<Result<Data, ClientError>> {
     const transformedDocument = this.getTransformedDocument(document);
     const transformedDocumentsForRequest =
@@ -170,6 +216,17 @@ export class Client {
           variablesAsRecord,
         );
       })
+      .tapOk((data) => {
+        if (connectionUpdates !== undefined) {
+          connectionUpdates.forEach((getUpdate) => {
+            getUpdate({ data, variables, prepend, append, remove }).map(
+              ([connection, update]) => {
+                this.cache.updateConnection(connection, update);
+              },
+            );
+          });
+        }
+      })
       .tap((result) => {
         this.cache.setOperationInCache(
           transformedDocument,
@@ -205,7 +262,7 @@ export class Client {
   query<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
-    requestOptions?: RequestOptions,
+    requestOptions?: RequestOptions<Data, Variables>,
   ) {
     return this.request(document, variables, requestOptions);
   }
@@ -213,7 +270,7 @@ export class Client {
   commitMutation<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
-    requestOptions?: RequestOptions,
+    requestOptions?: RequestOptions<Data, Variables>,
   ) {
     return this.request(document, variables, requestOptions);
   }

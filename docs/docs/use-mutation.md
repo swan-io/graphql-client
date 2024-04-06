@@ -8,6 +8,8 @@ sidebar_label: useMutation
 ### Params
 
 - `mutation`: your mutation document node
+- `config`:
+  - `connectionUpdates`: configuration to prepend/append/remove edges from connections on mutation
 
 ### Returns
 
@@ -73,4 +75,30 @@ const UserPage = ({ userId }: Props) => {
     </form>
   );
 };
+```
+
+## Handling connections
+
+```ts
+useMutation(BlockUser, {
+  connectionUpdates: [
+    ({ data, append }) =>
+      Option.fromNullable(data.blockUser).map(({ user }) =>
+        append(blockedUsers, [user]),
+      ),
+    ({ data, prepend }) =>
+      Option.fromNullable(data.blockUser).map(({ user }) =>
+        prepend(lastBlockedUsers, [user]),
+      ),
+  ],
+});
+
+useMutation(Unfriend, {
+  connectionUpdates: [
+    ({ variables, remove }) =>
+      Option.fromNullable(data.unfriend).map(() =>
+        remove(friends, [variables.id]),
+      ),
+  ],
+});
 ```

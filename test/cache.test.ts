@@ -1,5 +1,6 @@
 import { Option, Result } from "@swan-io/boxed";
 import { expect, test } from "vitest";
+import { Connection } from "../src";
 import { ClientCache } from "../src/cache/cache";
 import { optimizeQuery, readOperationFromCache } from "../src/cache/read";
 import { writeOperationToCache } from "../src/cache/write";
@@ -7,6 +8,7 @@ import { addTypenames, inlineFragments } from "../src/graphql/ast";
 import { print } from "../src/graphql/print";
 import {
   OnboardingInfo,
+  addMembership,
   appQuery,
   appQueryWithExtraArrayInfo,
   bindAccountMembershipMutation,
@@ -199,4 +201,145 @@ test("Write & read in cache", () => {
       language: "en",
     }),
   ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
+
+  const cache3 = new ClientCache();
+
+  writeOperationToCache(
+    cache3,
+    preparedAppQuery,
+    getAppQueryResponse({
+      user2LastName: "Last",
+      user1IdentificationLevels: null,
+    }),
+    {
+      id: "1",
+    },
+  );
+
+  const read = readOperationFromCache(cache3, preparedAppQuery, {
+    id: "1",
+  });
+
+  if (read.isSome()) {
+    const cacheResult = read.get();
+    if (cacheResult.isOk()) {
+      const value = cacheResult.get() as ReturnType<typeof getAppQueryResponse>;
+      const accountMemberships =
+        value.accountMemberships as unknown as Connection<{
+          __typename: "AccountMembership";
+          id: string;
+          account: {
+            __typename: "Account";
+            name: string;
+          };
+          membershipUser: {
+            __typename: "User";
+            id: string;
+            lastName: string;
+          };
+        }>;
+      cache3.updateConnection(accountMemberships, {
+        remove: ["account-membership-1"],
+      });
+
+      writeOperationToCache(
+        cache3,
+        inlineFragments(addTypenames(addMembership)),
+        {
+          __typename: "Mutation",
+          addMembership: {
+            __typename: "AddMembership",
+            membership: {
+              __typename: "AccountMembership",
+              id: "account-membership-3",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-3",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        },
+        {},
+      );
+
+      writeOperationToCache(
+        cache3,
+        inlineFragments(addTypenames(addMembership)),
+        {
+          __typename: "Mutation",
+          addMembership: {
+            __typename: "AddMembership",
+            membership: {
+              __typename: "AccountMembership",
+              id: "account-membership-0",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-0",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        },
+        {},
+      );
+
+      cache3.updateConnection(accountMemberships, {
+        append: [
+          {
+            __typename: "AccountMembershipEdge",
+            node: {
+              __typename: "AccountMembership",
+              id: "account-membership-3",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-3",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        ],
+      });
+      cache3.updateConnection(accountMemberships, {
+        prepend: [
+          {
+            __typename: "AccountMembershipEdge",
+            node: {
+              __typename: "AccountMembership",
+              id: "account-membership-0",
+              account: {
+                __typename: "Account",
+                name: "First",
+              },
+              membershipUser: {
+                __typename: "User",
+                id: "user-0",
+                lastName: "Le Brun",
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    expect(
+      readOperationFromCache(cache3, preparedAppQuery, {
+        id: "1",
+      }),
+    ).toMatchSnapshot();
+  } else {
+    expect(true).toBe(false);
+  }
 });
