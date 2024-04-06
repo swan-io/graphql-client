@@ -288,6 +288,7 @@ export class ClientCache {
                     [edgesSymbol]: [
                       ...Array.filterMap(edges, ({ node, __typename }) =>
                         getCacheKeyFromJson(node).flatMap((key) =>
+                          // we can omit the requested fields here because the Connection<A> contrains the fields
                           this.getFromCacheWithoutKey(key).map(() => ({
                             [typenameSymbol]: __typename,
                             [nodeSymbol]: key,
@@ -313,6 +314,7 @@ export class ClientCache {
                       ...value[edgesSymbol],
                       ...Array.filterMap(edges, ({ node, __typename }) =>
                         getCacheKeyFromJson(node).flatMap((key) =>
+                          // we can omit the requested fields here because the Connection<A> contrains the fields
                           this.getFromCacheWithoutKey(key).map(() => ({
                             [typenameSymbol]: __typename,
                             [nodeSymbol]: key,
