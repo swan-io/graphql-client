@@ -30,10 +30,18 @@ Map {
       Symbol(__typename): "AccountMembershipConnection",
       Symbol(edges): [
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-1>),
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-2>),
         },
@@ -160,10 +168,18 @@ Map {
       Symbol(__typename): "AccountMembershipConnection",
       Symbol(edges): [
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-1>),
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-2>),
         },
@@ -324,10 +340,18 @@ Map {
       Symbol(__typename): "AccountMembershipConnection",
       Symbol(edges): [
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-1>),
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(node),
+          },
           Symbol(__typename): "AccountMembershipEdge",
           Symbol(node): Symbol(AccountMembership<account-membership-2>),
         },
@@ -562,6 +586,11 @@ Map {
       Symbol(__typename): "OnboardingInvalidStatusInfo",
       Symbol(errors): [
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "email",
           Symbol(errors): [
@@ -569,6 +598,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "employmentStatus",
           Symbol(errors): [
@@ -576,6 +610,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "monthlyIncome",
           Symbol(errors): [
@@ -583,6 +622,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "language",
           Symbol(errors): [
@@ -590,6 +634,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "residencyAddress.addressLine1",
           Symbol(errors): [
@@ -597,6 +646,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "residencyAddress.city",
           Symbol(errors): [
@@ -604,6 +658,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "residencyAddress.country",
           Symbol(errors): [
@@ -611,6 +670,11 @@ Map {
           ],
         },
         {
+          Symbol(__requestedKeys): Set {
+            Symbol(__typename),
+            Symbol(field),
+            Symbol(errors),
+          },
           Symbol(__typename): "ValidationError",
           Symbol(field): "residencyAddress.postalCode",
           Symbol(errors): [

@@ -53,24 +53,34 @@ export const writeOperationToCache = (
                 selectedKeys,
               });
 
+              const nextValue = Array(fieldValue.length);
+
+              cache.updateFieldInClosestCachedAncestor({
+                originalFieldName,
+                fieldNameWithArguments,
+                value: nextValue,
+                path: [...path, fieldNameWithArguments],
+                ancestors: [...data, fieldValue],
+                variables: fieldArguments,
+                rootTypename,
+                selectedKeys,
+              });
+
               fieldValue.forEach((item: unknown, index: number) => {
                 const value = cache.cacheIfEligible(item, selectedKeys);
 
-                const nextValue = Array(fieldValue.length);
-                nextValue[index] = value;
-
                 cache.updateFieldInClosestCachedAncestor({
-                  originalFieldName,
-                  fieldNameWithArguments,
-                  value: nextValue,
-                  path,
-                  ancestors: data,
+                  originalFieldName: index.toString(),
+                  fieldNameWithArguments: index.toString(),
+                  value,
+                  path: [...path, fieldNameWithArguments],
+                  ancestors: [...data, fieldValue],
                   variables: fieldArguments,
                   rootTypename,
                   selectedKeys,
                 });
 
-                if (isRecord(item) && !Array.isArray(item)) {
+                if (isRecord(item)) {
                   traverse(
                     fieldNode.selectionSet!,
                     [...data, fieldValue, item],
