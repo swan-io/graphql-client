@@ -3,131 +3,129 @@
 exports[`Write & read in cache 1`] = `
 Map {
   Symbol(Query) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(accountMembership({"id":"1"})),
       Symbol(accountMemberships({"first":"2"})),
       Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})),
     },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
-      Symbol(accountMemberships({"first":"2"})): {
-        "__connectionArguments": {
-          "first": "2",
-        },
-        "__connectionCacheKey": "Query",
-        "__connectionCachePath": [
-          [
-            {
-              "symbol": "accountMemberships({"first":"2"})",
-            },
-          ],
-        ],
-        Symbol(__typename): "AccountMembershipConnection",
-        Symbol(edges): [
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-1>),
-          },
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-2>),
-          },
-        ],
+    Symbol(__typename): "Query",
+    Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
+    Symbol(accountMemberships({"first":"2"})): {
+      "__connectionArguments": {
+        "first": "2",
       },
-      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
+      "__connectionCacheKey": "Query",
+      "__connectionCachePath": [
+        [
+          {
+            "symbol": "accountMemberships({"first":"2"})",
+          },
+        ],
+      ],
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(edges),
+      },
+      Symbol(__typename): "AccountMembershipConnection",
+      Symbol(edges): [
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-1>),
+        },
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-2>),
+        },
+      ],
     },
+    Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
   },
   Symbol(AccountMembership<account-membership-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(user),
       Symbol(account),
       Symbol(membershipUser),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-1",
-      Symbol(user): Symbol(User<user-1>),
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "First",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-1",
+    Symbol(user): Symbol(User<user-1>),
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-1>),
+      Symbol(__typename): "Account",
+      Symbol(name): "First",
     },
+    Symbol(membershipUser): Symbol(User<user-1>),
   },
   Symbol(User<user-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(firstName),
       Symbol(lastName),
       Symbol(identificationLevels),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-1",
-      Symbol(firstName): "Matthias",
-      Symbol(lastName): "Le Brun",
-      Symbol(identificationLevels): null,
-    },
+    Symbol(__typename): "User",
+    Symbol(id): "user-1",
+    Symbol(firstName): "Matthias",
+    Symbol(lastName): "Le Brun",
+    Symbol(identificationLevels): null,
   },
   Symbol(AccountMembership<account-membership-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(account),
       Symbol(membershipUser),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-2",
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "Second",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-2",
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-2>),
+      Symbol(__typename): "Account",
+      Symbol(name): "Second",
     },
+    Symbol(membershipUser): Symbol(User<user-2>),
   },
   Symbol(User<user-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(lastName),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-2",
-      Symbol(lastName): "Last",
-    },
+    Symbol(__typename): "User",
+    Symbol(id): "user-2",
+    Symbol(lastName): "Last",
   },
   Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(supportingDocuments),
       Symbol(id),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(supportingDocuments): [
-        Symbol(SupportingDocument<supporting-document-1>),
-      ],
-      Symbol(id): "supporting-document-collection-1",
-    },
+    Symbol(__typename): "SupportingDocumentCollection",
+    Symbol(supportingDocuments): [
+      Symbol(SupportingDocument<supporting-document-1>),
+    ],
+    Symbol(id): "supporting-document-collection-1",
   },
   Symbol(SupportingDocument<supporting-document-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(createdAt),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocument",
-      Symbol(id): "supporting-document-1",
-      Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
+    Symbol(__typename): "SupportingDocument",
+    Symbol(id): "supporting-document-1",
+    Symbol(createdAt): "2024-03-14T12:06:10.857Z",
   },
 }
 `;
@@ -135,155 +133,162 @@ Map {
 exports[`Write & read in cache 2`] = `
 Map {
   Symbol(Query) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(accountMembership({"id":"1"})),
       Symbol(accountMemberships({"first":"2"})),
       Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})),
     },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
-      Symbol(accountMemberships({"first":"2"})): {
-        "__connectionArguments": {
-          "first": "2",
-        },
-        "__connectionCacheKey": "Query",
-        "__connectionCachePath": [
-          [
-            {
-              "symbol": "accountMemberships({"first":"2"})",
-            },
-          ],
-        ],
-        Symbol(__typename): "AccountMembershipConnection",
-        Symbol(edges): [
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-1>),
-          },
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-2>),
-          },
-        ],
+    Symbol(__typename): "Query",
+    Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
+    Symbol(accountMemberships({"first":"2"})): {
+      "__connectionArguments": {
+        "first": "2",
       },
-      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
+      "__connectionCacheKey": "Query",
+      "__connectionCachePath": [
+        [
+          {
+            "symbol": "accountMemberships({"first":"2"})",
+          },
+        ],
+      ],
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(edges),
+      },
+      Symbol(__typename): "AccountMembershipConnection",
+      Symbol(edges): [
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-1>),
+        },
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-2>),
+        },
+      ],
     },
+    Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
   },
   Symbol(AccountMembership<account-membership-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(user),
       Symbol(account),
       Symbol(membershipUser),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-1",
-      Symbol(user): Symbol(User<user-1>),
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "First",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-1",
+    Symbol(user): Symbol(User<user-1>),
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-1>),
+      Symbol(__typename): "Account",
+      Symbol(name): "First",
     },
+    Symbol(membershipUser): Symbol(User<user-1>),
   },
   Symbol(User<user-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(firstName),
       Symbol(lastName),
       Symbol(identificationLevels),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-1",
-      Symbol(firstName): "Matthias",
-      Symbol(lastName): "Le Brun",
-      Symbol(identificationLevels): null,
-    },
+    Symbol(__typename): "User",
+    Symbol(id): "user-1",
+    Symbol(firstName): "Matthias",
+    Symbol(lastName): "Le Brun",
+    Symbol(identificationLevels): null,
   },
   Symbol(AccountMembership<account-membership-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(account),
       Symbol(membershipUser),
       Symbol(user),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-2",
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "Second",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-2",
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-2>),
-      Symbol(user): Symbol(User<user-2>),
+      Symbol(__typename): "Account",
+      Symbol(name): "Second",
     },
+    Symbol(membershipUser): Symbol(User<user-2>),
+    Symbol(user): Symbol(User<user-2>),
   },
   Symbol(User<user-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(lastName),
       Symbol(firstName),
       Symbol(identificationLevels),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-2",
-      Symbol(lastName): "Acthernoene",
-      Symbol(firstName): "Mathieu",
-      Symbol(identificationLevels): {
-        Symbol(__typename): "IdentificationLevels",
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): false,
+    Symbol(__typename): "User",
+    Symbol(id): "user-2",
+    Symbol(lastName): "Acthernoene",
+    Symbol(firstName): "Mathieu",
+    Symbol(identificationLevels): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(expert),
+        Symbol(PVID),
+        Symbol(QES),
       },
+      Symbol(__typename): "IdentificationLevels",
+      Symbol(expert): true,
+      Symbol(PVID): true,
+      Symbol(QES): false,
     },
   },
   Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(supportingDocuments),
       Symbol(id),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(supportingDocuments): [
-        Symbol(SupportingDocument<supporting-document-1>),
-      ],
-      Symbol(id): "supporting-document-collection-1",
-    },
+    Symbol(__typename): "SupportingDocumentCollection",
+    Symbol(supportingDocuments): [
+      Symbol(SupportingDocument<supporting-document-1>),
+    ],
+    Symbol(id): "supporting-document-collection-1",
   },
   Symbol(SupportingDocument<supporting-document-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(createdAt),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocument",
-      Symbol(id): "supporting-document-1",
-      Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
+    Symbol(__typename): "SupportingDocument",
+    Symbol(id): "supporting-document-1",
+    Symbol(createdAt): "2024-03-14T12:06:10.857Z",
   },
   Symbol(Mutation) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})),
     },
-    "value": {
-      Symbol(__typename): "Mutation",
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
-        Symbol(__typename): "BindAccountMembershipSuccessPayload",
-        Symbol(message): "Account is in invalid status",
-        Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
+    Symbol(__typename): "Mutation",
+    Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(accountMembership),
+        Symbol(message),
       },
+      Symbol(__typename): "BindAccountMembershipSuccessPayload",
+      Symbol(message): "Account is in invalid status",
+      Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
     },
   },
 }
@@ -292,160 +297,173 @@ Map {
 exports[`Write & read in cache 3`] = `
 Map {
   Symbol(Query) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(accountMembership({"id":"1"})),
       Symbol(accountMemberships({"first":"2"})),
       Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})),
     },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
-      Symbol(accountMemberships({"first":"2"})): {
-        "__connectionArguments": {
-          "first": "2",
-        },
-        "__connectionCacheKey": "Query",
-        "__connectionCachePath": [
-          [
-            {
-              "symbol": "accountMemberships({"first":"2"})",
-            },
-          ],
-        ],
-        Symbol(__typename): "AccountMembershipConnection",
-        Symbol(edges): [
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-1>),
-          },
-          {
-            Symbol(__typename): "AccountMembershipEdge",
-            Symbol(node): Symbol(AccountMembership<account-membership-2>),
-          },
-        ],
+    Symbol(__typename): "Query",
+    Symbol(accountMembership({"id":"1"})): Symbol(AccountMembership<account-membership-1>),
+    Symbol(accountMemberships({"first":"2"})): {
+      "__connectionArguments": {
+        "first": "2",
       },
-      Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
+      "__connectionCacheKey": "Query",
+      "__connectionCachePath": [
+        [
+          {
+            "symbol": "accountMemberships({"first":"2"})",
+          },
+        ],
+      ],
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(edges),
+      },
+      Symbol(__typename): "AccountMembershipConnection",
+      Symbol(edges): [
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-1>),
+        },
+        {
+          Symbol(__typename): "AccountMembershipEdge",
+          Symbol(node): Symbol(AccountMembership<account-membership-2>),
+        },
+      ],
     },
+    Symbol(supportingDocumentCollection({"id":"e8d38e87-9862-47ef-b749-212ed566b955"})): Symbol(SupportingDocumentCollection<supporting-document-collection-1>),
   },
   Symbol(AccountMembership<account-membership-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(user),
       Symbol(account),
       Symbol(membershipUser),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-1",
-      Symbol(user): Symbol(User<user-1>),
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "First",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-1",
+    Symbol(user): Symbol(User<user-1>),
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-1>),
+      Symbol(__typename): "Account",
+      Symbol(name): "First",
     },
+    Symbol(membershipUser): Symbol(User<user-1>),
   },
   Symbol(User<user-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(firstName),
       Symbol(lastName),
       Symbol(identificationLevels),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-1",
-      Symbol(firstName): "Matthias",
-      Symbol(lastName): "Le Brun",
-      Symbol(identificationLevels): {
-        Symbol(__typename): "IdentificationLevels",
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): true,
+    Symbol(__typename): "User",
+    Symbol(id): "user-1",
+    Symbol(firstName): "Matthias",
+    Symbol(lastName): "Le Brun",
+    Symbol(identificationLevels): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(expert),
+        Symbol(PVID),
+        Symbol(QES),
       },
+      Symbol(__typename): "IdentificationLevels",
+      Symbol(expert): true,
+      Symbol(PVID): true,
+      Symbol(QES): true,
     },
   },
   Symbol(AccountMembership<account-membership-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(account),
       Symbol(membershipUser),
       Symbol(user),
     },
-    "value": {
-      Symbol(__typename): "AccountMembership",
-      Symbol(id): "account-membership-2",
-      Symbol(account): {
-        Symbol(__typename): "Account",
-        Symbol(name): "Second",
+    Symbol(__typename): "AccountMembership",
+    Symbol(id): "account-membership-2",
+    Symbol(account): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(name),
       },
-      Symbol(membershipUser): Symbol(User<user-2>),
-      Symbol(user): Symbol(User<user-2>),
+      Symbol(__typename): "Account",
+      Symbol(name): "Second",
     },
+    Symbol(membershipUser): Symbol(User<user-2>),
+    Symbol(user): Symbol(User<user-2>),
   },
   Symbol(User<user-2>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(lastName),
       Symbol(firstName),
       Symbol(identificationLevels),
     },
-    "value": {
-      Symbol(__typename): "User",
-      Symbol(id): "user-2",
-      Symbol(lastName): "Acthernoene",
-      Symbol(firstName): "Mathieu",
-      Symbol(identificationLevels): {
-        Symbol(__typename): "IdentificationLevels",
-        Symbol(expert): true,
-        Symbol(PVID): true,
-        Symbol(QES): false,
+    Symbol(__typename): "User",
+    Symbol(id): "user-2",
+    Symbol(lastName): "Acthernoene",
+    Symbol(firstName): "Mathieu",
+    Symbol(identificationLevels): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(expert),
+        Symbol(PVID),
+        Symbol(QES),
       },
+      Symbol(__typename): "IdentificationLevels",
+      Symbol(expert): true,
+      Symbol(PVID): true,
+      Symbol(QES): false,
     },
   },
   Symbol(SupportingDocumentCollection<supporting-document-collection-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(supportingDocuments),
       Symbol(id),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(supportingDocuments): [
-        Symbol(SupportingDocument<supporting-document-1>),
-      ],
-      Symbol(id): "supporting-document-collection-1",
-    },
+    Symbol(__typename): "SupportingDocumentCollection",
+    Symbol(supportingDocuments): [
+      Symbol(SupportingDocument<supporting-document-1>),
+    ],
+    Symbol(id): "supporting-document-collection-1",
   },
   Symbol(SupportingDocument<supporting-document-1>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(createdAt),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocument",
-      Symbol(id): "supporting-document-1",
-      Symbol(createdAt): "2024-03-14T12:06:10.857Z",
-    },
+    Symbol(__typename): "SupportingDocument",
+    Symbol(id): "supporting-document-1",
+    Symbol(createdAt): "2024-03-14T12:06:10.857Z",
   },
   Symbol(Mutation) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})),
     },
-    "value": {
-      Symbol(__typename): "Mutation",
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
-        Symbol(__typename): "BindAccountMembershipSuccessPayload",
-        Symbol(message): "Account is in invalid status",
-        Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
+    Symbol(__typename): "Mutation",
+    Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(accountMembership),
+        Symbol(message),
       },
+      Symbol(__typename): "BindAccountMembershipSuccessPayload",
+      Symbol(message): "Account is in invalid status",
+      Symbol(accountMembership): Symbol(AccountMembership<account-membership-2>),
     },
   },
 }
@@ -458,17 +476,15 @@ exports[`Write & read in cache 5`] = `"query App($id: ID!) {accountMembership(id
 exports[`Write & read in cache 6`] = `
 Map {
   Symbol(Query) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(onboardingInfo({"id":"d26ed1ed-5f70-4096-9d8e-27ef258e26fa"})),
     },
-    "value": {
-      Symbol(__typename): "Query",
-      Symbol(onboardingInfo({"id":"d26ed1ed-5f70-4096-9d8e-27ef258e26fa"})): Symbol(OnboardingInfo<d26ed1ed-5f70-4096-9d8e-27ef258e26fa>),
-    },
+    Symbol(__typename): "Query",
+    Symbol(onboardingInfo({"id":"d26ed1ed-5f70-4096-9d8e-27ef258e26fa"})): Symbol(OnboardingInfo<d26ed1ed-5f70-4096-9d8e-27ef258e26fa>),
   },
   Symbol(OnboardingInfo<d26ed1ed-5f70-4096-9d8e-27ef258e26fa>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(accountCountry),
@@ -484,99 +500,128 @@ Map {
       Symbol(info),
       Symbol(statusInfo),
     },
-    "value": {
-      Symbol(__typename): "OnboardingInfo",
-      Symbol(id): "d26ed1ed-5f70-4096-9d8e-27ef258e26fa",
-      Symbol(accountCountry): "FRA",
-      Symbol(email): null,
-      Symbol(language): null,
-      Symbol(redirectUrl): "",
-      Symbol(tcuUrl): "https://document-factory.sandbox.master.oina.ws/swanTCU/7649fada-a1c8-4537-bd3c-d539664a841c.pdf?Expires=1712229767&Key-Pair-Id=KTRMJ5W6BT4MH&Signature=eRpFq3ChqRx7KUVM5bhzPoX7uIxaCyJycw~wTAPDKslc-oq4OwKCrB1mm8efx~wdwuauT0b80EoPidCsoMEdYKvT7LE-H12HKizLYaHXxVNevmWZMR2zqN1v9bi77oIhVEQZmV9uGCluDypvWQn9eu3ICOMJr8k0dn7f4K0jQyAMju1AqBg3~jeeAbOD1Y0hA0T2zeJ~OLDahJB54kFDt~UbdwEylgjh1V-tg5GvXs1w268aax98DpHrORttnaSTLvB7PlMIJJbgQIy712OO2~zg6dggMSlWHk0J3243xsd65eWhLPeLVt8jlnYBMvc0Iscd4k12iVWKWRozckglNQ__",
-      Symbol(legalRepresentativeRecommendedIdentificationLevel): "PVID",
-      Symbol(oAuthRedirectParameters): null,
-      Symbol(onboardingState): "Ongoing",
-      Symbol(projectInfo): Symbol(ProjectInfo<64060573-f0ec-4204-ad49-a3983497ada4>),
-      Symbol(supportingDocumentCollection): Symbol(SupportingDocumentCollection<55561d8f-6a90-41f2-be48-e14c82e3cc34>),
-      Symbol(info): {
-        Symbol(__typename): "OnboardingIndividualAccountHolderInfo",
-        Symbol(residencyAddress): {
-          Symbol(__typename): "AddressInfo",
-          Symbol(addressLine1): null,
-          Symbol(addressLine2): null,
-          Symbol(city): null,
-          Symbol(country): null,
-          Symbol(postalCode): null,
-          Symbol(state): null,
+    Symbol(__typename): "OnboardingInfo",
+    Symbol(id): "d26ed1ed-5f70-4096-9d8e-27ef258e26fa",
+    Symbol(accountCountry): "FRA",
+    Symbol(email): null,
+    Symbol(language): null,
+    Symbol(redirectUrl): "",
+    Symbol(tcuUrl): "https://document-factory.sandbox.master.oina.ws/swanTCU/7649fada-a1c8-4537-bd3c-d539664a841c.pdf?Expires=1712229767&Key-Pair-Id=KTRMJ5W6BT4MH&Signature=eRpFq3ChqRx7KUVM5bhzPoX7uIxaCyJycw~wTAPDKslc-oq4OwKCrB1mm8efx~wdwuauT0b80EoPidCsoMEdYKvT7LE-H12HKizLYaHXxVNevmWZMR2zqN1v9bi77oIhVEQZmV9uGCluDypvWQn9eu3ICOMJr8k0dn7f4K0jQyAMju1AqBg3~jeeAbOD1Y0hA0T2zeJ~OLDahJB54kFDt~UbdwEylgjh1V-tg5GvXs1w268aax98DpHrORttnaSTLvB7PlMIJJbgQIy712OO2~zg6dggMSlWHk0J3243xsd65eWhLPeLVt8jlnYBMvc0Iscd4k12iVWKWRozckglNQ__",
+    Symbol(legalRepresentativeRecommendedIdentificationLevel): "PVID",
+    Symbol(oAuthRedirectParameters): null,
+    Symbol(onboardingState): "Ongoing",
+    Symbol(projectInfo): Symbol(ProjectInfo<64060573-f0ec-4204-ad49-a3983497ada4>),
+    Symbol(supportingDocumentCollection): Symbol(SupportingDocumentCollection<55561d8f-6a90-41f2-be48-e14c82e3cc34>),
+    Symbol(info): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(residencyAddress),
+        Symbol(taxIdentificationNumber),
+        Symbol(employmentStatus),
+        Symbol(monthlyIncome),
+        Symbol(legalRepresentativePersonalAddress),
+        Symbol(businessActivity),
+        Symbol(businessActivityDescription),
+        Symbol(companyType),
+        Symbol(isRegistered),
+        Symbol(monthlyPaymentVolume),
+        Symbol(name),
+        Symbol(typeOfRepresentation),
+        Symbol(registrationNumber),
+        Symbol(vatNumber),
+        Symbol(individualUltimateBeneficialOwners),
+      },
+      Symbol(__typename): "OnboardingIndividualAccountHolderInfo",
+      Symbol(residencyAddress): {
+        Symbol(__requestedKeys): Set {
+          Symbol(__typename),
+          Symbol(addressLine1),
+          Symbol(addressLine2),
+          Symbol(city),
+          Symbol(country),
+          Symbol(postalCode),
+          Symbol(state),
         },
-        Symbol(taxIdentificationNumber): null,
-        Symbol(employmentStatus): null,
-        Symbol(monthlyIncome): null,
+        Symbol(__typename): "AddressInfo",
+        Symbol(addressLine1): null,
+        Symbol(addressLine2): null,
+        Symbol(city): null,
+        Symbol(country): null,
+        Symbol(postalCode): null,
+        Symbol(state): null,
       },
-      Symbol(statusInfo): {
-        Symbol(__typename): "OnboardingInvalidStatusInfo",
-        Symbol(errors): [
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "email",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "employmentStatus",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "monthlyIncome",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "language",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "residencyAddress.addressLine1",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "residencyAddress.city",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "residencyAddress.country",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-          {
-            Symbol(__typename): "ValidationError",
-            Symbol(field): "residencyAddress.postalCode",
-            Symbol(errors): [
-              "Missing",
-            ],
-          },
-        ],
+      Symbol(taxIdentificationNumber): null,
+      Symbol(employmentStatus): null,
+      Symbol(monthlyIncome): null,
+    },
+    Symbol(statusInfo): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(errors),
       },
+      Symbol(__typename): "OnboardingInvalidStatusInfo",
+      Symbol(errors): [
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "email",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "employmentStatus",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "monthlyIncome",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "language",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "residencyAddress.addressLine1",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "residencyAddress.city",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "residencyAddress.country",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+        {
+          Symbol(__typename): "ValidationError",
+          Symbol(field): "residencyAddress.postalCode",
+          Symbol(errors): [
+            "Missing",
+          ],
+        },
+      ],
     },
   },
   Symbol(ProjectInfo<64060573-f0ec-4204-ad49-a3983497ada4>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(accentColor),
@@ -584,33 +629,33 @@ Map {
       Symbol(logoUri),
       Symbol(tcuDocumentUri({"language":"en"})),
     },
-    "value": {
-      Symbol(__typename): "ProjectInfo",
-      Symbol(id): "64060573-f0ec-4204-ad49-a3983497ada4",
-      Symbol(accentColor): "#38945D",
-      Symbol(name): "bloodyowl",
-      Symbol(logoUri): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/logo-5733f69e-8223-4b7e-92c7-0fed9eaaca33.png",
-      Symbol(tcuDocumentUri({"language":"en"})): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/tcu/bb87c4f2-de5f-4df7-b617-91f2c0eb03f4/en.pdf",
-    },
+    Symbol(__typename): "ProjectInfo",
+    Symbol(id): "64060573-f0ec-4204-ad49-a3983497ada4",
+    Symbol(accentColor): "#38945D",
+    Symbol(name): "bloodyowl",
+    Symbol(logoUri): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/logo-5733f69e-8223-4b7e-92c7-0fed9eaaca33.png",
+    Symbol(tcuDocumentUri({"language":"en"})): "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/tcu/bb87c4f2-de5f-4df7-b617-91f2c0eb03f4/en.pdf",
   },
   Symbol(SupportingDocumentCollection<55561d8f-6a90-41f2-be48-e14c82e3cc34>) => {
-    "requestedKeys": Set {
+    Symbol(__requestedKeys): Set {
       Symbol(__typename),
       Symbol(id),
       Symbol(requiredSupportingDocumentPurposes),
       Symbol(statusInfo),
       Symbol(supportingDocuments),
     },
-    "value": {
-      Symbol(__typename): "SupportingDocumentCollection",
-      Symbol(id): "55561d8f-6a90-41f2-be48-e14c82e3cc34",
-      Symbol(requiredSupportingDocumentPurposes): [],
-      Symbol(statusInfo): {
-        Symbol(__typename): "SupportingDocumentCollectionWaitingForDocumentStatusInfo",
-        Symbol(status): "WaitingForDocument",
+    Symbol(__typename): "SupportingDocumentCollection",
+    Symbol(id): "55561d8f-6a90-41f2-be48-e14c82e3cc34",
+    Symbol(requiredSupportingDocumentPurposes): [],
+    Symbol(statusInfo): {
+      Symbol(__requestedKeys): Set {
+        Symbol(__typename),
+        Symbol(status),
       },
-      Symbol(supportingDocuments): [],
+      Symbol(__typename): "SupportingDocumentCollectionWaitingForDocumentStatusInfo",
+      Symbol(status): "WaitingForDocument",
     },
+    Symbol(supportingDocuments): [],
   },
 }
 `;

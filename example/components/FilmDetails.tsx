@@ -51,9 +51,14 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
 
   useEffect(() => {
     // try debounced
-    queryProducers({ filmId: "1" });
-    queryProducers({ filmId: "2" });
-    queryProducers({ filmId });
+    const a = queryProducers({ filmId: "1" });
+    const b = queryProducers({ filmId: "2" });
+    const c = queryProducers({ filmId });
+    return () => {
+      a.cancel();
+      b.cancel();
+      c.cancel();
+    };
   }, [filmId, queryProducers]);
 
   return (

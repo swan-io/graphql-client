@@ -1,7 +1,12 @@
 export const DEEP_MERGE_DELETE = Symbol.for("DEEP_MERGE_DELETE");
 
+export const REQUESTED_KEYS = Symbol.for("__requestedKeys");
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const deepMerge = (target: any, source: any): any => {
+  if (target instanceof Set && source instanceof Set) {
+    return new Set([...target, ...source]);
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const next: any = Array.isArray(target)
     ? Array(target.length)

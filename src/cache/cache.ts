@@ -8,16 +8,12 @@ import { P, match } from "ts-pattern";
 import { Connection, Edge } from "../types";
 import {
   DEEP_MERGE_DELETE,
+  REQUESTED_KEYS,
   containsAll,
   deepMerge,
   isRecord,
   serializeVariables,
 } from "../utils";
-
-type CacheEntry = {
-  requestedKeys: Set<symbol>;
-  value: unknown;
-};
 
 export const getCacheKeyFromJson = (json: unknown): Option<symbol> => {
   return match(json)
@@ -43,15 +39,8 @@ export const getCacheKeyFromOperationNode = (
     .otherwise(() => Option.None());
 };
 
-const mergeCacheEntries = (a: CacheEntry, b: CacheEntry): CacheEntry => {
-  return {
-    requestedKeys: new Set([...a.requestedKeys, ...b.requestedKeys]),
-    value: deepMerge(a.value, b.value),
-  };
-};
-
 export class ClientCache {
-  cache = new Map<symbol, CacheEntry>();
+  cache = new Map<symbol, unknown>();
   operationCache = new Map<
     DocumentNode,
     Map<string, Option<Result<unknown, unknown>>>
@@ -86,40 +75,41 @@ export class ClientCache {
 
   getFromCache(cacheKey: symbol, requestedKeys: Set<symbol>) {
     return this.get(cacheKey).flatMap((entry) => {
-      if (containsAll(entry.requestedKeys, requestedKeys)) {
-        return Option.Some(entry.value);
+      if (isRecord(entry)) {
+        if (containsAll(entry[REQUESTED_KEYS] as Set<symbol>, requestedKeys)) {
+          return Option.Some(entry);
+        } else {
+          return Option.None();
+        }
       } else {
-        return Option.None();
+        return Option.Some(entry);
       }
     });
   }
 
   getFromCacheWithoutKey(cacheKey: symbol) {
     return this.get(cacheKey).flatMap((entry) => {
-      return Option.Some(entry.value);
+      return Option.Some(entry);
     });
   }
 
-  get(cacheKey: symbol): Option<CacheEntry> {
+  get(cacheKey: symbol): Option<unknown> {
     if (this.cache.has(cacheKey)) {
-      return Option.Some(this.cache.get(cacheKey) as CacheEntry);
+      return Option.Some(this.cache.get(cacheKey));
     } else {
       return Option.None();
     }
   }
 
-  getOrDefault(cacheKey: symbol): CacheEntry {
+  getOrDefault(cacheKey: symbol): unknown {
     if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey) as CacheEntry;
+      return this.cache.get(cacheKey) as unknown;
     } else {
-      return {
-        requestedKeys: new Set(),
-        value: {},
-      };
+      return {};
     }
   }
 
-  set(cacheKey: symbol, entry: CacheEntry) {
+  set(cacheKey: symbol, entry: unknown) {
     this.cache.set(cacheKey, entry);
   }
 
@@ -127,12 +117,15 @@ export class ClientCache {
     return match(getCacheKeyFromJson(value))
       .with(Option.P.Some(P.select()), (cacheKey) => {
         const existingEntry = this.getOrDefault(cacheKey);
+
         this.set(
           cacheKey,
-          mergeCacheEntries(existingEntry, {
-            requestedKeys,
-            value,
-          }),
+          deepMerge(
+            existingEntry,
+            isRecord(value)
+              ? { ...value, [REQUESTED_KEYS]: requestedKeys }
+              : value,
+          ),
         );
         return cacheKey;
       })
@@ -147,6 +140,7 @@ export class ClientCache {
     ancestors,
     variables,
     rootTypename,
+    selectedKeys,
   }: {
     originalFieldName: string;
     fieldNameWithArguments: symbol | string;
@@ -155,6 +149,7 @@ export class ClientCache {
     ancestors: unknown[];
     variables: Record<string, unknown>;
     rootTypename: string;
+    selectedKeys: Set<symbol>;
   }) {
     const ancestorsCopy = ancestors.concat();
     const pathCopy = path.concat();
@@ -172,18 +167,20 @@ export class ClientCache {
         const cacheKey = maybeCacheKey.get();
         const existingEntry = this.getOrDefault(cacheKey);
 
-        if (
-          isRecord(value) &&
-          typeof value.__typename === "string" &&
-          value.__typename.endsWith("Connection")
-        ) {
-          value.__connectionCacheKey = cacheKey.description;
-          value.__connectionCachePath = [
-            [...writePath, fieldNameWithArguments].map((item) =>
-              typeof item === "symbol" ? { symbol: item.description } : item,
-            ),
-          ];
-          value.__connectionArguments = variables;
+        if (isRecord(value) && !Array.isArray(value)) {
+          if (
+            typeof value.__typename === "string" &&
+            value.__typename.endsWith("Connection")
+          ) {
+            value.__connectionCacheKey = cacheKey.description;
+            value.__connectionCachePath = [
+              [...writePath, fieldNameWithArguments].map((item) =>
+                typeof item === "symbol" ? { symbol: item.description } : item,
+              ),
+            ];
+            value.__connectionArguments = variables;
+          }
+          value[REQUESTED_KEYS] = selectedKeys;
         }
 
         const deepUpdate = writePath.reduce<unknown>(
@@ -199,13 +196,7 @@ export class ClientCache {
           },
         );
 
-        this.set(
-          cacheKey,
-          mergeCacheEntries(existingEntry, {
-            requestedKeys: new Set(),
-            value: deepUpdate,
-          }),
-        );
+        this.set(cacheKey, deepMerge(existingEntry, deepUpdate));
 
         // When the cached ancestor is found, remove
         break;
@@ -226,7 +217,7 @@ export class ClientCache {
           acc.flatMap((acc) =>
             Option.fromNullable(isRecord(acc) ? acc[key] : null),
           ),
-        Option.fromNullable(cachedAncestor.value),
+        Option.fromNullable(cachedAncestor),
       );
 
       value.map((item) => {
@@ -239,13 +230,7 @@ export class ClientCache {
           updater(item as A),
         );
 
-        this.set(
-          cacheKey,
-          mergeCacheEntries(cachedAncestor, {
-            requestedKeys: new Set(),
-            value: deepUpdate,
-          }),
-        );
+        this.set(cacheKey, deepMerge(cachedAncestor, deepUpdate));
       });
     });
   }

@@ -6,4 +6,4 @@ export * from "./react/useDeferredQuery";
 export * from "./react/useMutation";
 export * from "./react/usePagination";
 export * from "./react/useQuery";
-export { Connection, Edge } from "./types";
+export * from "./types";

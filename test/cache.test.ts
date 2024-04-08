@@ -11,6 +11,8 @@ import {
   addMembership,
   appQuery,
   appQueryWithExtraArrayInfo,
+  appQueryWithMoreAccountInfo,
+  appQueryWithoutMoreAccountInfo,
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
@@ -219,6 +221,14 @@ test("Write & read in cache", () => {
   const read = readOperationFromCache(cache3, preparedAppQuery, {
     id: "1",
   });
+
+  expect(
+    readOperationFromCache(cache3, appQueryWithoutMoreAccountInfo, {}).isSome(),
+  ).toBe(true);
+
+  expect(
+    readOperationFromCache(cache3, appQueryWithMoreAccountInfo, {}).isNone(),
+  ).toBe(true);
 
   if (read.isSome()) {
     const cacheResult = read.get();

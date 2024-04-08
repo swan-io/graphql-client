@@ -15,6 +15,8 @@ import {
   getSelectedKeys,
 } from "../graphql/ast";
 import {
+  REQUESTED_KEYS,
+  containsAll,
   deepEqual,
   hasOwnProperty,
   isRecord,
@@ -27,9 +29,23 @@ const getFromCacheOrReturnValue = (
   valueOrKey: unknown,
   selectedKeys: Set<symbol>,
 ): Option<unknown> => {
-  return typeof valueOrKey === "symbol"
-    ? cache.getFromCache(valueOrKey, selectedKeys).flatMap(Option.fromNullable)
-    : Option.Some(valueOrKey);
+  if (typeof valueOrKey === "symbol") {
+    return cache
+      .getFromCache(valueOrKey, selectedKeys)
+      .flatMap(Option.fromNullable);
+  }
+  if (
+    isRecord(valueOrKey) &&
+    REQUESTED_KEYS in valueOrKey &&
+    valueOrKey[REQUESTED_KEYS] instanceof Set
+  ) {
+    if (containsAll(valueOrKey[REQUESTED_KEYS], selectedKeys)) {
+      return Option.Some(valueOrKey);
+    } else {
+      return Option.None();
+    }
+  }
+  return Option.Some(valueOrKey);
 };
 
 const getFromCacheOrReturnValueWithoutKeyFilter = (

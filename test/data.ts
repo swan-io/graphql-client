@@ -111,6 +111,37 @@ export const otherAppQuery = graphql(
   [CompleteUserInfo],
 );
 
+export const appQueryWithoutMoreAccountInfo = graphql(`
+  query App($id: ID!) {
+    accountMemberships(first: 2) {
+      edges {
+        node {
+          id
+          account {
+            name
+          }
+        }
+      }
+    }
+  }
+`);
+
+export const appQueryWithMoreAccountInfo = graphql(`
+  query App($id: ID!) {
+    accountMemberships(first: 2) {
+      edges {
+        node {
+          id
+          account {
+            name
+            country
+          }
+        }
+      }
+    }
+  }
+`);
+
 export const appQueryWithExtraArrayInfo = graphql(
   `
     query App($id: ID!) {

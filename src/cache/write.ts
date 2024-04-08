@@ -50,6 +50,7 @@ export const writeOperationToCache = (
                 ancestors: data,
                 variables: fieldArguments,
                 rootTypename,
+                selectedKeys,
               });
 
               fieldValue.forEach((item: unknown, index: number) => {
@@ -66,6 +67,7 @@ export const writeOperationToCache = (
                   ancestors: data,
                   variables: fieldArguments,
                   rootTypename,
+                  selectedKeys,
                 });
 
                 if (isRecord(item) && !Array.isArray(item)) {
@@ -88,6 +90,7 @@ export const writeOperationToCache = (
                 ancestors: data,
                 variables: fieldArguments,
                 rootTypename,
+                selectedKeys,
               });
 
               if (isRecord(fieldValue) && fieldNode.selectionSet != undefined) {
@@ -109,6 +112,7 @@ export const writeOperationToCache = (
                 ancestors: data,
                 variables: fieldArguments,
                 rootTypename,
+                selectedKeys,
               });
             }
           }
