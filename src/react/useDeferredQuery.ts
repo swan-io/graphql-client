@@ -7,6 +7,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { RequestOverrides } from "../client";
 import { ClientError } from "../errors";
 import { TypedDocumentNode } from "../types";
 import { deepEqual } from "../utils";
@@ -17,10 +18,15 @@ export type DeferredQueryConfig = {
   debounce?: number;
 };
 
+export type DeferredQueryExtraConfig = { overrides?: RequestOverrides };
+
 export type DeferredQuery<Data, Variables> = readonly [
   AsyncData<Result<Data, ClientError>>,
   {
-    query: (variables: Variables) => Future<Result<Data, ClientError>>;
+    query: (
+      variables: Variables,
+      config?: DeferredQueryExtraConfig,
+    ) => Future<Result<Data, ClientError>>;
     reset: () => void;
   },
 ];
@@ -60,7 +66,7 @@ export const useDeferredQuery = <Data, Variables>(
   }, [data]);
 
   const runQuery = useCallback(
-    (variables: Variables) => {
+    (variables: Variables, { overrides }: DeferredQueryExtraConfig = {}) => {
       setStableVariables((stableVariables) =>
         stableVariables.match({
           None: () => Option.Some(variables),
@@ -71,7 +77,7 @@ export const useDeferredQuery = <Data, Variables>(
         }),
       );
       return client
-        .request(stableQuery, variables, { optimize })
+        .request(stableQuery, variables, { optimize, overrides })
         .tap(() => setIsQuerying(false));
     },
     [client, optimize, stableQuery],
@@ -79,18 +85,18 @@ export const useDeferredQuery = <Data, Variables>(
 
   const [isQuerying, setIsQuerying] = useState(false);
   const exposedRunQuery = useCallback(
-    (variables: Variables) => {
+    (variables: Variables, config?: DeferredQueryExtraConfig) => {
       if (timeoutRef.current !== undefined) {
         clearTimeout(timeoutRef.current);
       }
       setIsQuerying(true);
       if (debounce === undefined) {
-        return runQuery(variables);
+        return runQuery(variables, config);
       } else {
         const [future, resolve] = Deferred.make<Result<Data, ClientError>>();
         timeoutRef.current = window.setTimeout(
           (variables: Variables) => {
-            runQuery(variables).tap(resolve);
+            runQuery(variables, config).tap(resolve);
           },
           debounce,
           variables,

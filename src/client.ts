@@ -24,6 +24,7 @@ export type RequestConfig = {
   operationName: string;
   document: DocumentNode;
   variables: Record<string, unknown>;
+  withCredentials?: boolean;
 };
 
 export type MakeRequest = (
@@ -40,6 +41,7 @@ const defaultMakeRequest: MakeRequest = ({
   url,
   headers,
   operationName,
+  withCredentials,
   document,
   variables,
 }: RequestConfig) => {
@@ -48,6 +50,7 @@ const defaultMakeRequest: MakeRequest = ({
     method: "POST",
     responseType: "json",
     headers,
+    withCredentials: Option.fromNullable(withCredentials).getWithDefault(false),
     body: JSON.stringify({
       operationName,
       query: print(document),
@@ -111,9 +114,14 @@ export type GetConnectionUpdate<Data, Variables> = (config: {
   remove: <A>(connection: Connection<A>, ids: string[]) => ConnectionUpdate<A>;
 }) => Option<ConnectionUpdate<unknown>>;
 
+export type RequestOverrides = Partial<
+  Pick<RequestConfig, "url" | "headers" | "withCredentials">
+>;
+
 type RequestOptions<Data, Variables> = {
   optimize?: boolean;
   connectionUpdates?: GetConnectionUpdate<Data, Variables>[] | undefined;
+  overrides?: RequestOverrides | undefined;
 };
 
 export class Client {
@@ -168,6 +176,7 @@ export class Client {
     {
       optimize = false,
       connectionUpdates,
+      overrides,
     }: RequestOptions<Data, Variables> = {},
   ): Future<Result<Data, ClientError>> {
     const transformedDocument = this.getTransformedDocument(document);
@@ -200,12 +209,16 @@ export class Client {
 
     return this.makeRequest({
       url: this.url,
-      headers: this.headers,
       operationName,
       document: possiblyOptimizedQuery.getWithDefault(
         transformedDocumentsForRequest,
       ),
       variables: variablesAsRecord,
+      ...overrides,
+      headers: {
+        ...this.headers,
+        ...(overrides != null ? overrides.headers : null),
+      },
     })
       .mapOk((data) => data as Data)
       .tapOk((data) => {

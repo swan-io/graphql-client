@@ -1,12 +1,17 @@
 import { AsyncData, Future, Result } from "@swan-io/boxed";
 import { useCallback, useContext, useRef, useState } from "react";
-import { GetConnectionUpdate } from "../client";
+import { GetConnectionUpdate, RequestOverrides } from "../client";
 import { ClientError } from "../errors";
 import { TypedDocumentNode } from "../types";
 import { ClientContext } from "./ClientContext";
 
+export type MutationExtraConfig = { overrides?: RequestOverrides };
+
 export type Mutation<Data, Variables> = readonly [
-  (variables: Variables) => Future<Result<Data, ClientError>>,
+  (
+    variables: Variables,
+    config?: MutationExtraConfig,
+  ) => Future<Result<Data, ClientError>>,
   AsyncData<Result<Data, ClientError>>,
 ];
 
@@ -31,11 +36,12 @@ export const useMutation = <Data, Variables>(
   );
 
   const commitMutation = useCallback(
-    (variables: Variables) => {
+    (variables: Variables, { overrides }: MutationExtraConfig = {}) => {
       setData(AsyncData.Loading());
       return client
         .commitMutation(stableMutation, variables, {
           connectionUpdates: connectionUpdatesRef.current,
+          overrides,
         })
         .tap((result) => setData(AsyncData.Done(result)));
     },
