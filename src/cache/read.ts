@@ -13,6 +13,7 @@ import {
   getFieldName,
   getFieldNameWithArguments,
   getSelectedKeys,
+  isExcluded,
 } from "../graphql/ast";
 import {
   REQUESTED_KEYS,
@@ -59,6 +60,8 @@ const getFromCacheOrReturnValueWithoutKeyFilter = (
 
 const STABILITY_CACHE = new WeakMap<DocumentNode, Map<string, unknown>>();
 
+const EXCLUDED = Symbol.for("EXCLUDED");
+
 export const readOperationFromCache = (
   cache: ClientCache,
   document: DocumentNode,
@@ -77,6 +80,7 @@ export const readOperationFromCache = (
             fieldNode,
             variables,
           );
+
           if (data == undefined) {
             return Option.None();
           }
@@ -86,7 +90,14 @@ export const readOperationFromCache = (
             hasOwnProperty.call(data, fieldNameWithArguments);
 
           if (!cacheHasKey) {
-            return Option.None();
+            if (isExcluded(fieldNode, variables)) {
+              return Option.Some({
+                ...data,
+                [originalFieldName]: EXCLUDED,
+              });
+            } else {
+              return Option.None();
+            }
           }
 
           // in case a the data is read across multiple selections, get the actual one if generated,

@@ -1,5 +1,6 @@
 import {
   ASTNode,
+  DirectiveNode,
   DocumentNode,
   FieldNode,
   FragmentDefinitionNode,
@@ -289,4 +290,25 @@ export const addIdIfPreviousSelected = (
       ] as readonly SelectionNode[],
     }))
     .getWithDefault(newSelectionSet);
+};
+
+export const isExcluded = (
+  fieldNode: FieldNode,
+  variables: Record<string, unknown>,
+) => {
+  if (!Array.isArray(fieldNode.directives)) {
+    return false;
+  }
+
+  return fieldNode.directives.some(
+    (directive: DirectiveNode) =>
+      directive.name.value === "include" &&
+      directive.arguments != null &&
+      directive.arguments.some((arg) => {
+        return (
+          arg.name.value === "if" &&
+          extractValue(arg.value, variables) === false
+        );
+      }),
+  );
 };
