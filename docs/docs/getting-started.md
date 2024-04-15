@@ -19,12 +19,19 @@ or
 $ npm install @swan-io/graphql-client
 ```
 
+## 2. Generate the schema config
+
+```console
+$ generate-schema-config path/to/schema.gql dist/schema-config.json
+```
+
 ## 2. Create your client
 
 ```ts title="src/index.tsx"
 import { Client, ClientContext } from "@swan-io/graphql-client";
 import { App } from "./App";
 import { createRoot } from "react-dom/client";
+import schemaConfig from "./dist/schema-config.json"
 
 // highlight-start
 const client = new Client({
@@ -32,6 +39,7 @@ const client = new Client({
   headers: {
     "Content-Type": "application/json",
   },
+  schemaConfig,
 });
 // highlight-end
 
