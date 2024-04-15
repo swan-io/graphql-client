@@ -140,22 +140,24 @@ export class ClientCache {
   }
 
   cacheIfEligible<T>(value: T, requestedKeys: Set<symbol>): symbol | T {
-    return match(getCacheKeyFromJson(value))
-      .with(Option.P.Some(P.select()), (cacheKey) => {
-        const existingEntry = this.getOrDefault(cacheKey);
+    const cacheKeyOption = getCacheKeyFromJson(value);
+    if (cacheKeyOption.isSome()) {
+      const cacheKey = cacheKeyOption.get();
+      const existingEntry = this.getOrDefault(cacheKey);
 
-        this.set(
-          cacheKey,
-          deepMerge(
-            existingEntry,
-            isRecord(value)
-              ? { ...value, [REQUESTED_KEYS]: requestedKeys }
-              : value,
-          ),
-        );
-        return cacheKey;
-      })
-      .otherwise(() => value);
+      this.set(
+        cacheKey,
+        deepMerge(
+          existingEntry,
+          isRecord(value)
+            ? { ...value, [REQUESTED_KEYS]: requestedKeys }
+            : value,
+        ),
+      );
+      return cacheKey;
+    } else {
+      return value;
+    }
   }
 
   updateFieldInClosestCachedAncestor({

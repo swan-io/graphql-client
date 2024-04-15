@@ -69,153 +69,149 @@ export const readOperationFromCache = (
     data: Record<PropertyKey, unknown>,
   ): Option<unknown> => {
     return selections.selections.reduce<Option<unknown>>((data, selection) => {
-      return data.flatMap((data) =>
-        match(selection)
-          .with({ kind: Kind.FIELD }, (fieldNode) => {
-            const originalFieldName = getFieldName(fieldNode);
-            const fieldNameWithArguments = getFieldNameWithArguments(
-              fieldNode,
-              variables,
+      return data.flatMap((data) => {
+        if (selection.kind === Kind.FIELD) {
+          const fieldNode = selection;
+          const originalFieldName = getFieldName(fieldNode);
+          const fieldNameWithArguments = getFieldNameWithArguments(
+            fieldNode,
+            variables,
+          );
+          if (data == undefined) {
+            return Option.None();
+          }
+
+          const cacheHasKey =
+            hasOwnProperty.call(data, originalFieldName) ||
+            hasOwnProperty.call(data, fieldNameWithArguments);
+
+          if (!cacheHasKey) {
+            return Option.None();
+          }
+
+          // in case a the data is read across multiple selections, get the actual one if generated,
+          // otherwise, read from cache (e.g. fragments)
+          const valueOrKeyFromCache =
+            // @ts-expect-error `data` is indexable at this point
+            originalFieldName in data
+              ? // @ts-expect-error `data` is indexable at this point
+                data[originalFieldName]
+              : // @ts-expect-error `data` is indexable at this point
+                data[fieldNameWithArguments];
+
+          if (valueOrKeyFromCache == undefined) {
+            return Option.Some({
+              ...data,
+              [originalFieldName]: valueOrKeyFromCache,
+            });
+          }
+
+          if (Array.isArray(valueOrKeyFromCache)) {
+            const selectedKeys = getSelectedKeys(fieldNode, variables);
+            return Option.all(
+              valueOrKeyFromCache.map((valueOrKey) => {
+                const value = getFromCacheOrReturnValue(
+                  cache,
+                  valueOrKey,
+                  selectedKeys,
+                );
+
+                return value.flatMap((value) => {
+                  if (isRecord(value) && fieldNode.selectionSet != undefined) {
+                    return traverse(fieldNode.selectionSet, value);
+                  } else {
+                    return Option.Some(value);
+                  }
+                });
+              }),
+            ).map((result) => ({
+              ...data,
+              [originalFieldName]: result,
+            }));
+          } else {
+            const selectedKeys = getSelectedKeys(fieldNode, variables);
+
+            const value = getFromCacheOrReturnValue(
+              cache,
+              valueOrKeyFromCache,
+              selectedKeys,
             );
-            if (data == undefined) {
-              return Option.None();
-            }
 
-            const cacheHasKey =
-              hasOwnProperty.call(data, originalFieldName) ||
-              hasOwnProperty.call(data, fieldNameWithArguments);
-
-            if (!cacheHasKey) {
-              return Option.None();
-            }
-
-            // in case a the data is read across multiple selections, get the actual one if generated,
-            // otherwise, read from cache (e.g. fragments)
-            const valueOrKeyFromCache =
-              // @ts-expect-error `data` is indexable at this point
-              originalFieldName in data
-                ? // @ts-expect-error `data` is indexable at this point
-                  data[originalFieldName]
-                : // @ts-expect-error `data` is indexable at this point
-                  data[fieldNameWithArguments];
-
-            if (valueOrKeyFromCache == undefined) {
-              return Option.Some({
-                ...data,
-                [originalFieldName]: valueOrKeyFromCache,
-              });
-            }
-
-            if (Array.isArray(valueOrKeyFromCache)) {
-              const selectedKeys = getSelectedKeys(fieldNode, variables);
-              return Option.all(
-                valueOrKeyFromCache.map((valueOrKey) => {
-                  const value = getFromCacheOrReturnValue(
-                    cache,
-                    valueOrKey,
-                    selectedKeys,
-                  );
-
-                  return value.flatMap((value) => {
-                    if (
-                      isRecord(value) &&
-                      fieldNode.selectionSet != undefined
-                    ) {
-                      return traverse(fieldNode.selectionSet, value);
-                    } else {
-                      return Option.Some(value);
-                    }
-                  });
-                }),
-              ).map((result) => ({
-                ...data,
-                [originalFieldName]: result,
-              }));
-            } else {
-              const selectedKeys = getSelectedKeys(fieldNode, variables);
-
-              const value = getFromCacheOrReturnValue(
-                cache,
-                valueOrKeyFromCache,
-                selectedKeys,
-              );
-
-              return value.flatMap((value) => {
-                if (isRecord(value) && fieldNode.selectionSet != undefined) {
-                  return traverse(
-                    fieldNode.selectionSet,
-                    value as Record<PropertyKey, unknown>,
-                  ).map((result) => ({
-                    ...data,
-                    [originalFieldName]: result,
-                  }));
-                } else {
-                  return Option.Some({ ...data, [originalFieldName]: value });
-                }
-              });
-            }
-          })
-          .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
-            const typeCondition = inlineFragmentNode.typeCondition?.name.value;
-            const dataTypename = match(data)
-              .with({ __typename: P.select(P.string) }, (name) => name)
-              .with(
-                { __typename: P.array({ __typename: P.select(P.string) }) },
-                (name) => name[0],
-              )
-              .otherwise(() => undefined);
-
-            if (typeCondition != null && dataTypename != null) {
-              if (cache.isTypeCompatible(dataTypename, typeCondition)) {
+            return value.flatMap((value) => {
+              if (isRecord(value) && fieldNode.selectionSet != undefined) {
                 return traverse(
-                  inlineFragmentNode.selectionSet,
+                  fieldNode.selectionSet,
+                  value as Record<PropertyKey, unknown>,
+                ).map((result) => ({
+                  ...data,
+                  [originalFieldName]: result,
+                }));
+              } else {
+                return Option.Some({ ...data, [originalFieldName]: value });
+              }
+            });
+          }
+        }
+        if (selection.kind === Kind.INLINE_FRAGMENT) {
+          const inlineFragmentNode = selection;
+          const typeCondition = inlineFragmentNode.typeCondition?.name.value;
+          const dataTypename = match(data)
+            .with({ __typename: P.select(P.string) }, (name) => name)
+            .with(
+              { __typename: P.array({ __typename: P.select(P.string) }) },
+              (name) => name[0],
+            )
+            .otherwise(() => undefined);
+
+          if (typeCondition != null && dataTypename != null) {
+            if (cache.isTypeCompatible(dataTypename, typeCondition)) {
+              return traverse(
+                inlineFragmentNode.selectionSet,
+                data as Record<PropertyKey, unknown>,
+              );
+            } else {
+              if (
+                inlineFragmentNode.selectionSet.selections.some(
+                  (selection) => selection.kind === Kind.INLINE_FRAGMENT,
+                )
+              ) {
+                return traverse(
+                  {
+                    ...inlineFragmentNode.selectionSet,
+                    selections:
+                      inlineFragmentNode.selectionSet.selections.filter(
+                        (selection) => {
+                          if (selection.kind === Kind.INLINE_FRAGMENT) {
+                            const typeCondition =
+                              selection.typeCondition?.name.value;
+                            if (typeCondition == null) {
+                              return true;
+                            } else {
+                              return cache.isTypeCompatible(
+                                dataTypename,
+                                typeCondition,
+                              );
+                            }
+                          }
+                          return true;
+                        },
+                      ),
+                  },
                   data as Record<PropertyKey, unknown>,
                 );
               } else {
-                if (
-                  inlineFragmentNode.selectionSet.selections.some(
-                    (selection) => selection.kind === Kind.INLINE_FRAGMENT,
-                  )
-                ) {
-                  return traverse(
-                    {
-                      ...inlineFragmentNode.selectionSet,
-                      selections:
-                        inlineFragmentNode.selectionSet.selections.filter(
-                          (selection) => {
-                            if (selection.kind === Kind.INLINE_FRAGMENT) {
-                              const typeCondition =
-                                selection.typeCondition?.name.value;
-                              if (typeCondition == null) {
-                                return true;
-                              } else {
-                                return cache.isTypeCompatible(
-                                  dataTypename,
-                                  typeCondition,
-                                );
-                              }
-                            }
-                            return true;
-                          },
-                        ),
-                    },
-                    data as Record<PropertyKey, unknown>,
-                  );
-                } else {
-                  return Option.Some(data);
-                }
+                return Option.Some(data);
               }
             }
-            return traverse(
-              inlineFragmentNode.selectionSet,
-              data as Record<PropertyKey, unknown>,
-            );
-          })
-          .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
-            return Option.None();
-          })
-          .exhaustive(),
-      );
+          }
+          return traverse(
+            inlineFragmentNode.selectionSet,
+            data as Record<PropertyKey, unknown>,
+          );
+        } else {
+          return Option.None();
+        }
+      });
     }, Option.Some(data));
   };
 
