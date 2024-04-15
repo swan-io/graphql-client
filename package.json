@@ -24,7 +24,11 @@
     "access": "public",
     "registry": "https://registry.npmjs.org"
   },
+  "bin": {
+    "generate-schema-config": "bin/generate-schema-config"
+  },
   "files": [
+    "bin",
     "LICENSE",
     "dist",
     "README.md"

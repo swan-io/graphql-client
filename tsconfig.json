@@ -25,6 +25,8 @@
     "noImplicitReturns": false,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   }
 }

@@ -16,13 +16,15 @@ import {
   bindAccountMembershipMutation,
   bindMembershipMutationRejectionResponse,
   bindMembershipMutationSuccessResponse,
+  brandingQuery,
+  brandingResponse,
   getAppQueryResponse,
   onboardingInfoResponse,
   otherAppQuery,
 } from "./data";
 
 test("Write & read in cache", () => {
-  const cache = new ClientCache();
+  const cache = new ClientCache({});
 
   const preparedAppQuery = inlineFragments(addTypenames(appQuery));
 
@@ -183,7 +185,7 @@ test("Write & read in cache", () => {
       .getWithDefault("no delta"),
   ).toMatchSnapshot();
 
-  const cache2 = new ClientCache();
+  const cache2 = new ClientCache({});
 
   writeOperationToCache(
     cache2,
@@ -204,7 +206,7 @@ test("Write & read in cache", () => {
     }),
   ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
 
-  const cache3 = new ClientCache();
+  const cache3 = new ClientCache({});
 
   writeOperationToCache(
     cache3,
@@ -352,4 +354,20 @@ test("Write & read in cache", () => {
   } else {
     expect(true).toBe(false);
   }
+
+  const preparedBrandingQuery = inlineFragments(addTypenames(brandingQuery));
+
+  const cache4 = new ClientCache({
+    ProjectSettings: ["LiveProjectSettings", "SandboxProjectSettings"],
+  });
+
+  writeOperationToCache(cache4, preparedBrandingQuery, brandingResponse, {
+    id: "64060573-f0ec-4204-ad49-a3983497ada4",
+  });
+
+  expect(
+    readOperationFromCache(cache4, preparedBrandingQuery, {
+      id: "64060573-f0ec-4204-ad49-a3983497ada4",
+    }),
+  ).toEqual(Option.Some(Result.Ok(brandingResponse)));
 });

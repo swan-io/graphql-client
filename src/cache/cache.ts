@@ -46,6 +46,25 @@ export class ClientCache {
     Map<string, Option<Result<unknown, unknown>>>
   >();
 
+  schemaConfig: Record<string, Set<string>>;
+
+  constructor(schemaConfig: Record<string, string[]>) {
+    this.schemaConfig = Object.fromEntries(
+      Object.entries(schemaConfig).map(([key, value]) => [key, new Set(value)]),
+    );
+  }
+
+  isTypeCompatible(typename: string, typeCondition: string) {
+    if (typename === typeCondition) {
+      return true;
+    }
+    const compatibleTypes = this.schemaConfig[typeCondition];
+    if (compatibleTypes == undefined) {
+      return false;
+    }
+    return compatibleTypes.has(typename);
+  }
+
   dump() {
     return this.cache;
   }

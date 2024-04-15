@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+const fs = require("node:fs");
+const path = require("node:path");
+const {
+  introspectionFromSchema,
+  buildSchema,
+  getIntrospectionQuery,
+} = require("graphql");
+const cwd = process.cwd();
+const args = process.argv;
+
+const schemaPath = args[2];
+const distPath = args[3];
+
+const introspection = schemaPath.startsWith("http")
+  ? fetch(schemaPath + "?test", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ query: getIntrospectionQuery() }),
+    })
+      .then((res) => res.json())
+      .then((res) => res.data)
+  : Promise.resolve(
+      introspectionFromSchema(
+        buildSchema(fs.readFileSync(path.join(cwd, schemaPath), "utf-8")),
+      ),
+    );
+
+introspection.then((introspection) => {
+  const interfaceToTypes = new Map();
+
+  introspection.__schema.types.forEach((type) => {
+    type.interfaces?.forEach((int) => {
+      const set = interfaceToTypes.get(int.name) ?? new Set();
+      set.add(type.name);
+      interfaceToTypes.set(int.name, set);
+    });
+  });
+
+  const json = Object.fromEntries(
+    [...interfaceToTypes.entries()].map(([key, value]) => [key, [...value]]),
+  );
+
+  console.log(JSON.stringify(json, null, 2));
+
+  fs.writeFileSync(
+    path.join(cwd, distPath),
+    JSON.stringify(json, null, 2),
+    "utf-8",
+  );
+});

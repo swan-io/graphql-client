@@ -615,3 +615,51 @@ export const bindMembershipMutationSuccessResponse = {
     },
   },
 };
+
+export const brandingQuery = graphql(`
+  query getBrandingPage($projectId: ID!) {
+    project(id: $projectId) {
+      id
+      activatedInLive
+      sandboxProjectSettings {
+        ...BrandingInfo
+      }
+      liveProjectSettings {
+        ...BrandingInfo
+      }
+    }
+  }
+
+  fragment BrandingInfo on ProjectSettings {
+    __typename
+    id
+    name
+    accentColor
+    logoUri
+  }
+`);
+
+export const brandingResponse = {
+  __typename: "Query",
+  project: {
+    __typename: "Project",
+    id: "64060573-f0ec-4204-ad49-a3983497ada4",
+    activatedInLive: false,
+    sandboxProjectSettings: {
+      __typename: "SandboxProjectSettings",
+      id: "e73d3a09-98ad-4abd-8c83-75d3ac86e4f7",
+      name: "bloodyowl",
+      accentColor: "#38945D",
+      logoUri:
+        "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/64060573-f0ec-4204-ad49-a3983497ada4/SANDBOX/logo-5733f69e-8223-4b7e-92c7-0fed9eaaca33.png",
+    },
+    liveProjectSettings: {
+      __typename: "LiveProjectSettings",
+      id: "2c35f812-3763-44cc-b102-9d7fc9991407",
+      name: "bloodyowl",
+      accentColor: "#65E197",
+      logoUri:
+        "https://s3.eu-west-1.amazonaws.com/data.master.oina.ws/8c2bfcb0-d18a-4cf0-bb2a-3805930661be",
+    },
+  },
+};

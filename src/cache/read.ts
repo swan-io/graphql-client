@@ -161,12 +161,12 @@ export const readOperationFromCache = (
               .with({ __typename: P.select(P.string) }, (name) => name)
               .with(
                 { __typename: P.array({ __typename: P.select(P.string) }) },
-                (name) => name,
+                (name) => name[0],
               )
               .otherwise(() => undefined);
 
             if (typeCondition != null && dataTypename != null) {
-              if (dataTypename === typeCondition) {
+              if (cache.isTypeCompatible(dataTypename, typeCondition)) {
                 return traverse(
                   inlineFragmentNode.selectionSet,
                   data as Record<PropertyKey, unknown>,
@@ -186,7 +186,14 @@ export const readOperationFromCache = (
                             if (selection.kind === Kind.INLINE_FRAGMENT) {
                               const typeCondition =
                                 selection.typeCondition?.name.value;
-                              return typeCondition === dataTypename;
+                              if (typeCondition == null) {
+                                return true;
+                              } else {
+                                return cache.isTypeCompatible(
+                                  dataTypename,
+                                  typeCondition,
+                                );
+                              }
                             }
                             return true;
                           },

@@ -35,6 +35,7 @@ export type ClientConfig = {
   url: string;
   headers?: Record<string, string>;
   makeRequest?: MakeRequest;
+  schemaConfig: Record<string, string[]>;
 };
 
 const defaultMakeRequest: MakeRequest = ({
@@ -138,7 +139,7 @@ export class Client {
   constructor(config: ClientConfig) {
     this.url = config.url;
     this.headers = config.headers ?? { "Content-Type": "application/json" };
-    this.cache = new ClientCache();
+    this.cache = new ClientCache(config.schemaConfig);
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
     this.subscribers = new Set();
     this.transformedDocuments = new Map();
