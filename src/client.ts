@@ -2,7 +2,7 @@ import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
 import { Future, Option, Result } from "@swan-io/boxed";
 import { Request, badStatusToError, emptyToError } from "@swan-io/request";
 import { P, match } from "ts-pattern";
-import { ClientCache } from "./cache/cache";
+import { ClientCache, SchemaConfig } from "./cache/cache";
 import { optimizeQuery, readOperationFromCache } from "./cache/read";
 import { writeOperationToCache } from "./cache/write";
 import {
@@ -35,7 +35,7 @@ export type ClientConfig = {
   url: string;
   headers?: Record<string, string>;
   makeRequest?: MakeRequest;
-  schemaConfig: Record<string, string[]>;
+  schemaConfig: SchemaConfig;
 };
 
 const defaultMakeRequest: MakeRequest = ({

@@ -37,9 +37,11 @@ introspection.then((introspection) => {
     });
   });
 
-  const json = Object.fromEntries(
-    [...interfaceToTypes.entries()].map(([key, value]) => [key, [...value]]),
-  );
+  const json = {
+    interfaceToTypes: Object.fromEntries(
+      [...interfaceToTypes.entries()].map(([key, value]) => [key, [...value]]),
+    ),
+  };
 
   console.log(JSON.stringify(json, null, 2));
 

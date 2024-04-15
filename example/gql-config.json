@@ -1,10 +1,12 @@
 {
-  "Node": [
-    "Film",
-    "Species",
-    "Planet",
-    "Person",
-    "Starship",
-    "Vehicle"
-  ]
+  "interfaceToTypes": {
+    "Node": [
+      "Film",
+      "Species",
+      "Planet",
+      "Person",
+      "Starship",
+      "Vehicle"
+    ]
+  }
 }

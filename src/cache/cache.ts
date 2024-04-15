@@ -28,6 +28,10 @@ export const getCacheKeyFromJson = (json: unknown): Option<symbol> => {
     .otherwise(() => Option.None());
 };
 
+export type SchemaConfig = {
+  interfaceToTypes: Record<string, string[]>;
+};
+
 export const getCacheKeyFromOperationNode = (
   operationNode: OperationDefinitionNode,
 ): Option<symbol> => {
@@ -48,9 +52,12 @@ export class ClientCache {
 
   schemaConfig: Record<string, Set<string>>;
 
-  constructor(schemaConfig: Record<string, string[]>) {
+  constructor(schemaConfig: SchemaConfig) {
     this.schemaConfig = Object.fromEntries(
-      Object.entries(schemaConfig).map(([key, value]) => [key, new Set(value)]),
+      Object.entries(schemaConfig.interfaceToTypes).map(([key, value]) => [
+        key,
+        new Set(value),
+      ]),
     );
   }
 

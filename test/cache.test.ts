@@ -24,7 +24,7 @@ import {
 } from "./data";
 
 test("Write & read in cache", () => {
-  const cache = new ClientCache({});
+  const cache = new ClientCache({ interfaceToTypes: {} });
 
   const preparedAppQuery = inlineFragments(addTypenames(appQuery));
 
@@ -185,7 +185,7 @@ test("Write & read in cache", () => {
       .getWithDefault("no delta"),
   ).toMatchSnapshot();
 
-  const cache2 = new ClientCache({});
+  const cache2 = new ClientCache({ interfaceToTypes: {} });
 
   writeOperationToCache(
     cache2,
@@ -206,7 +206,7 @@ test("Write & read in cache", () => {
     }),
   ).toMatchObject(Option.Some(Result.Ok(onboardingInfoResponse)));
 
-  const cache3 = new ClientCache({});
+  const cache3 = new ClientCache({ interfaceToTypes: {} });
 
   writeOperationToCache(
     cache3,
@@ -358,7 +358,9 @@ test("Write & read in cache", () => {
   const preparedBrandingQuery = inlineFragments(addTypenames(brandingQuery));
 
   const cache4 = new ClientCache({
-    ProjectSettings: ["LiveProjectSettings", "SandboxProjectSettings"],
+    interfaceToTypes: {
+      ProjectSettings: ["LiveProjectSettings", "SandboxProjectSettings"],
+    },
   });
 
   writeOperationToCache(cache4, preparedBrandingQuery, brandingResponse, {
