@@ -36,7 +36,7 @@ export const writeOperationToCache = (
           );
           const fieldArguments = extractArguments(fieldNode, variables);
 
-          const parent = data.at(-1) as Record<PropertyKey, unknown>;
+          const parent = data[data.length - 1] as Record<PropertyKey, unknown>;
           const fieldValue = parent[originalFieldName];
           const selectedKeys = getSelectedKeys(fieldNode, variables);
 
