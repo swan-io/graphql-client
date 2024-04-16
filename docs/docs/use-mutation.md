@@ -19,7 +19,11 @@ This hook returns a tuple you can extract like a `useState`:
 const [commitMutation, mutationData] = useMutation(...)
 ```
 
-- `commitMutation(variables)`: function commit the mutation, returns a `Future<Result<Data, ClientError>>`
+- `commitMutation(variables, ?config)`: function commit the mutation, returns a `Future<Result<Data, ClientError>>`
+
+  - `config` (optional)
+    - `overrides`: custom request configuration (`url`, `headers` and/or `withCredentials`)
+
 - `mutationData` (`AsyncData<Result<Data, ClientError>>`): the mutation data
 
 ## Example
@@ -78,6 +82,8 @@ const UserPage = ({ userId }: Props) => {
 ```
 
 ## Handling connections
+
+You can configure the update of [GraphQL Connections](https://relay.dev/graphql/connections.htm) in the `connectionUpdates` field.
 
 ```ts
 useMutation(BlockUser, {

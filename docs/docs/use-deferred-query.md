@@ -5,7 +5,7 @@ sidebar_label: useDeferredQuery
 
 ## useDeferredQuery(query, config?)
 
-Similar to `useQuery`, but requires a manual call to `query`.
+Similar to [`useQuery`](./use-query), but requires a manual call to `query`.
 
 ### Params
 
@@ -22,7 +22,9 @@ const [data, query] = useDeferredQuery(...)
 ```
 
 - `data` (`AsyncData<Result<Data, ClientError>>`): the GraphQL response
-- `query(variables)`: runs the query
+- `query(variables, ?config)`: runs the query
+  - `config` (optional)
+    - `overrides`: custom request configuration (`url`, `headers` and/or `withCredentials`)
 
 ## Example
 

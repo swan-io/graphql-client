@@ -12,7 +12,7 @@ function HomepageHeader() {
     <header className={clsx("hero hero--primary", styles.heroBanner)}>
       <img
         src={"./img/logo.svg"}
-        alt="GraphQL Client logo"
+        alt="GraphQL Client"
         className={styles.heroLogo}
       />
       <div>
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <Layout
       title={`GraphQL Client: ${siteConfig.tagline}`}
-      description="A simple, typesafe GraphQL client for React"
+      description="A simple GraphQL client for React"
     >
       <HomepageHeader />
       <main>

@@ -19,24 +19,40 @@ const sidebars = {
       id: "getting-started",
     },
     {
-      type: "doc",
-      id: "use-query",
+      type: "category",
+      label: "API",
+      collapsed: false,
+      collapsible: false,
+      items: [
+        {
+          type: "doc",
+          id: "use-query",
+        },
+        {
+          type: "doc",
+          id: "use-deferred-query",
+        },
+        {
+          type: "doc",
+          id: "use-mutation",
+        },
+        {
+          type: "doc",
+          id: "client",
+        },
+        {
+          type: "doc",
+          id: "pagination",
+        },
+        {
+          type: "doc",
+          id: "client-errors",
+        },
+      ],
     },
     {
       type: "doc",
-      id: "use-deferred-query",
-    },
-    {
-      type: "doc",
-      id: "use-mutation",
-    },
-    {
-      type: "doc",
-      id: "client",
-    },
-    {
-      type: "doc",
-      id: "pagination",
+      id: "caching",
     },
   ],
 };

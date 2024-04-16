@@ -9,7 +9,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "GraphQL Client",
-  tagline: "A simple, typesafe GraphQL client for React",
+  tagline: "A simple GraphQL client for React",
   favicon: "img/favicon.png",
 
   // Set the production url of your site here

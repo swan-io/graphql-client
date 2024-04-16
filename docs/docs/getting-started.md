@@ -21,11 +21,15 @@ $ npm install @swan-io/graphql-client
 
 ## 2. Generate the schema config
 
+The schema config is necessary for the cache to understand when your spread an interface type (e.g. `on ... Node { id }`). Don't worry, this ends up being really light and wont't affect your bundle size much.
+
 ```console
 $ generate-schema-config path/to/schema.gql dist/schema-config.json
 ```
 
 ## 2. Create your client
+
+Configure your client with your `url`, desired default `headers` & the `schemaConfig` you just generateed.
 
 ```ts title="src/index.tsx"
 import { Client, ClientContext } from "@swan-io/graphql-client";
