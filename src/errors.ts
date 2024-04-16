@@ -60,31 +60,17 @@ export const parseGraphQLError = (error: unknown): GraphQLError => {
     .otherwise((error) => new GraphQLError(JSON.stringify(error)));
 };
 
+type Flat<T> = T extends (infer X)[] ? X : T;
+
 export const ClientError = {
-  toArray: (
-    clientError: ClientError,
-  ): (
-    | GraphQLError
-    | NetworkError
-    | TimeoutError
-    | BadStatusError
-    | EmptyResponseError
-    | InvalidGraphQLResponseError
-  )[] => {
-    return Array.isArray(clientError) ? clientError : [clientError];
+  toArray: <E extends Error | ClientError>(clientError: E): Flat<E>[] => {
+    return Array.isArray(clientError)
+      ? (clientError as Flat<E>[])
+      : ([clientError] as Flat<E>[]);
   },
-  forEach: (
-    clientError: ClientError,
-    func: (
-      error:
-        | NetworkError
-        | TimeoutError
-        | BadStatusError
-        | EmptyResponseError
-        | InvalidGraphQLResponseError
-        | GraphQLError,
-      index?: number,
-    ) => void,
+  forEach: <E extends Error | ClientError>(
+    clientError: E,
+    func: (error: Flat<E>, index?: number) => void,
   ) => {
     ClientError.toArray(clientError).forEach(func);
   },
