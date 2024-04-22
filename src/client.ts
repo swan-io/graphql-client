@@ -129,6 +129,7 @@ export class Client {
   url: string;
   headers: Record<string, string>;
   cache: ClientCache;
+  schemaConfig: SchemaConfig;
   makeRequest: MakeRequest;
 
   subscribers: Set<() => void>;
@@ -139,6 +140,7 @@ export class Client {
   constructor(config: ClientConfig) {
     this.url = config.url;
     this.headers = config.headers ?? { "Content-Type": "application/json" };
+    this.schemaConfig = config.schemaConfig;
     this.cache = new ClientCache(config.schemaConfig);
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
     this.subscribers = new Set();
@@ -283,5 +285,12 @@ export class Client {
     requestOptions?: RequestOptions<Data, Variables>,
   ) {
     return this.request(document, variables, requestOptions);
+  }
+
+  purge() {
+    this.cache = new ClientCache(this.schemaConfig);
+    this.subscribers.forEach((func) => {
+      func();
+    });
   }
 }
