@@ -55,9 +55,7 @@ export const FilmList = ({
           <Film
             film={node}
             key={node.id}
-            isActive={activeFilm
-              .map((id) => node.id === id)
-              .getWithDefault(false)}
+            isActive={activeFilm.map((id) => node.id === id).getOr(false)}
             onPress={onPressFilm}
           />
         );

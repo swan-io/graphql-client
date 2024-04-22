@@ -289,7 +289,7 @@ export const addIdIfPreviousSelected = (
         ...newSelectionSet.selections,
       ] as readonly SelectionNode[],
     }))
-    .getWithDefault(newSelectionSet);
+    .getOr(newSelectionSet);
 };
 
 export const isExcluded = (

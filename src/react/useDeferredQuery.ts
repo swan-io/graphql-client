@@ -62,7 +62,7 @@ export const useDeferredQuery = <Data, Variables>(
   const asyncData = useMemo(() => {
     return data
       .map((value) => AsyncData.Done(value as Result<Data, ClientError>))
-      .getWithDefault(AsyncData.NotAsked());
+      .getOr(AsyncData.NotAsked());
   }, [data]);
 
   const runQuery = useCallback(

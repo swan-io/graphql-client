@@ -1444,15 +1444,15 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
   integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
-"@swan-io/boxed@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.1.1.tgz#bdf17d725270c8560d2371972427b6f7e80da5d8"
-  integrity sha512-NzmIVAnJuzuPwm8ZR4I9tUpuo9qjtVNA7aTSZYdSvcJ+y7NTyt9+tCi4y87T3m8hACN2ATMqvTmRtHOSDIIz7w==
+"@swan-io/boxed@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-2.2.1.tgz#adda3c08bad0215a90cfced371817484ef90ad50"
+  integrity sha512-jJiiVd9CzVPQUb8OuFeGddruTkbLBNCiL2RvN8Jt+Eul7EMkXB/gY4dUYffxyLMDnn2t3EaZahYQ+yHvtLxzDg==
 
-"@swan-io/request@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@swan-io/request/-/request-1.0.4.tgz#9578892306b92c335b064051e165a55268817d14"
-  integrity sha512-3KguAxPCJ0EBlETij2volJw68k4lOw4nxjw1SkjStyjA50awFxx5UwgUeGfocsDbI7EwPqs1oH3E23hoAcni5w==
+"@swan-io/request@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@swan-io/request/-/request-1.0.5.tgz#3e4fd8e0d699bde18fa7338939c4f2de92ab7dae"
+  integrity sha512-inXD6hBUmbbDyzAAL30yEaIuSmTCjzyGpQwejdTTDE63qNnDpOVj4SZzsMgph8q1xCq5r3tLm5QgvN2HGuneIw==
 
 "@types/estree@1.0.5", "@types/estree@^1.0.0":
   version "1.0.5"

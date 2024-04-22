@@ -94,7 +94,7 @@ export class ClientCache {
     const serializedVariables = serializeVariables(variables);
     const documentCache = Option.fromNullable(
       this.operationCache.get(documentNode),
-    ).getWithDefault(new Map());
+    ).getOr(new Map());
     documentCache.set(serializedVariables, Option.Some(data));
     this.operationCache.set(documentNode, documentCache);
   }

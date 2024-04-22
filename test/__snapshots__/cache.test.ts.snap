@@ -725,9 +725,9 @@ Map {
 `;
 
 exports[`Write & read in cache 7`] = `
-t {
+{
   "tag": "Some",
-  "value": t {
+  "value": {
     "tag": "Ok",
     "value": {
       "__typename": "Query",
@@ -818,6 +818,8 @@ t {
         ],
       },
     },
+    Symbol(__boxed_type__): "Result",
   },
+  Symbol(__boxed_type__): "Option",
 }
 `;

@@ -51,7 +51,7 @@ const defaultMakeRequest: MakeRequest = ({
     method: "POST",
     responseType: "json",
     headers,
-    withCredentials: Option.fromNullable(withCredentials).getWithDefault(false),
+    withCredentials: Option.fromNullable(withCredentials).getOr(false),
     body: JSON.stringify({
       operationName,
       query: print(document),
@@ -185,9 +185,7 @@ export class Client {
       this.getTransformedDocumentsForRequest(document);
 
     const operationName =
-      getExecutableOperationName(transformedDocument).getWithDefault(
-        "Untitled",
-      );
+      getExecutableOperationName(transformedDocument).getOr("Untitled");
 
     const variablesAsRecord = variables as Record<string, unknown>;
 
@@ -211,9 +209,7 @@ export class Client {
     return this.makeRequest({
       url: this.url,
       operationName,
-      document: possiblyOptimizedQuery.getWithDefault(
-        transformedDocumentsForRequest,
-      ),
+      document: possiblyOptimizedQuery.getOr(transformedDocumentsForRequest),
       variables: variablesAsRecord,
       ...overrides,
       headers: {

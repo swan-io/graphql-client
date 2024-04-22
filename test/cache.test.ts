@@ -176,13 +176,13 @@ test("Write & read in cache", () => {
   expect(
     optimizeQuery(cache, preparedOtherAppQuery, { id: "1" })
       .map(print)
-      .getWithDefault("no delta"),
+      .getOr("no delta"),
   ).toMatchSnapshot();
 
   expect(
     optimizeQuery(cache, preparedAppQueryWithExtraArrayInfo, { id: "1" })
       .map(print)
-      .getWithDefault("no delta"),
+      .getOr("no delta"),
   ).toMatchSnapshot();
 
   const cache2 = new ClientCache({ interfaceToTypes: {} });

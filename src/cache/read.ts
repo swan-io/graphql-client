@@ -264,7 +264,7 @@ export const readOperationFromCache = (
         previous
           .flatMap((previous) => previous.toOption())
           .map((previous) => deepEqual(value, previous))
-          .getWithDefault(false)
+          .getOr(false)
       ) {
         return previous;
       } else {
