@@ -30,11 +30,16 @@ export type Query<Data, Variables> = readonly [
   },
 ];
 
-const usePreviousValue = <T>(value: T): T => {
+const usePreviousValue = <A, T extends AsyncData<A>>(value: T): T => {
   const previousRef = useRef(value);
 
   useEffect(() => {
-    previousRef.current = value;
+    if (value.isDone()) {
+      previousRef.current = value;
+    }
+    if (value.isLoading() && previousRef.current.isNotAsked()) {
+      previousRef.current = value;
+    }
   }, [value]);
 
   return previousRef.current;
