@@ -1,5 +1,7 @@
+import { AsyncData, Result } from "@swan-io/boxed";
 import { useRef } from "react";
 import { match } from "ts-pattern";
+import { ClientError } from "../errors";
 import { Connection } from "../types";
 import { isRecord } from "../utils";
 
@@ -79,6 +81,30 @@ const mergeConnection = <A, T extends Connection<A>>(
   };
 };
 
+const mergeAsyncDataCollection = <
+  A,
+  T extends AsyncData<Result<Connection<A>, ClientError>>,
+>(
+  previous: T,
+  next: T,
+  mode: mode,
+): T => {
+  const values: [
+    AsyncData<Result<Connection<A>, ClientError>>,
+    AsyncData<Result<Connection<A>, ClientError>>,
+  ] = [previous, next];
+
+  const mergedValue = AsyncData.all(values)
+    .map(Result.all)
+    .mapOk(([previous, next]) => mergeConnection(previous, next, mode)) as T;
+
+  // Both prev & next are done, apply merge
+  if (mergedValue.isDone()) {
+    return mergedValue;
+  }
+  return next;
+};
+
 const createPaginationHook = (direction: mode) => {
   return <A, T extends Connection<A>>(connection: T): T => {
     const connectionRef = useRef(connection);
@@ -91,6 +117,26 @@ const createPaginationHook = (direction: mode) => {
   };
 };
 
+const createAsyncDataPaginationHook = (direction: mode) => {
+  return <A, T extends AsyncData<Result<Connection<A>, ClientError>>>(
+    connection: T,
+  ): T => {
+    const connectionRef = useRef(connection);
+    connectionRef.current = mergeAsyncDataCollection(
+      connectionRef.current,
+      connection,
+      direction,
+    );
+    return connectionRef.current;
+  };
+};
+
 export const useForwardPagination = createPaginationHook("after");
 
 export const useBackwardPagination = createPaginationHook("before");
+
+export const useAsyncDataForwardPagination =
+  createAsyncDataPaginationHook("after");
+
+export const useAsyncDataBackwardPagination =
+  createAsyncDataPaginationHook("before");

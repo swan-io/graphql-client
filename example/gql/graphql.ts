@@ -1310,19 +1310,6 @@ export type FilmItemFragment = {
   producers?: Array<string | null> | null;
 } & { " $fragmentName"?: "FilmItemFragment" };
 
-export type FilmCharactersConnectionFragment = {
-  __typename?: "FilmCharactersConnection";
-  edges?: Array<{
-    __typename?: "FilmCharactersEdge";
-    node?: { __typename?: "Person"; id: string; name?: string | null } | null;
-  } | null> | null;
-  pageInfo: {
-    __typename?: "PageInfo";
-    hasNextPage: boolean;
-    endCursor?: string | null;
-  };
-} & { " $fragmentName"?: "FilmCharactersConnectionFragment" };
-
 export type FilmDetailsQueryVariables = Exact<{
   filmId: Scalars["ID"]["input"];
   first: Scalars["Int"]["input"];
@@ -1338,13 +1325,22 @@ export type FilmDetailsQuery = {
     director?: string | null;
     openingCrawl?: string | null;
     releaseDate?: string | null;
-    characterConnection?:
-      | ({ __typename?: "FilmCharactersConnection" } & {
-          " $fragmentRefs"?: {
-            FilmCharactersConnectionFragment: FilmCharactersConnectionFragment;
-          };
-        })
-      | null;
+    characterConnection?: {
+      __typename?: "FilmCharactersConnection";
+      edges?: Array<{
+        __typename?: "FilmCharactersEdge";
+        node?: {
+          __typename?: "Person";
+          id: string;
+          name?: string | null;
+        } | null;
+      } | null> | null;
+      pageInfo: {
+        __typename?: "PageInfo";
+        hasNextPage: boolean;
+        endCursor?: string | null;
+      };
+    } | null;
   } | null;
 };
 
@@ -1378,55 +1374,6 @@ export type FilmsConnectionFragment = {
   };
 } & { " $fragmentName"?: "FilmsConnectionFragment" };
 
-export const FilmCharactersConnectionFragmentDoc = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "FilmCharactersConnection" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "FilmCharactersConnection" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "edges" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "node" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "pageInfo" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "hasNextPage" } },
-                { kind: "Field", name: { kind: "Name", value: "endCursor" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<FilmCharactersConnectionFragment, unknown>;
 export const FilmItemFragmentDoc = {
   kind: "Document",
   definitions: [
@@ -1742,60 +1689,52 @@ export const FilmDetailsDocument = {
                     kind: "SelectionSet",
                     selections: [
                       {
-                        kind: "FragmentSpread",
-                        name: {
-                          kind: "Name",
-                          value: "FilmCharactersConnection",
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "pageInfo" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "hasNextPage" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "endCursor" },
+                            },
+                          ],
                         },
                       },
                     ],
                   },
                 },
                 { kind: "Field", name: { kind: "Name", value: "releaseDate" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "FilmCharactersConnection" },
-      typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "FilmCharactersConnection" },
-      },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "edges" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "node" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "pageInfo" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "hasNextPage" } },
-                { kind: "Field", name: { kind: "Name", value: "endCursor" } },
               ],
             },
           },

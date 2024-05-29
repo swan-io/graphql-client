@@ -1,5 +1,9 @@
-import { useEffect } from "react";
-import { useDeferredQuery, useQuery } from "../../src";
+import { useEffect, useMemo } from "react";
+import {
+  useAsyncDataForwardPagination,
+  useDeferredQuery,
+  useQuery,
+} from "../../src";
 import { graphql } from "../gql";
 import { FilmCharacterList } from "./FilmCharacterList";
 
@@ -11,7 +15,16 @@ const FilmDetailsQuery = graphql(`
       director
       openingCrawl
       characterConnection(first: $first, after: $after) {
-        ...FilmCharactersConnection
+        edges {
+          node {
+            id
+            name
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
       }
       releaseDate
     }
@@ -61,6 +74,12 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
     };
   }, [filmId, queryProducers]);
 
+  const connection = useMemo(() => {
+    return data.mapOk((data) => data.film?.characterConnection);
+  }, [data]);
+
+  const characterConnection = useAsyncDataForwardPagination(connection);
+
   return (
     <div className="FilmDetails" style={{ opacity: isLoading ? 0.5 : 1 }}>
       {data.match({
@@ -108,16 +127,15 @@ export const FilmDetails = ({ filmId, optimize }: Props) => {
                     Opening crawl:
                     <pre>{film.openingCrawl}</pre>
                   </div>
-                  {film.characterConnection != null ? (
-                    <>
-                      <h2>Characters</h2>
-                      <FilmCharacterList
-                        characters={film.characterConnection}
-                        onNextPage={(after) => setVariables({ after })}
-                        isLoadingMore={isLoading}
-                      />
-                    </>
-                  ) : null}
+
+                  <>
+                    <h2>Characters</h2>
+                    <FilmCharacterList
+                      characters={characterConnection}
+                      onNextPage={(after) => setVariables({ after })}
+                      isLoadingMore={isLoading}
+                    />
+                  </>
                 </>
               );
             },
