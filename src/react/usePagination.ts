@@ -1,5 +1,5 @@
 import { AsyncData, Result } from "@swan-io/boxed";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { match } from "ts-pattern";
 import { ClientError } from "../errors";
 import { Connection } from "../types";
@@ -122,10 +122,10 @@ const createAsyncDataPaginationHook = (direction: mode) => {
     connection: T,
   ): T => {
     const connectionRef = useRef(connection);
-    connectionRef.current = mergeAsyncDataCollection(
-      connectionRef.current,
-      connection,
-      direction,
+    connectionRef.current = useMemo(
+      () =>
+        mergeAsyncDataCollection(connectionRef.current, connection, direction),
+      [connection],
     );
     return connectionRef.current;
   };

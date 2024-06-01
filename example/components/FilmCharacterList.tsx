@@ -38,7 +38,7 @@ export const FilmCharacterList = ({
       return result.match<ReactNode>({
         Error: () => "Error",
         Ok: (characters) => {
-          if (characters.edges == null) {
+          if (characters?.edges == null) {
             return null;
           }
 
