@@ -17,9 +17,7 @@ const documents = {
     types.AllFilmsWithVariablesQueryDocument,
   "\n  fragment FilmItem on Film {\n    id\n    title\n    releaseDate\n    producers\n  }\n":
     types.FilmItemFragmentDoc,
-  "\n  fragment FilmCharactersConnection on FilmCharactersConnection {\n    edges {\n      node {\n        id\n        name\n      }\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n":
-    types.FilmCharactersConnectionFragmentDoc,
-  "\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        ...FilmCharactersConnection\n      }\n      releaseDate\n    }\n  }\n":
+  "\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        edges {\n          node {\n            id\n            name\n          }\n        }\n        pageInfo {\n          hasNextPage\n          endCursor\n        }\n      }\n      releaseDate\n    }\n  }\n":
     types.FilmDetailsDocument,
   "\n  query Producers($filmId: ID!) {\n    film(id: $filmId) {\n      id\n      producers\n    }\n  }\n":
     types.ProducersDocument,
@@ -57,14 +55,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  fragment FilmCharactersConnection on FilmCharactersConnection {\n    edges {\n      node {\n        id\n        name\n      }\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n",
-): (typeof documents)["\n  fragment FilmCharactersConnection on FilmCharactersConnection {\n    edges {\n      node {\n        id\n        name\n      }\n    }\n    pageInfo {\n      hasNextPage\n      endCursor\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        ...FilmCharactersConnection\n      }\n      releaseDate\n    }\n  }\n",
-): (typeof documents)["\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        ...FilmCharactersConnection\n      }\n      releaseDate\n    }\n  }\n"];
+  source: "\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        edges {\n          node {\n            id\n            name\n          }\n        }\n        pageInfo {\n          hasNextPage\n          endCursor\n        }\n      }\n      releaseDate\n    }\n  }\n",
+): (typeof documents)["\n  query FilmDetails($filmId: ID!, $first: Int!, $after: String) {\n    film(id: $filmId) {\n      id\n      title\n      director\n      openingCrawl\n      characterConnection(first: $first, after: $after) {\n        edges {\n          node {\n            id\n            name\n          }\n        }\n        pageInfo {\n          hasNextPage\n          endCursor\n        }\n      }\n      releaseDate\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
