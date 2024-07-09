@@ -132,7 +132,10 @@ const extractValue = (
     )
     .with({ kind: Kind.OBJECT }, ({ fields }) =>
       Object.fromEntries(
-        fields.map(({ name: { value: name }, value }) => [name, value]),
+        fields.map(({ name: { value: name }, value }) => [
+          name,
+          extractValue(value, variables),
+        ]),
       ),
     )
     .with(
