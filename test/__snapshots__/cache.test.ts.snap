@@ -293,10 +293,10 @@ Map {
   Symbol(Mutation) => {
     Symbol(__requestedKeys): Set {
       Symbol(__typename),
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})),
+      Symbol(bindAccountMembership({"input":{"accountMembershipId":"account-membership-2"}})),
     },
     Symbol(__typename): "Mutation",
-    Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
+    Symbol(bindAccountMembership({"input":{"accountMembershipId":"account-membership-2"}})): {
       Symbol(__requestedKeys): Set {
         Symbol(__typename),
         Symbol(accountMembership),
@@ -476,10 +476,10 @@ Map {
   Symbol(Mutation) => {
     Symbol(__requestedKeys): Set {
       Symbol(__typename),
-      Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})),
+      Symbol(bindAccountMembership({"input":{"accountMembershipId":"account-membership-2"}})),
     },
     Symbol(__typename): "Mutation",
-    Symbol(bindAccountMembership({"input":{"accountMembershipId":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}})): {
+    Symbol(bindAccountMembership({"input":{"accountMembershipId":"account-membership-2"}})): {
       Symbol(__requestedKeys): Set {
         Symbol(__typename),
         Symbol(accountMembership),
