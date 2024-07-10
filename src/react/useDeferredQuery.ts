@@ -15,6 +15,7 @@ import { ClientContext } from "./ClientContext";
 
 export type DeferredQueryConfig = {
   optimize?: boolean;
+  normalize?: boolean;
   debounce?: number;
 };
 
@@ -33,7 +34,7 @@ export type DeferredQuery<Data, Variables> = readonly [
 
 export const useDeferredQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
-  { optimize = false, debounce }: DeferredQueryConfig = {},
+  { optimize = false, normalize = true, debounce }: DeferredQueryConfig = {},
 ): DeferredQuery<Data, Variables> => {
   const client = useContext(ClientContext);
 
@@ -50,9 +51,9 @@ export const useDeferredQuery = <Data, Variables>(
   // Get data from cache
   const getSnapshot = useCallback(() => {
     return stableVariables.flatMap((variables) =>
-      client.readFromCache(stableQuery, variables),
+      client.readFromCache(stableQuery, variables, { normalize }),
     );
-  }, [client, stableQuery, stableVariables]);
+  }, [client, stableQuery, stableVariables, normalize]);
 
   const data = useSyncExternalStore(
     (func) => client.subscribe(func),

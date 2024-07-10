@@ -17,6 +17,7 @@ import { ClientContext } from "./ClientContext";
 export type QueryConfig = {
   suspense?: boolean;
   optimize?: boolean;
+  normalize?: boolean;
   overrides?: RequestOverrides;
 };
 
@@ -48,7 +49,12 @@ const usePreviousValue = <A, T extends AsyncData<A>>(value: T): T => {
 export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
   variables: Variables,
-  { suspense = false, optimize = false, overrides }: QueryConfig = {},
+  {
+    suspense = false,
+    optimize = false,
+    normalize = true,
+    overrides,
+  }: QueryConfig = {},
 ): Query<Data, Variables> => {
   const client = useContext(ClientContext);
 
@@ -82,8 +88,8 @@ export const useQuery = <Data, Variables>(
 
   // Get data from cache
   const getSnapshot = useCallback(() => {
-    return client.readFromCache(stableQuery, stableVariables[1]);
-  }, [client, stableQuery, stableVariables]);
+    return client.readFromCache(stableQuery, stableVariables[1], { normalize });
+  }, [client, stableQuery, stableVariables, normalize]);
 
   const data = useSyncExternalStore(
     (func) => client.subscribe(func),
@@ -109,6 +115,7 @@ export const useQuery = <Data, Variables>(
       .query(stableQuery, stableVariables[1], {
         optimize,
         overrides: stableOverrides,
+        normalize,
       })
       .tap(() => setIsReloading(false));
     return () => request.cancel();
@@ -116,6 +123,7 @@ export const useQuery = <Data, Variables>(
     client,
     suspense,
     optimize,
+    normalize,
     stableOverrides,
     stableQuery,
     stableVariables,
@@ -125,18 +133,24 @@ export const useQuery = <Data, Variables>(
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     return client
-      .query(stableQuery, stableVariables[1], { overrides: stableOverrides })
+      .query(stableQuery, stableVariables[1], {
+        overrides: stableOverrides,
+        normalize,
+      })
       .tap(() => setIsRefreshing(false));
-  }, [client, stableQuery, stableOverrides, stableVariables]);
+  }, [client, stableQuery, stableOverrides, stableVariables, normalize]);
 
   const [isReloading, setIsReloading] = useState(false);
   const reload = useCallback(() => {
     setIsReloading(true);
     setStableVariables(([stable]) => [stable, stable]);
     return client
-      .query(stableQuery, stableVariables[0], { overrides: stableOverrides })
+      .query(stableQuery, stableVariables[0], {
+        overrides: stableOverrides,
+        normalize,
+      })
       .tap(() => setIsReloading(false));
-  }, [client, stableQuery, stableOverrides, stableVariables]);
+  }, [client, stableQuery, stableOverrides, stableVariables, normalize]);
 
   const isLoading = isRefreshing || isReloading || asyncData.isLoading();
   const asyncDataToExpose = isReloading
@@ -151,7 +165,7 @@ export const useQuery = <Data, Variables>(
     asyncDataToExpose.isLoading()
   ) {
     throw client
-      .query(stableQuery, stableVariables[1], { optimize })
+      .query(stableQuery, stableVariables[1], { optimize, normalize })
       .toPromise();
   }
 

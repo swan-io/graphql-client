@@ -121,6 +121,7 @@ export type RequestOverrides = Partial<
 
 type RequestOptions<Data, Variables> = {
   optimize?: boolean;
+  normalize?: boolean;
   connectionUpdates?: GetConnectionUpdate<Data, Variables>[] | undefined;
   overrides?: RequestOverrides | undefined;
 };
@@ -178,6 +179,7 @@ export class Client {
     variables: Variables,
     {
       optimize = false,
+      normalize = true,
       connectionUpdates,
       overrides,
     }: RequestOptions<Data, Variables> = {},
@@ -221,12 +223,14 @@ export class Client {
     })
       .mapOk((data) => data as Data)
       .tapOk((data) => {
-        writeOperationToCache(
-          this.cache,
-          transformedDocument,
-          data,
-          variablesAsRecord,
-        );
+        if (normalize) {
+          writeOperationToCache(
+            this.cache,
+            transformedDocument,
+            data,
+            variablesAsRecord,
+          );
+        }
       })
       .tapOk((data) => {
         if (connectionUpdates !== undefined) {
@@ -254,14 +258,26 @@ export class Client {
   readFromCache<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
     variables: Variables,
+    { normalize = true }: { normalize?: boolean },
   ) {
     const variablesAsRecord = variables as Record<string, unknown>;
     const transformedDocument = this.getTransformedDocument(document);
 
-    return match(
-      this.cache.getOperationFromCache(transformedDocument, variablesAsRecord),
-    )
-      .with(Option.P.Some(Result.P.Error(P._)), (value) => value)
+    return match({
+      cached: this.cache.getOperationFromCache(
+        transformedDocument,
+        variablesAsRecord,
+      ),
+      normalize,
+    })
+      .with(
+        { cached: Option.P.Some(Result.P.Error(P._)) },
+        (value) => value.cached,
+      )
+      .with(
+        { cached: Option.P.Some(Result.P.Ok(P._)), normalize: false },
+        (value) => value.cached,
+      )
       .otherwise(() =>
         readOperationFromCache(
           this.cache,
