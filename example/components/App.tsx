@@ -1,5 +1,5 @@
 import { Option } from "@swan-io/boxed";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useQuery } from "../../src";
 import { graphql } from "../gql";
 import { FilmDetails } from "./FilmDetails";
@@ -15,6 +15,7 @@ const AllFilmsQuery = graphql(`
 
 export const App = () => {
   const [optimize, setOptimize] = useState(false);
+  const [suspense, setSuspense] = useState(false);
   const [activeFilm, setActiveFilm] = useState<Option<string>>(Option.None());
 
   const [data, { isLoading, setVariables }] = useQuery(
@@ -46,6 +47,14 @@ export const App = () => {
                       />
                       Optimize
                     </label>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={suspense}
+                        onChange={() => setSuspense((x) => !x)}
+                      />
+                      Suspense
+                    </label>
                     <FilmList
                       films={allFilms}
                       onNextPage={(after) => setVariables({ after })}
@@ -60,7 +69,14 @@ export const App = () => {
                     {activeFilm.match({
                       None: () => <div>No film selected</div>,
                       Some: (filmId) => (
-                        <FilmDetails filmId={filmId} optimize={optimize} />
+                        <Suspense fallback={"Suspense"}>
+                          <FilmDetails
+                            filmId={filmId}
+                            optimize={optimize}
+                            suspense={suspense}
+                            key={suspense ? filmId : undefined}
+                          />
+                        </Suspense>
                       ),
                     })}
                   </div>
