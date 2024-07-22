@@ -1,7 +1,10 @@
-import { useRef } from "react";
+import { DocumentNode } from "@0no-co/graphql.web";
+import { Option, Result } from "@swan-io/boxed";
+import { useCallback, useContext, useRef, useSyncExternalStore } from "react";
 import { match } from "ts-pattern";
 import { Connection } from "../types";
-import { isRecord } from "../utils";
+import { deepEqual, isRecord, serializeVariables } from "../utils";
+import { ClientContext } from "./ClientContext";
 
 type mode = "before" | "after";
 
@@ -81,13 +84,86 @@ const mergeConnection = <A, T extends Connection<A>>(
 
 const createPaginationHook = (direction: mode) => {
   return <A, T extends Connection<A>>(connection: T): T => {
-    const connectionRef = useRef(connection);
-    connectionRef.current = mergeConnection(
-      connectionRef.current,
-      connection,
-      direction,
+    const client = useContext(ClientContext);
+    const connectionArgumentsRef = useRef<[string, Record<string, unknown>][]>(
+      [],
     );
-    return connectionRef.current;
+
+    if (connection != null && "__connectionQueryArguments" in connection) {
+      const arg = connection.__connectionQueryArguments as Record<
+        string,
+        unknown
+      >;
+      const serializedArg = serializeVariables(arg);
+      if (
+        !connectionArgumentsRef.current.find(
+          ([serialized]) => serializedArg === serialized,
+        )
+      ) {
+        connectionArgumentsRef.current = [
+          ...connectionArgumentsRef.current,
+          [serializedArg, arg],
+        ];
+      }
+    }
+
+    const jsonPath = useRef(
+      connection != null && "__connectionJsonPath" in connection
+        ? (connection.__connectionJsonPath as string[])
+        : [],
+    );
+
+    const documentNode =
+      connection != null && "__connectionDocumentNode" in connection
+        ? (connection.__connectionDocumentNode as DocumentNode)
+        : undefined;
+
+    const lastReturnedValueRef = useRef<Option<T[]>>(Option.None());
+
+    // Get fresh data from cache
+    const getSnapshot = useCallback(() => {
+      if (documentNode == null) {
+        return Option.None();
+      }
+      const value = Option.all(
+        connectionArgumentsRef.current.map(([, args]) =>
+          client.readFromCache(documentNode, args, {}),
+        ),
+      )
+        .map(Result.all)
+        .flatMap((x) => x.toOption())
+        .map((queries) =>
+          queries.map((query) =>
+            jsonPath.current.reduce(
+              (acc, key) =>
+                acc != null && typeof acc === "object" && key in acc
+                  ? // @ts-expect-error indexable
+                    acc[key]
+                  : null,
+              query,
+            ),
+          ),
+        ) as Option<T[]>;
+      if (!deepEqual(value, lastReturnedValueRef.current)) {
+        lastReturnedValueRef.current = value;
+        return value;
+      } else {
+        return lastReturnedValueRef.current;
+      }
+    }, [client, documentNode]);
+
+    const data = useSyncExternalStore(
+      (func) => client.subscribe(func),
+      getSnapshot,
+    ) as Option<T[]>;
+
+    return data
+      .map(([first, ...rest]) =>
+        rest.reduce((acc, item) => {
+          return mergeConnection(acc, item, direction);
+        }, first),
+      )
+      .getOr(connection) as T;
   };
 };
 
