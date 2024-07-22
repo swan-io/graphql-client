@@ -213,7 +213,7 @@ export class ClientCache {
               ),
             ];
             value.__connectionArguments = variables;
-            // used to retreive up to date data from pagination hook
+            // used to retrieve up to date data from pagination hook
             value.__connectionQueryArguments = queryVariables;
             value.__connectionDocumentNode = documentNode;
             value.__connectionJsonPath = [...jsonPath, originalFieldName];
