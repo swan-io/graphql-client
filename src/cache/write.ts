@@ -24,6 +24,7 @@ export const writeOperationToCache = (
     selections: SelectionSetNode,
     data: unknown[],
     path: PropertyKey[] = [],
+    jsonPath: PropertyKey[] = [],
     rootTypename: string,
   ) => {
     selections.selections.forEach((selection) => {
@@ -47,10 +48,13 @@ export const writeOperationToCache = (
                 fieldNameWithArguments,
                 value: fieldValue,
                 path,
+                jsonPath,
                 ancestors: data,
                 variables: fieldArguments,
+                queryVariables: variables,
                 rootTypename,
                 selectedKeys,
+                documentNode: document,
               });
 
               const nextValue = Array(fieldValue.length);
@@ -60,10 +64,13 @@ export const writeOperationToCache = (
                 fieldNameWithArguments,
                 value: nextValue,
                 path: [...path, fieldNameWithArguments],
+                jsonPath: [...jsonPath, originalFieldName],
                 ancestors: [...data, fieldValue],
                 variables: fieldArguments,
+                queryVariables: variables,
                 rootTypename,
                 selectedKeys,
+                documentNode: document,
               });
 
               fieldValue.forEach((item: unknown, index: number) => {
@@ -74,10 +81,13 @@ export const writeOperationToCache = (
                   fieldNameWithArguments: index.toString(),
                   value,
                   path: [...path, fieldNameWithArguments],
+                  jsonPath: [...jsonPath, originalFieldName],
                   ancestors: [...data, fieldValue],
                   variables: fieldArguments,
+                  queryVariables: variables,
                   rootTypename,
                   selectedKeys,
+                  documentNode: document,
                 });
 
                 if (isRecord(item)) {
@@ -85,6 +95,7 @@ export const writeOperationToCache = (
                     fieldNode.selectionSet!,
                     [...data, fieldValue, item],
                     [...path, fieldNameWithArguments, index.toString()],
+                    [...jsonPath, originalFieldName, index.toString()],
                     rootTypename,
                   );
                 }
@@ -97,10 +108,13 @@ export const writeOperationToCache = (
                 fieldNameWithArguments,
                 value,
                 path,
+                jsonPath,
                 ancestors: data,
                 variables: fieldArguments,
+                queryVariables: variables,
                 rootTypename,
                 selectedKeys,
+                documentNode: document,
               });
 
               if (isRecord(fieldValue) && fieldNode.selectionSet != undefined) {
@@ -108,6 +122,7 @@ export const writeOperationToCache = (
                   fieldNode.selectionSet,
                   [...data, fieldValue],
                   [...path, fieldNameWithArguments],
+                  [...jsonPath, originalFieldName],
                   rootTypename,
                 );
               }
@@ -119,16 +134,25 @@ export const writeOperationToCache = (
                 fieldNameWithArguments,
                 value: fieldValue,
                 path,
+                jsonPath,
                 ancestors: data,
                 variables: fieldArguments,
+                queryVariables: variables,
                 rootTypename,
                 selectedKeys,
+                documentNode: document,
               });
             }
           }
         })
         .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
-          traverse(inlineFragmentNode.selectionSet, data, path, rootTypename);
+          traverse(
+            inlineFragmentNode.selectionSet,
+            data,
+            path,
+            jsonPath,
+            rootTypename,
+          );
         })
         .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
           // ignore, those are stripped
@@ -155,7 +179,7 @@ export const writeOperationToCache = (
           : response,
         getSelectedKeys(definition, variables),
       );
-      traverse(definition.selectionSet, [response], [], rootTypename);
+      traverse(definition.selectionSet, [response], [], [], rootTypename);
     }
   });
 

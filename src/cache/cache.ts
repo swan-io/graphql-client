@@ -165,19 +165,25 @@ export class ClientCache {
     fieldNameWithArguments,
     value,
     path,
+    jsonPath,
     ancestors,
     variables,
+    queryVariables,
     rootTypename,
     selectedKeys,
+    documentNode,
   }: {
     originalFieldName: string;
     fieldNameWithArguments: symbol | string;
     value: unknown;
     path: PropertyKey[];
+    jsonPath: PropertyKey[];
     ancestors: unknown[];
     variables: Record<string, unknown>;
+    queryVariables: Record<string, unknown>;
     rootTypename: string;
     selectedKeys: Set<symbol>;
+    documentNode: DocumentNode;
   }) {
     const ancestorsCopy = ancestors.concat();
     const pathCopy = path.concat();
@@ -207,6 +213,10 @@ export class ClientCache {
               ),
             ];
             value.__connectionArguments = variables;
+            // used to retrieve up to date data from pagination hook
+            value.__connectionQueryArguments = queryVariables;
+            value.__connectionDocumentNode = documentNode;
+            value.__connectionJsonPath = [...jsonPath, originalFieldName];
           }
           value[REQUESTED_KEYS] = selectedKeys;
         }
