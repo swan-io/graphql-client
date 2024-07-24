@@ -100,10 +100,20 @@ const createPaginationHook = (direction: mode) => {
           ([serialized]) => serializedArg === serialized,
         )
       ) {
-        connectionArgumentsRef.current = [
-          ...connectionArgumentsRef.current,
-          [serializedArg, arg],
-        ];
+        // if `before` or `after` argument is `null`, we're on the first page,
+        // reset the pagination
+        if (
+          "__connectionArguments" in connection &&
+          isRecord(connection.__connectionArguments) &&
+          connection.__connectionArguments[direction] == null
+        ) {
+          connectionArgumentsRef.current = [[serializedArg, arg]];
+        } else {
+          connectionArgumentsRef.current = [
+            ...connectionArgumentsRef.current,
+            [serializedArg, arg],
+          ];
+        }
       }
     }
 
