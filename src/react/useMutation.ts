@@ -13,6 +13,7 @@ export type Mutation<Data, Variables> = readonly [
     config?: MutationExtraConfig,
   ) => Future<Result<Data, ClientError>>,
   AsyncData<Result<Data, ClientError>>,
+  { reset: () => void },
 ];
 
 export type MutationConfig<Data, Variables> = {
@@ -48,5 +49,9 @@ export const useMutation = <Data, Variables>(
     [client, stableMutation],
   );
 
-  return [commitMutation, data];
+  const reset = useCallback(() => {
+    setData(AsyncData.NotAsked());
+  }, []);
+
+  return [commitMutation, data, { reset }];
 };
