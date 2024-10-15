@@ -46,9 +46,9 @@ const usePreviousValue = <A, T extends AsyncData<A>>(value: T): T => {
   return previousRef.current;
 };
 
-export const useQuery = <Data, Variables>(
+export const useQuery = <Data, Variables, InitialVariables extends Variables>(
   query: TypedDocumentNode<Data, Variables>,
-  variables: Variables,
+  variables: InitialVariables,
   {
     suspense = false,
     optimize = false,
