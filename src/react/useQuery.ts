@@ -48,7 +48,7 @@ const usePreviousValue = <A, T extends AsyncData<A>>(value: T): T => {
 
 export const useQuery = <Data, Variables>(
   query: TypedDocumentNode<Data, Variables>,
-  variables: Variables,
+  variables: NoInfer<Variables>,
   {
     suspense = false,
     optimize = false,
