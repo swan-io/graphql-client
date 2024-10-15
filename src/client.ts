@@ -176,7 +176,7 @@ export class Client {
 
   request<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables,
+    variables: NoInfer<Variables>,
     {
       optimize = false,
       normalize = true,
@@ -257,7 +257,7 @@ export class Client {
 
   readFromCache<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables,
+    variables: NoInfer<Variables>,
     { normalize = true }: { normalize?: boolean },
   ) {
     const variablesAsRecord = variables as Record<string, unknown>;
@@ -289,7 +289,7 @@ export class Client {
 
   query<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables,
+    variables: NoInfer<Variables>,
     requestOptions?: RequestOptions<Data, Variables>,
   ) {
     return this.request(document, variables, requestOptions);
@@ -297,7 +297,7 @@ export class Client {
 
   commitMutation<Data, Variables>(
     document: TypedDocumentNode<Data, Variables>,
-    variables: Variables,
+    variables: NoInfer<Variables>,
     requestOptions?: RequestOptions<Data, Variables>,
   ) {
     return this.request(document, variables, requestOptions);
