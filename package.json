@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.6",
-    "@swan-io/boxed": "^2.3.0",
+    "@swan-io/boxed": "^3.0.0",
     "@swan-io/request": "^1.0.6",
     "ts-pattern": "^5.1.0"
   },
