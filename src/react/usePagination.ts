@@ -1,5 +1,5 @@
 import { DocumentNode } from "@0no-co/graphql.web";
-import { Option, Result } from "@swan-io/boxed";
+import { AsyncData, Option, Result } from "@swan-io/boxed";
 import { useCallback, useContext, useRef, useSyncExternalStore } from "react";
 import { match } from "ts-pattern";
 import { Connection } from "../types";
@@ -180,3 +180,33 @@ const createPaginationHook = (direction: mode) => {
 export const useForwardPagination = createPaginationHook("after");
 
 export const useBackwardPagination = createPaginationHook("before");
+
+export const useForwardAsyncDataPagination = <
+  A,
+  E,
+  T extends AsyncData<Result<Connection<A>, E>>,
+>(
+  connection: T,
+): T => {
+  const data = connection
+    .toOption()
+    .flatMap((result) => result.toOption())
+    .toNull();
+  const patchedData = useForwardPagination(data);
+  return connection.mapOk(() => patchedData) as T;
+};
+
+export const useBackwardAsyncDataPagination = <
+  A,
+  E,
+  T extends AsyncData<Result<Connection<A>, E>>,
+>(
+  connection: T,
+): T => {
+  const data = connection
+    .toOption()
+    .flatMap((result) => result.toOption())
+    .toNull();
+  const patchedData = useBackwardPagination(data);
+  return connection.mapOk(() => patchedData) as T;
+};
