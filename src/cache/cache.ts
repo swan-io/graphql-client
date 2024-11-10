@@ -1,71 +1,65 @@
-import {
-  DocumentNode,
-  OperationDefinitionNode,
-  OperationTypeNode,
-} from "@0no-co/graphql.web";
+import { DocumentNode } from "@0no-co/graphql.web";
 import { Array, Option, Result } from "@swan-io/boxed";
-import { P, match } from "ts-pattern";
+import { getCacheEntryKey } from "../json/cacheEntryKey";
 import { Connection, Edge } from "../types";
 import {
-  DEEP_MERGE_DELETE,
+  CONNECTION_REF,
+  EDGES_KEY,
+  NODE_KEY,
   REQUESTED_KEYS,
+  TYPENAME_KEY,
   containsAll,
-  deepMerge,
   isRecord,
   serializeVariables,
 } from "../utils";
-
-export const getCacheKeyFromJson = (json: unknown): Option<symbol> => {
-  return match(json)
-    .with(
-      { __typename: P.select(P.union("Query", "Mutation", "Subscription")) },
-      (name) => Option.Some(Symbol.for(name)),
-    )
-    .with(
-      { __typename: P.select("name", P.string), id: P.select("id", P.string) },
-      ({ name, id }) => Option.Some(Symbol.for(`${name}<${id}>`)),
-    )
-    .otherwise(() => Option.None());
-};
+import type { CacheEntry } from "./entry";
 
 export type SchemaConfig = {
   interfaceToTypes: Record<string, string[]>;
 };
 
-export const getCacheKeyFromOperationNode = (
-  operationNode: OperationDefinitionNode,
-): Option<symbol> => {
-  return match(operationNode.operation)
-    .with(OperationTypeNode.QUERY, () => Option.Some(Symbol.for("Query")))
-    .with(OperationTypeNode.SUBSCRIPTION, () =>
-      Option.Some(Symbol.for("Subscription")),
-    )
-    .otherwise(() => Option.None());
+type ConnectionInfo = {
+  // useful for connection updates
+  cacheEntry: CacheEntry;
+  // to re-read from cache
+  document: DocumentNode;
+  variables: Record<string, unknown>;
+  pathInQuery: PropertyKey[];
+  fieldVariables: Record<string, unknown>;
 };
 
 export class ClientCache {
-  cache = new Map<symbol, unknown>();
+  cache = new Map<symbol, CacheEntry>();
   operationCache = new Map<
     DocumentNode,
     Map<string, Option<Result<unknown, unknown>>>
   >();
 
-  schemaConfig: Record<string, Set<string>>;
+  interfaceToType: Record<string, Set<string>>;
+  connectionCache: Map<number, ConnectionInfo>;
+  connectionRefCount = -1;
 
   constructor(schemaConfig: SchemaConfig) {
-    this.schemaConfig = Object.fromEntries(
+    this.interfaceToType = Object.fromEntries(
       Object.entries(schemaConfig.interfaceToTypes).map(([key, value]) => [
         key,
         new Set(value),
       ]),
     );
+    this.connectionCache = new Map<number, ConnectionInfo>();
+  }
+
+  registerConnectionInfo(info: ConnectionInfo) {
+    const id = ++this.connectionRefCount;
+    this.connectionCache.set(id, info);
+    return id;
   }
 
   isTypeCompatible(typename: string, typeCondition: string) {
     if (typename === typeCondition) {
       return true;
     }
-    const compatibleTypes = this.schemaConfig[typeCondition];
+    const compatibleTypes = this.interfaceToType[typeCondition];
     if (compatibleTypes == undefined) {
       return false;
     }
@@ -127,150 +121,18 @@ export class ClientCache {
     }
   }
 
-  getOrDefault(cacheKey: symbol): unknown {
+  getOrCreateEntry(cacheKey: symbol, defaultValue: CacheEntry): unknown {
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey) as unknown;
     } else {
-      return {};
+      const entry = defaultValue;
+      this.cache.set(cacheKey, entry);
+      return entry;
     }
   }
 
-  set(cacheKey: symbol, entry: unknown) {
+  set(cacheKey: symbol, entry: CacheEntry) {
     this.cache.set(cacheKey, entry);
-  }
-
-  cacheIfEligible<T>(value: T, requestedKeys: Set<symbol>): symbol | T {
-    const cacheKeyOption = getCacheKeyFromJson(value);
-    if (cacheKeyOption.isSome()) {
-      const cacheKey = cacheKeyOption.get();
-      const existingEntry = this.getOrDefault(cacheKey);
-
-      this.set(
-        cacheKey,
-        deepMerge(
-          existingEntry,
-          isRecord(value)
-            ? { ...value, [REQUESTED_KEYS]: requestedKeys }
-            : value,
-        ),
-      );
-      return cacheKey;
-    } else {
-      return value;
-    }
-  }
-
-  updateFieldInClosestCachedAncestor({
-    originalFieldName,
-    fieldNameWithArguments,
-    value,
-    path,
-    jsonPath,
-    ancestors,
-    variables,
-    queryVariables,
-    rootTypename,
-    selectedKeys,
-    documentNode,
-  }: {
-    originalFieldName: string;
-    fieldNameWithArguments: symbol | string;
-    value: unknown;
-    path: PropertyKey[];
-    jsonPath: PropertyKey[];
-    ancestors: unknown[];
-    variables: Record<string, unknown>;
-    queryVariables: Record<string, unknown>;
-    rootTypename: string;
-    selectedKeys: Set<symbol>;
-    documentNode: DocumentNode;
-  }) {
-    const ancestorsCopy = ancestors.concat();
-    const pathCopy = path.concat();
-    const writePath: PropertyKey[] = [];
-
-    let ancestor;
-
-    while ((ancestor = ancestorsCopy.pop())) {
-      const maybeCacheKey = getCacheKeyFromJson(
-        ancestorsCopy.length === 0
-          ? { ...ancestor, __typename: rootTypename }
-          : ancestor,
-      );
-      if (maybeCacheKey.isSome()) {
-        const cacheKey = maybeCacheKey.get();
-        const existingEntry = this.getOrDefault(cacheKey);
-
-        if (isRecord(value) && !Array.isArray(value)) {
-          if (
-            typeof value.__typename === "string" &&
-            value.__typename.endsWith("Connection")
-          ) {
-            value.__connectionCacheKey = cacheKey.description;
-            value.__connectionCachePath = [
-              [...writePath, fieldNameWithArguments].map((item) =>
-                typeof item === "symbol" ? { symbol: item.description } : item,
-              ),
-            ];
-            value.__connectionArguments = variables;
-            // used to retrieve up to date data from pagination hook
-            value.__connectionQueryArguments = queryVariables;
-            value.__connectionDocumentNode = documentNode;
-            value.__connectionJsonPath = [...jsonPath, originalFieldName];
-          }
-          value[REQUESTED_KEYS] = selectedKeys;
-        }
-
-        const deepUpdate = writePath.reduce<unknown>(
-          (acc, key) => {
-            return {
-              [key]: acc,
-            };
-          },
-          // remote original field
-          {
-            [originalFieldName]: DEEP_MERGE_DELETE,
-            [fieldNameWithArguments]: value,
-          },
-        );
-
-        this.set(cacheKey, deepMerge(existingEntry, deepUpdate));
-
-        // When the cached ancestor is found, remove
-        break;
-      }
-
-      writePath.push(pathCopy.pop() as PropertyKey);
-    }
-  }
-
-  unsafe__update<A>(
-    cacheKey: symbol,
-    path: (symbol | string)[],
-    updater: (value: A) => A,
-  ) {
-    this.get(cacheKey).map((cachedAncestor) => {
-      const value = path.reduce<Option<unknown>>(
-        (acc, key) =>
-          acc.flatMap((acc) =>
-            Option.fromNullable(isRecord(acc) ? acc[key] : null),
-          ),
-        Option.fromNullable(cachedAncestor),
-      );
-
-      value.map((item) => {
-        const deepUpdate = path.reduce<unknown>(
-          (acc, key) => {
-            return {
-              [key]: acc,
-            };
-          },
-          updater(item as A),
-        );
-
-        this.set(cacheKey, deepMerge(cachedAncestor, deepUpdate));
-      });
-    });
   }
 
   updateConnection<A>(
@@ -280,95 +142,63 @@ export class ClientCache {
       | { append: Edge<A>[] }
       | { remove: string[] },
   ) {
-    match(connection as unknown)
-      .with(
-        {
-          __connectionCacheKey: P.string,
-          __connectionCachePath: P.array(
-            P.array(P.union({ symbol: P.string }, P.string)),
-          ),
-        },
-        ({ __connectionCacheKey, __connectionCachePath }) => {
-          const cacheKey = Symbol.for(__connectionCacheKey);
-          const cachePath = __connectionCachePath.map((path) =>
-            path.map((item) =>
-              typeof item === "string" ? item : Symbol.for(item.symbol),
+    if (connection == null) {
+      return;
+    }
+    if (
+      CONNECTION_REF in connection &&
+      typeof connection[CONNECTION_REF] === "number"
+    ) {
+      const connectionConfig = this.connectionCache.get(
+        connection[CONNECTION_REF],
+      );
+      if (connectionConfig == null) {
+        return;
+      }
+
+      if ("prepend" in config) {
+        const edges = config.prepend;
+        connectionConfig.cacheEntry[EDGES_KEY] = [
+          ...Array.filterMap(edges, ({ node, __typename }) =>
+            getCacheEntryKey(node).flatMap((key) =>
+              // we can omit the requested fields here because the Connection<A> contrains the fields
+              this.getFromCacheWithoutKey(key).map(() => ({
+                [TYPENAME_KEY]: __typename,
+                [NODE_KEY]: key,
+              })),
             ),
-          );
-          const typenameSymbol = Symbol.for("__typename");
-          const edgesSymbol = Symbol.for("edges");
-          const nodeSymbol = Symbol.for("node");
-          match(config)
-            .with({ prepend: P.select(P.nonNullable) }, (edges) => {
-              const firstPath = cachePath[0];
-              if (firstPath != null) {
-                this.unsafe__update(cacheKey, firstPath, (value) => {
-                  if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
-                    return value;
-                  }
-                  return {
-                    ...value,
-                    [edgesSymbol]: [
-                      ...Array.filterMap(edges, ({ node, __typename }) =>
-                        getCacheKeyFromJson(node).flatMap((key) =>
-                          // we can omit the requested fields here because the Connection<A> contrains the fields
-                          this.getFromCacheWithoutKey(key).map(() => ({
-                            [typenameSymbol]: __typename,
-                            [nodeSymbol]: key,
-                          })),
-                        ),
-                      ),
-                      ...value[edgesSymbol],
-                    ],
-                  };
-                });
-              }
-            })
-            .with({ append: P.select(P.nonNullable) }, (edges) => {
-              const lastPath = cachePath[cachePath.length - 1];
-              if (lastPath != null) {
-                this.unsafe__update(cacheKey, lastPath, (value) => {
-                  if (!isRecord(value) || !Array.isArray(value[edgesSymbol])) {
-                    return value;
-                  }
-                  return {
-                    ...value,
-                    [edgesSymbol]: [
-                      ...value[edgesSymbol],
-                      ...Array.filterMap(edges, ({ node, __typename }) =>
-                        getCacheKeyFromJson(node).flatMap((key) =>
-                          // we can omit the requested fields here because the Connection<A> contrains the fields
-                          this.getFromCacheWithoutKey(key).map(() => ({
-                            [typenameSymbol]: __typename,
-                            [nodeSymbol]: key,
-                          })),
-                        ),
-                      ),
-                    ],
-                  };
-                });
-              }
-            })
-            .with({ remove: P.select(P.array()) }, (nodeIds) => {
-              cachePath.forEach((path) => {
-                this.unsafe__update(cacheKey, path, (value) => {
-                  return isRecord(value) && Array.isArray(value[edgesSymbol])
-                    ? {
-                        ...value,
-                        [edgesSymbol]: value[edgesSymbol].filter((edge) => {
-                          const node = edge[nodeSymbol] as symbol;
-                          return !nodeIds.some((nodeId) => {
-                            return node.description?.includes(`<${nodeId}>`);
-                          });
-                        }),
-                      }
-                    : value;
-                });
-              });
-            })
-            .exhaustive();
-        },
-      )
-      .otherwise(() => {});
+          ),
+          ...(connectionConfig.cacheEntry[EDGES_KEY] as unknown[]),
+        ];
+        return;
+      }
+
+      if ("append" in config) {
+        const edges = config.append;
+        connectionConfig.cacheEntry[EDGES_KEY] = [
+          ...(connectionConfig.cacheEntry[EDGES_KEY] as unknown[]),
+          ...Array.filterMap(edges, ({ node, __typename }) =>
+            getCacheEntryKey(node).flatMap((key) =>
+              // we can omit the requested fields here because the Connection<A> contrains the fields
+              this.getFromCacheWithoutKey(key).map(() => ({
+                [TYPENAME_KEY]: __typename,
+                [NODE_KEY]: key,
+              })),
+            ),
+          ),
+        ];
+        return;
+      }
+      const nodeIds = config.remove;
+      connectionConfig.cacheEntry[EDGES_KEY] = (
+        connectionConfig.cacheEntry[EDGES_KEY] as unknown[]
+      ).filter((edge) => {
+        // @ts-expect-error fine
+        const node = edge[NODE_KEY] as symbol;
+        return !nodeIds.some((nodeId) => {
+          return node.description?.includes(`<${nodeId}>`);
+        });
+      });
+    }
   }
 }

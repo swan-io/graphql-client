@@ -7,14 +7,15 @@ import {
   SelectionSetNode,
 } from "@0no-co/graphql.web";
 import { Array, Option, Result } from "@swan-io/boxed";
-import { P, match } from "ts-pattern";
 import {
   addIdIfPreviousSelected,
+  getCacheKeyFromOperationNode,
   getFieldName,
   getFieldNameWithArguments,
   getSelectedKeys,
   isExcluded,
 } from "../graphql/ast";
+import { getTypename } from "../json/getTypename";
 import {
   REQUESTED_KEYS,
   containsAll,
@@ -23,7 +24,7 @@ import {
   isRecord,
   serializeVariables,
 } from "../utils";
-import { ClientCache, getCacheKeyFromOperationNode } from "./cache";
+import { ClientCache } from "./cache";
 
 const getFromCacheOrReturnValue = (
   cache: ClientCache,
@@ -166,13 +167,7 @@ export const readOperationFromCache = (
         if (selection.kind === Kind.INLINE_FRAGMENT) {
           const inlineFragmentNode = selection;
           const typeCondition = inlineFragmentNode.typeCondition?.name.value;
-          const dataTypename = match(data)
-            .with({ __typename: P.select(P.string) }, (name) => name)
-            .with(
-              { __typename: P.array({ __typename: P.select(P.string) }) },
-              (name) => name[0],
-            )
-            .otherwise(() => undefined);
+          const dataTypename = getTypename(data);
 
           if (typeCondition != null && dataTypename != null) {
             if (cache.isTypeCompatible(dataTypename, typeCondition)) {
@@ -290,8 +285,9 @@ export const optimizeQuery = (
     const nextSelections = Array.filterMap<SelectionNode, SelectionNode>(
       selections.selections,
       (selection) => {
-        return match(selection)
-          .with({ kind: Kind.FIELD }, (fieldNode) => {
+        switch (selection.kind) {
+          case Kind.FIELD: {
+            const fieldNode = selection;
             const fieldNameWithArguments = getFieldNameWithArguments(
               fieldNode,
               variables,
@@ -375,8 +371,9 @@ export const optimizeQuery = (
             } else {
               return Option.Some(fieldNode);
             }
-          })
-          .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
+          }
+          case Kind.INLINE_FRAGMENT: {
+            const inlineFragmentNode = selection;
             return traverse(
               inlineFragmentNode.selectionSet,
               data as Record<PropertyKey, unknown>,
@@ -385,11 +382,10 @@ export const optimizeQuery = (
               (selectionSet) =>
                 ({ ...inlineFragmentNode, selectionSet }) as InlineFragmentNode,
             );
-          })
-          .with({ kind: Kind.FRAGMENT_SPREAD }, () => {
+          }
+          default:
             return Option.None();
-          })
-          .exhaustive();
+        }
       },
     );
     if (nextSelections.length > 0) {
