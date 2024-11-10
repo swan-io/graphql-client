@@ -86,6 +86,13 @@ const config = {
         style: "dark",
         copyright: `Copyright © ${new Date().getFullYear()} Swan`,
       },
+      metadata: [
+        { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:image", content: `${url}/img/social.png` },
+        { property: "og:image:width", content: `1280` },
+        { property: "og:image:height", content: `640` },
+        { name: "twitter:image", content: `${url}/img/social.png` },
+      ],
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
