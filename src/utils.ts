@@ -1,57 +1,10 @@
-export const DEEP_MERGE_DELETE = Symbol.for("DEEP_MERGE_DELETE");
-
 export const REQUESTED_KEYS = Symbol.for("__requestedKeys");
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const deepMerge = (target: any, source: any): any => {
-  if (target instanceof Set && source instanceof Set) {
-    return new Set([...target, ...source]);
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const next: any = Array.isArray(target)
-    ? Array(target.length)
-    : Array.isArray(source)
-      ? Array(source.length)
-      : {};
+export const CONNECTION_REF = "__connectionRef";
 
-  Object.getOwnPropertyNames(target).forEach((name) => {
-    // instruction to remove existing field
-    if (source[name] !== DEEP_MERGE_DELETE) {
-      next[name] = target[name];
-    }
-  });
-
-  Object.getOwnPropertySymbols(target).forEach((name) => {
-    // instruction to remove existing field
-    if (source[name] !== DEEP_MERGE_DELETE) {
-      next[name] = target[name];
-    }
-  });
-
-  Object.getOwnPropertyNames(source).forEach((name) => {
-    // instruction to remove existing field
-    if (source[name] !== DEEP_MERGE_DELETE) {
-      if (isRecord(next[name]) && isRecord(source[name])) {
-        next[name] = deepMerge(next[name], source[name]);
-      } else {
-        next[name] = source[name];
-      }
-    }
-  });
-
-  Object.getOwnPropertySymbols(source).forEach((name) => {
-    // instruction to remove existing field
-    if (source[name] !== DEEP_MERGE_DELETE) {
-      if (isRecord(next[name]) && isRecord(source[name])) {
-        next[name] = deepMerge(next[name], source[name]);
-      } else {
-        next[name] = source[name];
-      }
-    }
-  });
-
-  return next;
-};
+export const TYPENAME_KEY = Symbol.for("__typename");
+export const EDGES_KEY = Symbol.for("edges");
+export const NODE_KEY = Symbol.for("node");
 
 export const containsAll = <T>(a: Set<T>, b: Set<T>): boolean => {
   const keys = [...b.values()];

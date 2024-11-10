@@ -7,13 +7,13 @@ import {
   InlineFragmentNode,
   Kind,
   OperationDefinitionNode,
+  OperationTypeNode,
   SelectionNode,
   SelectionSetNode,
   ValueNode,
   visit,
 } from "@0no-co/graphql.web";
 import { Array, Option } from "@swan-io/boxed";
-import { P, match } from "ts-pattern";
 
 /**
  * Returns a Set<string> with all keys selected within the direct selection sets
@@ -113,36 +113,29 @@ const extractValue = (
   valueNode: ValueNode,
   variables: Record<string, unknown>,
 ): unknown => {
-  return match(valueNode)
-    .with({ kind: Kind.NULL }, () => null)
-    .with(
-      {
-        kind: P.union(
-          Kind.INT,
-          Kind.FLOAT,
-          Kind.STRING,
-          Kind.BOOLEAN,
-          Kind.ENUM,
-        ),
-      },
-      ({ value }) => value,
-    )
-    .with({ kind: Kind.LIST }, ({ values }) =>
-      values.map((value) => extractValue(value, variables)),
-    )
-    .with({ kind: Kind.OBJECT }, ({ fields }) =>
-      Object.fromEntries(
-        fields.map(({ name: { value: name }, value }) => [
+  switch (valueNode.kind) {
+    case Kind.NULL:
+      return null;
+    case Kind.INT:
+    case Kind.FLOAT:
+    case Kind.STRING:
+    case Kind.BOOLEAN:
+    case Kind.ENUM:
+      return valueNode.value;
+    case Kind.LIST:
+      return valueNode.values.map((value) => extractValue(value, variables));
+    case Kind.OBJECT:
+      return Object.fromEntries(
+        valueNode.fields.map(({ name: { value: name }, value }) => [
           name,
           extractValue(value, variables),
         ]),
-      ),
-    )
-    .with(
-      { kind: Kind.VARIABLE },
-      ({ name: { value: name } }) => variables[name],
-    )
-    .exhaustive();
+      );
+    case Kind.VARIABLE:
+      return variables[valueNode.name.value];
+    default:
+      return null;
+  }
 };
 
 /**
@@ -257,17 +250,16 @@ export const getExecutableOperationName = (document: DocumentNode) => {
 };
 
 const getIdFieldNode = (selection: SelectionNode): Option<SelectionNode> => {
-  return match(selection)
-    .with({ kind: Kind.FIELD }, (fieldNode) =>
-      fieldNode.name.value === "id" ? Option.Some(fieldNode) : Option.None(),
-    )
-    .with({ kind: Kind.INLINE_FRAGMENT }, (inlineFragmentNode) => {
-      return Array.findMap(
-        inlineFragmentNode.selectionSet.selections,
-        getIdFieldNode,
-      );
-    })
-    .otherwise(() => Option.None());
+  switch (selection.kind) {
+    case Kind.FIELD:
+      return selection.name.value === "id"
+        ? Option.Some(selection)
+        : Option.None();
+    case Kind.INLINE_FRAGMENT:
+      return Array.findMap(selection.selectionSet.selections, getIdFieldNode);
+    default:
+      return Option.None();
+  }
 };
 
 export const addIdIfPreviousSelected = (
@@ -314,4 +306,17 @@ export const isExcluded = (
         );
       }),
   );
+};
+
+export const getCacheKeyFromOperationNode = (
+  operationNode: OperationDefinitionNode,
+): Option<symbol> => {
+  switch (operationNode.operation) {
+    case OperationTypeNode.QUERY:
+      return Option.Some(Symbol.for("Query"));
+    case OperationTypeNode.SUBSCRIPTION:
+      return Option.Some(Symbol.for("Subscription"));
+    default:
+      return Option.None();
+  }
 };

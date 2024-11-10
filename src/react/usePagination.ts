@@ -1,9 +1,7 @@
-import { DocumentNode } from "@0no-co/graphql.web";
-import { AsyncData, Option, Result } from "@swan-io/boxed";
+import { Array, AsyncData, Option, Result } from "@swan-io/boxed";
 import { useCallback, useContext, useRef, useSyncExternalStore } from "react";
-import { match } from "ts-pattern";
 import { Connection } from "../types";
-import { deepEqual, isRecord, serializeVariables } from "../utils";
+import { CONNECTION_REF, deepEqual } from "../utils";
 import { ClientContext } from "./ClientContext";
 
 type mode = "before" | "after";
@@ -19,11 +17,7 @@ const mergeConnection = <A, T extends Connection<A>>(
   if (previous == null) {
     return next;
   }
-  if ("__connectionArguments" in next && isRecord(next.__connectionArguments)) {
-    if (next.__connectionArguments[mode] == null) {
-      return next;
-    }
-  }
+
   if (
     mode === "after" &&
     next.pageInfo.endCursor === previous.pageInfo.endCursor
@@ -39,120 +33,71 @@ const mergeConnection = <A, T extends Connection<A>>(
 
   return {
     ...next,
-    __connectionCachePath: match(mode)
-      .with("before", () => [
-        ...("__connectionCachePath" in next &&
-        Array.isArray(next.__connectionCachePath)
-          ? next.__connectionCachePath
-          : []),
-        ...("__connectionCachePath" in previous &&
-        Array.isArray(previous.__connectionCachePath)
-          ? previous.__connectionCachePath
-          : []),
-      ])
-      .with("after", () => [
-        ...("__connectionCachePath" in previous &&
-        Array.isArray(previous.__connectionCachePath)
-          ? previous.__connectionCachePath
-          : []),
-        ...("__connectionCachePath" in next &&
-        Array.isArray(next.__connectionCachePath)
-          ? next.__connectionCachePath
-          : []),
-      ])
-      .exhaustive(),
-    edges: match(mode)
-      .with("before", () => [...(next.edges ?? []), ...(previous.edges ?? [])])
-      .with("after", () => [...(previous.edges ?? []), ...(next.edges ?? [])])
-      .exhaustive(),
-    pageInfo: match(mode)
-      .with("before", () => ({
-        hasPreviousPage: next.pageInfo.hasPreviousPage,
-        startCursor: next.pageInfo.startCursor,
-        hasNextPage: previous.pageInfo.hasNextPage,
-        endCursor: previous.pageInfo.endCursor,
-      }))
-      .with("after", () => ({
-        hasPreviousPage: previous.pageInfo.hasPreviousPage,
-        startCursor: previous.pageInfo.startCursor,
-        hasNextPage: next.pageInfo.hasNextPage,
-        endCursor: next.pageInfo.endCursor,
-      }))
-      .exhaustive(),
+    edges:
+      mode === "before"
+        ? [...(next.edges ?? []), ...(previous.edges ?? [])]
+        : [...(previous.edges ?? []), ...(next.edges ?? [])],
+    pageInfo:
+      mode === "before"
+        ? {
+            hasPreviousPage: next.pageInfo.hasPreviousPage,
+            startCursor: next.pageInfo.startCursor,
+            hasNextPage: previous.pageInfo.hasNextPage,
+            endCursor: previous.pageInfo.endCursor,
+          }
+        : {
+            hasPreviousPage: previous.pageInfo.hasPreviousPage,
+            startCursor: previous.pageInfo.startCursor,
+            hasNextPage: next.pageInfo.hasNextPage,
+            endCursor: next.pageInfo.endCursor,
+          },
   };
 };
 
 const createPaginationHook = (direction: mode) => {
   return <A, T extends Connection<A>>(connection: T): T => {
     const client = useContext(ClientContext);
-    const connectionArgumentsRef = useRef<[string, Record<string, unknown>][]>(
-      [],
-    );
+    const connectionRefs = useRef<number[]>([]);
+    const lastReturnedValueRef = useRef<Option<T[]>>(Option.None());
 
-    if (connection != null && "__connectionQueryArguments" in connection) {
-      const arg = connection.__connectionQueryArguments as Record<
-        string,
-        unknown
-      >;
-      const serializedArg = serializeVariables(arg);
+    if (connection == null) {
+      connectionRefs.current = [];
+    } else {
       if (
-        !connectionArgumentsRef.current.find(
-          ([serialized]) => serializedArg === serialized,
-        )
+        CONNECTION_REF in connection &&
+        typeof connection[CONNECTION_REF] === "number" &&
+        !connectionRefs.current.includes(connection[CONNECTION_REF])
       ) {
-        // if `before` or `after` argument is `null`, we're on the first page,
-        // reset the pagination
-        if (
-          "__connectionArguments" in connection &&
-          isRecord(connection.__connectionArguments) &&
-          connection.__connectionArguments[direction] == null
-        ) {
-          connectionArgumentsRef.current = [[serializedArg, arg]];
-        } else {
-          connectionArgumentsRef.current = [
-            ...connectionArgumentsRef.current,
-            [serializedArg, arg],
-          ];
-        }
+        connectionRefs.current.push(connection[CONNECTION_REF]);
       }
     }
 
-    const jsonPath = useRef(
-      connection != null && "__connectionJsonPath" in connection
-        ? (connection.__connectionJsonPath as string[])
-        : [],
-    );
-
-    const documentNode =
-      connection != null && "__connectionDocumentNode" in connection
-        ? (connection.__connectionDocumentNode as DocumentNode)
-        : undefined;
-
-    const lastReturnedValueRef = useRef<Option<T[]>>(Option.None());
-
     // Get fresh data from cache
     const getSnapshot = useCallback(() => {
-      if (documentNode == null) {
-        return Option.None();
-      }
       const value = Option.all(
-        connectionArgumentsRef.current.map(([, args]) =>
-          client.readFromCache(documentNode, args, {}),
+        Array.filterMap(connectionRefs.current, (id) =>
+          Option.fromNullable(client.cache.connectionCache.get(id)),
+        ).flatMap((info) =>
+          client
+            .readFromCache(info.document, info.variables, {})
+            .map((query) =>
+              query.map((query) => ({ query, pathInQuery: info.pathInQuery })),
+            ),
         ),
       )
         .map(Result.all)
         .flatMap((x) => x.toOption())
         .map((queries) =>
-          queries.map((query) =>
-            jsonPath.current.reduce(
+          queries.map(({ query, pathInQuery }) => {
+            return pathInQuery.reduce(
               (acc, key) =>
                 acc != null && typeof acc === "object" && key in acc
                   ? // @ts-expect-error indexable
                     acc[key]
                   : null,
               query,
-            ),
-          ),
+            );
+          }),
         ) as Option<T[]>;
       if (!deepEqual(value, lastReturnedValueRef.current)) {
         lastReturnedValueRef.current = value;
@@ -160,7 +105,7 @@ const createPaginationHook = (direction: mode) => {
       } else {
         return lastReturnedValueRef.current;
       }
-    }, [client, documentNode]);
+    }, [client]);
 
     const data = useSyncExternalStore(
       (func) => client.subscribe(func),

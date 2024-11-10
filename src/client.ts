@@ -1,7 +1,6 @@
-import { DocumentNode, GraphQLError } from "@0no-co/graphql.web";
+import { DocumentNode } from "@0no-co/graphql.web";
 import { Future, Option, Result } from "@swan-io/boxed";
 import { Request, badStatusToError, emptyToError } from "@swan-io/request";
-import { P, match } from "ts-pattern";
 import { ClientCache, SchemaConfig } from "./cache/cache";
 import { optimizeQuery, readOperationFromCache } from "./cache/read";
 import { writeOperationToCache } from "./cache/write";
@@ -60,19 +59,17 @@ const defaultMakeRequest: MakeRequest = ({
   })
     .mapOkToResult(badStatusToError)
     .mapOkToResult(emptyToError)
-    .mapOkToResult((payload) =>
-      match(payload as unknown)
-        .returnType<
-          Result<unknown, GraphQLError[] | InvalidGraphQLResponseError>
-        >()
-        .with({ errors: P.select(P.array()) }, (errors) =>
-          Result.Error(errors.map(parseGraphQLError)),
-        )
-        .with({ data: P.select(P.nonNullable) }, (data) => Result.Ok(data))
-        .otherwise((response) =>
-          Result.Error(new InvalidGraphQLResponseError(response)),
-        ),
-    );
+    .mapOkToResult((payload) => {
+      if (payload != null && typeof payload === "object") {
+        if ("errors" in payload && Array.isArray(payload.errors)) {
+          return Result.Error(payload.errors.map(parseGraphQLError));
+        }
+        if ("data" in payload && payload.data != null) {
+          return Result.Ok(payload.data);
+        }
+      }
+      return Result.Error(new InvalidGraphQLResponseError(payload));
+    });
 };
 
 type ConnectionUpdate<Node> = [
@@ -262,29 +259,22 @@ export class Client {
   ) {
     const variablesAsRecord = variables as Record<string, unknown>;
     const transformedDocument = this.getTransformedDocument(document);
+    const cached = this.cache.getOperationFromCache(
+      transformedDocument,
+      variablesAsRecord,
+    );
 
-    return match({
-      cached: this.cache.getOperationFromCache(
-        transformedDocument,
-        variablesAsRecord,
-      ),
-      normalize,
-    })
-      .with(
-        { cached: Option.P.Some(Result.P.Error(P._)) },
-        (value) => value.cached,
-      )
-      .with(
-        { cached: Option.P.Some(Result.P.Ok(P._)), normalize: false },
-        (value) => value.cached,
-      )
-      .otherwise(() =>
-        readOperationFromCache(
-          this.cache,
-          transformedDocument,
-          variablesAsRecord,
-        ),
-      );
+    if (cached.isSome() && cached.get().isError()) {
+      return cached;
+    }
+    if (cached.isSome() && cached.get().isOk() && normalize === false) {
+      return cached;
+    }
+    return readOperationFromCache(
+      this.cache,
+      transformedDocument,
+      variablesAsRecord,
+    );
   }
 
   query<Data, Variables>(
