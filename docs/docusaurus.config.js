@@ -6,6 +6,8 @@
 
 import { themes as prismThemes } from "prism-react-renderer";
 
+const url = "https://swan-io.github.io/graphql-client";
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "GraphQL Client",
