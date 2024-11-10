@@ -1,10 +1,10 @@
 import {
   Kind,
   OperationTypeNode,
+  type DocumentNode,
   type FieldNode,
   type SelectionSetNode,
 } from "@0no-co/graphql.web";
-import type { DocumentNode } from "graphql";
 import {
   extractArguments,
   getFieldName,
