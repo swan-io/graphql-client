@@ -1,6 +1,6 @@
 {
   "name": "@swan-io/graphql-client",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "description": "A simple, typesafe GraphQL client for React",
   "author": "Matthias Le Brun <bloodyowl@swan.io>",
@@ -75,9 +75,9 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "ts-pattern": "^5.1.0",
     "tsup": "^8.0.2",
     "tsx": "^4.7.1",
-    "ts-pattern": "^5.1.0",
     "typescript": "^5.6.3",
     "vite": "^5.2.7",
     "vitest": "^1.4.0"
