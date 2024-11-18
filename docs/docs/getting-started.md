@@ -27,7 +27,7 @@ The schema config is necessary for the cache to understand when your spread an i
 $ generate-schema-config path/to/schema.gql dist/schema-config.json
 ```
 
-## 2. Create your client
+## 3. Create your client
 
 Configure your client with your `url`, desired default `headers` & the `schemaConfig` you just generateed.
 
@@ -65,5 +65,9 @@ if (root != null) {
   createRoot(root).render(<Root />);
 }
 ```
+
+## 4. Add linter (recommended)
+
+We recommend to install `@graphql-eslint` and activate the `@graphql-eslint/require-id-when-available` rule, as the cache heavily relies on `id` being queried.
 
 And you're ready to go!
