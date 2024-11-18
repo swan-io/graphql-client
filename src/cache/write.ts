@@ -49,9 +49,7 @@ export const writeOperationToCache = (
     const fieldNameWithArguments = getFieldNameWithArguments(field, variables);
     const fieldValue = parentJson[originalFieldName];
 
-    if (!Array.isArray(parentCache)) {
-      parentCache[REQUESTED_KEYS].add(fieldNameWithArguments);
-    }
+    parentCache[REQUESTED_KEYS].add(fieldNameWithArguments);
 
     // either scalar type with no selection, or a null/undefined value
     const subSelectionSet = field.selectionSet;
