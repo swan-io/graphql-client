@@ -49,7 +49,13 @@ export const writeOperationToCache = (
     const fieldNameWithArguments = getFieldNameWithArguments(field, variables);
     const fieldValue = parentJson[originalFieldName];
 
-    parentCache[REQUESTED_KEYS].add(fieldNameWithArguments);
+    if (parentCache[REQUESTED_KEYS] != undefined) {
+      parentCache[REQUESTED_KEYS].add(fieldNameWithArguments);
+    } else {
+      console.error(
+        `GraphQL Client cache error: ${path.join(".")} likely didn't query its \`id\` field`,
+      );
+    }
 
     // either scalar type with no selection, or a null/undefined value
     const subSelectionSet = field.selectionSet;
@@ -61,6 +67,8 @@ export const writeOperationToCache = (
     if (Array.isArray(fieldValue)) {
       const arrayCache =
         parentCache[fieldNameWithArguments] ?? Array(fieldValue.length);
+      // @ts-expect-error it's an array
+      arrayCache.length = fieldValue.length;
       if (parentCache[fieldNameWithArguments] == undefined) {
         parentCache[fieldNameWithArguments] = arrayCache;
       }
