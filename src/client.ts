@@ -113,7 +113,7 @@ export type GetConnectionUpdate<Data, Variables> = (config: {
 }) => Option<ConnectionUpdate<unknown>>;
 
 export type RequestOverrides = Partial<
-  Pick<RequestConfig, "url" | "headers" | "withCredentials">
+  Pick<RequestConfig, "url" | "headers" | "credentials">
 >;
 
 type RequestOptions<Data, Variables> = {
