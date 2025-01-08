@@ -1449,10 +1449,10 @@
   resolved "https://registry.yarnpkg.com/@swan-io/boxed/-/boxed-3.0.0.tgz#2118f0362461cd68d813a4286f15b59798074a90"
   integrity sha512-E5so5kp40ZEwa/vQDxH9BevaKFrm6P4Gy84D2+q9tQeNcUQc2rrE3StH9tHLRCh+LcI5h9Nv3JMbpwpI3p8nQQ==
 
-"@swan-io/request@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@swan-io/request/-/request-1.0.6.tgz#e46c7a92d4088a484bfd60e180bd2768adb68568"
-  integrity sha512-HirhY0gu6aZk95YGXONcmwrfwQ0u5+uZGAtwtSDmrXfCLEGubXb1qIdRMex1e65TroXnTzBG3A65M5EvUB28ZQ==
+"@swan-io/request@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@swan-io/request/-/request-2.0.0.tgz#b5a4e080303a88fcf796d72314b9658d9dc1ad6f"
+  integrity sha512-5RVY6bOCQ+H5jr9Ar+k+dQ9s3W/D4+I9Ba9O1pTtWjLw/xXqgfITwlvKS+9d7GVS3Yqi7g4vEp98mOCjWR+SkQ==
 
 "@types/estree@1.0.5", "@types/estree@^1.0.0":
   version "1.0.5"

@@ -5,7 +5,7 @@ import { App } from "./components/App";
 import schemaConfig from "./gql-config.json";
 
 const client = new Client({
-  url: "https://swapi-graphql.netlify.app/.netlify/functions/index",
+  url: "https://swapi-graphql.eskerda.vercel.app",
   headers: {
     "Content-Type": "application/json",
   },

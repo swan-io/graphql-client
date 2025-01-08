@@ -23,7 +23,7 @@ export type RequestConfig = {
   operationName: string;
   document: DocumentNode;
   variables: Record<string, unknown>;
-  withCredentials?: boolean;
+  credentials?: RequestCredentials;
 };
 
 export type MakeRequest = (
@@ -41,16 +41,16 @@ const defaultMakeRequest: MakeRequest = ({
   url,
   headers,
   operationName,
-  withCredentials,
+  credentials,
   document,
   variables,
 }: RequestConfig) => {
   return Request.make({
     url,
     method: "POST",
-    responseType: "json",
+    type: "json",
     headers,
-    withCredentials: Option.fromNullable(withCredentials).getOr(false),
+    ...(credentials != undefined ? { credentials } : null),
     body: JSON.stringify({
       operationName,
       query: print(document),
