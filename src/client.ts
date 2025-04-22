@@ -137,7 +137,13 @@ export class Client {
 
   constructor(config: ClientConfig) {
     this.url = config.url;
-    this.headers = config.headers ?? { "Content-Type": "application/json" };
+
+    this.headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...config.headers,
+    };
+
     this.schemaConfig = config.schemaConfig;
     this.cache = new ClientCache(config.schemaConfig);
     this.makeRequest = config.makeRequest ?? defaultMakeRequest;
