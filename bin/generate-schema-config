@@ -43,8 +43,6 @@ introspection.then((introspection) => {
     ),
   };
 
-  console.log(JSON.stringify(json, null, 2));
-
   fs.writeFileSync(
     path.join(cwd, distPath),
     JSON.stringify(json, null, 2),
