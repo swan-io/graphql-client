@@ -1,6 +1,6 @@
 {
   "name": "@swan-io/graphql-client",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "license": "MIT",
   "description": "A simple, typesafe GraphQL client for React",
   "author": "Matthias Le Brun <bloodyowl@swan.io>",
