@@ -144,13 +144,7 @@ export const useQuery = <Data, Variables>(
   const reload = useCallback(() => {
     setIsReloading(true);
     setStableVariables(([stable]) => [stable, stable]);
-    return client
-      .query(stableQuery, stableVariables[0], {
-        overrides: stableOverrides,
-        normalize,
-      })
-      .tap(() => setIsReloading(false));
-  }, [client, stableQuery, stableOverrides, stableVariables, normalize]);
+  }, []);
 
   const isLoading = isRefreshing || isReloading || asyncData.isLoading();
   const asyncDataToExpose = isReloading
